@@ -1,34 +1,30 @@
 """
 # Explanation of the Two Sum Solution
 
-## 1. Approach Explanation
+## 1. Brief Explanation of the Approach
 
-The solution utilizes a hash map (dictionary in Python) to efficiently find the indices of two numbers that add up to a specified target value. Here's a step-by-step breakdown of the approach:
+The given solution utilizes a hash map (or dictionary) to efficiently find two numbers in the list `nums` that add up to a specified `target`. The algorithm follows these steps:
 
-- Initialize an empty dictionary called `seen` to map values to their respective indices as we iterate through the list `nums`.
-- For each number in `nums`, calculate its complement by subtracting the number from the `target`.
-- Check if the complement exists in the `seen` dictionary:
-  - If it does, we have found the two numbers (the current number and its complement) that add up to the target. In this case, return the indices of the complement (from `seen`) and the current number.
-  - If it does not exist, store the current number and its index in the `seen` dictionary.
-- The loop continues until a solution is found, which guarantees that if the solution exists, it will be found in a single pass through the list.
+- Create a hash map named `seen` to store each number's value as the key and its index as the value.
+- Iterate over the list `nums` using the `enumerate` function, which provides both the index (`i`) and the number (`num`).
+- For each `num`, calculate its complement with respect to the target (`complement = target - num`).
+- Check if this `complement` already exists in the `seen` hash map.
+  - If it does, it means we found two numbers that add up to the target: `num` and its complement. The algorithm then returns their indices in the form of a list.
+  - If it does not, the current number `num` and its index `i` are added to the `seen` hash map for future reference.
+
+This approach ensures that each number is only processed once, which leads to an efficient solution.
 
 ## 2. Time and Space Complexity Analysis
 
-- **Time Complexity**: O(N)
-  - We only iterate over the list `nums` once. Each lookup and insertion operation in the dictionary (hash map) is average O(1), making the overall complexity linear with respect to the number of elements in `nums`.
+### Time Complexity
+- The algorithm runs in \(O(n)\), where \(n\) is the number of elements in the `nums` list. This is because we traverse the list exactly once and each lookup and insertion operation in the hash map is \(O(1)\) on average.
 
-- **Space Complexity**: O(N)
-  - In the worst case, we store all N elements of the `nums` list in the `seen` dictionary, which consumes O(N) space.
+### Space Complexity
+- The space complexity is also \(O(n)\) due to the additional hash map used to store elements and their indices. In the worst case, if no two numbers sum up to the target, we would store all \(n\) numbers in the hash map.
 
-## 3. Efficiency of the Approach
+## 3. Why This Approach is Efficient
 
-This approach is efficient because:
-
-- **Single Pass**: Instead of using a nested loop to check each number against all others (which would result in O(N^2) time complexity), this algorithm processes each element only once.
-- **Hash Map Lookup**: The use of a hash map allows for O(1) average time complexity for lookups, facilitating immediate checks for the existence of the needed complement for each number.
-- **Immediate Solution Returning**: The algorithm immediately returns upon finding the first valid pair, which ensures it does not perform unnecessary computations after a solution is found.
-
-In summary, the solution employs a clever combination of a single loop and a hash map to achieve an optimal solution for the Two Sum problem.
+This approach is efficient due to the use of a hash map for constant time lookups and insertions. Instead of using a nested loop to check every possible pair of numbers (which would result in a time complexity of \(O(n^2)\)), this algorithm reduces the problem to a single pass through the data, significantly improving performance, especially for large datasets. By utilizing the hash map effectively, it achieves both hunting for the necessary complement and storing the indices of already seen numbers simultaneously, thus ensuring a quick and optimal solution.
 
 Runtime: N/A
 Memory: N/A
