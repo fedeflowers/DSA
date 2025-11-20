@@ -32,7 +32,8 @@ function getExtension(lang) {
         'kotlin': '.kt',
         'scala': '.scala',
         'rust': '.rs',
-        'csharp': '.cs'
+        'csharp': '.cs',
+        'c': '.c'
     };
     return map[lang.toLowerCase()] || '.txt';
 }
