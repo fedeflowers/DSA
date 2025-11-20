@@ -3,28 +3,35 @@
 
 ## 1. Brief Explanation of the Approach
 
-The given solution utilizes a hash map (or dictionary) to efficiently find two numbers in the list `nums` that add up to a specified `target`. The algorithm follows these steps:
+The provided solution for the "Two Sum" problem uses a hash map (dictionary in Python) to keep track of the numbers we have seen so far and their corresponding indices. The algorithm works as follows:
 
-- Create a hash map named `seen` to store each number's value as the key and its index as the value.
-- Iterate over the list `nums` using the `enumerate` function, which provides both the index (`i`) and the number (`num`).
-- For each `num`, calculate its complement with respect to the target (`complement = target - num`).
-- Check if this `complement` already exists in the `seen` hash map.
-  - If it does, it means we found two numbers that add up to the target: `num` and its complement. The algorithm then returns their indices in the form of a list.
-  - If it does not, the current number `num` and its index `i` are added to the `seen` hash map for future reference.
-
-This approach ensures that each number is only processed once, which leads to an efficient solution.
+- Iterate through each number in the input list `nums` using `enumerate` which gives both the index (`i`) and the number (`num`).
+- For each number, compute the `complement` which is the difference between the `target` and the current `num` (i.e., `complement = target - num`).
+- Check if this `complement` already exists in the `seen` hash map:
+  - If it does, return the index of the `complement` (found in `seen`) and the current index `i`, as these two numbers add up to the target.
+  - If it does not, store the current number `num` and its index `i` in the `seen` hash map.
+  
+This approach allows us to find two indices whose values sum to the target efficiently by leveraging the hash map for quick lookups.
 
 ## 2. Time and Space Complexity Analysis
 
-### Time Complexity
-- The algorithm runs in \(O(n)\), where \(n\) is the number of elements in the `nums` list. This is because we traverse the list exactly once and each lookup and insertion operation in the hash map is \(O(1)\) on average.
+- **Time Complexity**: O(N)
+  - The algorithm makes a single pass through the list of numbers, performing constant time operations (dictionary lookups and insertions) for each element. Thus, the total time complexity is linear in terms of the number of elements, `N`.
 
-### Space Complexity
-- The space complexity is also \(O(n)\) due to the additional hash map used to store elements and their indices. In the worst case, if no two numbers sum up to the target, we would store all \(n\) numbers in the hash map.
+- **Space Complexity**: O(N)
+  - In the worst case, all the numbers are stored in the hash map if no two numbers add up to the target. Therefore, the space complexity is also linear in terms of the number of elements, `N`, due to the additional space used for the hash map.
 
 ## 3. Why This Approach is Efficient
 
-This approach is efficient due to the use of a hash map for constant time lookups and insertions. Instead of using a nested loop to check every possible pair of numbers (which would result in a time complexity of \(O(n^2)\)), this algorithm reduces the problem to a single pass through the data, significantly improving performance, especially for large datasets. By utilizing the hash map effectively, it achieves both hunting for the necessary complement and storing the indices of already seen numbers simultaneously, thus ensuring a quick and optimal solution.
+This approach is efficient due to the following reasons:
+
+- **Single Pass**: It only requires a single pass through the input list, which reduces the time complexity from O(N^2) (as in a naive nested loop approach) to O(N). This is a significant improvement, especially for large input sizes.
+  
+- **Fast Lookups**: Hash maps provide average-case constant time complexity for lookups and insertions. This allows for quick checks to see if the required complement exists for the current number.
+
+- **Low Overhead**: The use of a hash map instead of more complex data structures keeps the implementation simple and the overhead low.
+
+Overall, this solution effectively balances time and space efficiency, making it a commonly accepted method for solving the "Two Sum" problem.
 
 Runtime: N/A
 Memory: N/A
