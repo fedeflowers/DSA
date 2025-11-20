@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Sync Settings</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <h2>LeetCode Sync Settings</h2>
+        
+        <div class="form-group">
+            <label for="githubToken">GitHub Personal Access Token</label>
+            <input type="password" id="githubToken" placeholder="ghp_..." />
+        </div>
+
+        <div class="form-group">
+            <label for="repoName">Target Repository</label>
+            <input type="text" id="repoName" placeholder="owner/repo" value="fedeflowers/DSA" />
+        </div>
+
+        <div class="form-group">
+            <label for="llmProvider">LLM Provider</label>
+            <select id="llmProvider">
+                <option value="openai">OpenAI</option>
+                <option value="gemini">Google Gemini</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="llmApiKey">LLM API Key</label>
+            <input type="password" id="llmApiKey" placeholder="sk-..." />
+        </div>
+
+        <button id="saveBtn">Save Settings</button>
+        <button id="syncLastBtn" style="margin-top: 10px; background-color: #28a745;">Sync Last Submission (Manual)</button>
+        <p id="status" class="status"></p>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
