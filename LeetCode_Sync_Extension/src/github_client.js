@@ -2,19 +2,19 @@ const GITHUB_API_BASE = 'https://api.github.com';
 
 export async function syncToGitHub(token, repo, data) {
     const { code, lang, tags, title, explanation, stats } = data;
-    
+
     // Determine path: Primary Tag / ProblemTitle.ext
     // We use the first tag as the folder
     const folder = tags.length > 0 ? tags[0].replace(/\s+/g, '_') : 'Uncategorized';
-    const filename = title.replace(/\s+/g, '_') + getExtension(lang);
+    const filename = toCamelCase(title) + getExtension(lang);
     const path = `${folder}/${filename}`;
-    
+
     // We also want to save the explanation. Maybe as a comment in the code or a separate MD file?
     // User requested: "push the code that ive submitted with an explanation of the exercise"
     // Let's append the explanation as a comment block at the top of the file.
-    
+
     const content = formatContent(code, explanation, stats, lang);
-    
+
     await createOrUpdateFile(token, repo, path, content, `Add solution for ${title}`);
 }
 
@@ -40,7 +40,7 @@ function getExtension(lang) {
 function formatContent(code, explanation, stats, lang) {
     const commentStart = lang.includes('python') || lang.includes('ruby') ? '"""' : '/*';
     const commentEnd = lang.includes('python') || lang.includes('ruby') ? '"""' : '*/';
-    
+
     return `${commentStart}
 ${explanation}
 
@@ -76,7 +76,7 @@ async function createOrUpdateFile(token, repo, path, content, message) {
         content: btoa(unescape(encodeURIComponent(content))), // Base64 encode handling unicode
         branch: 'main' // Assuming main branch
     };
-    
+
     if (sha) {
         body.sha = sha;
     }
@@ -95,4 +95,8 @@ async function createOrUpdateFile(token, repo, path, content, message) {
         const err = await response.json();
         throw new Error(`GitHub API Error: ${err.message}`);
     }
+}
+
+function toCamelCase(str) {
+    return str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
 }
