@@ -1,38 +1,29 @@
 """
-## Explanation of the Two Sum Solution
+## Explanation of the LeetCode Solution for "Two Sum"
 
-### 1. Approach
+### 1. Brief Explanation of the Approach
+The provided solution uses a hash map (dictionary in Python) to efficiently find two numbers in the list `nums` that sum up to the specified `target`. Here's how it works:
 
-The provided `twoSum` function uses a hash map (dictionary in Python) to keep track of the numbers that have been encountered so far in the list `nums`. The goal is to find two distinct indices `i` and `j` such that `nums[i] + nums[j] = target`.
-
-Here's how the algorithm works step-by-step:
-
-- Initialize an empty dictionary called `seen`, which will map each number to its index in the `nums` list.
-- Iterate over the `nums` list using `enumerate`, which provides both the index `i` and the value `num` of each element.
-- For each `num`, calculate its `complement`, which is the difference between the `target` and `num`.
-- Check if this `complement` already exists in the `seen` dictionary:
-  - If it does, that means we have already seen a number which, when added to `num`, equals `target`. Hence, we return the indices of both numbers: the index of the `complement` (found in `seen[complement]`) and the current index `i`.
-- If the `complement` is not found, store `num` along with its index `i` in the `seen` dictionary for future reference.
+- Iterate through each number in the input list `nums` using the `enumerate` function, which gives both the index (`i`) and the number (`num`).
+- For each number, calculate its "complement," which is defined as the difference between the `target` and the current number (`complement = target - num`).
+- Check if this complement already exists in the `seen` dictionary. If it does, this means we have found the two numbers (the current number and its complement) that add up to the `target`. The indices of these numbers are returned as a list.
+- If the complement does not exist in `seen`, store the current number and its index in the dictionary (`seen[num] = i`). This way, you keep track of the numbers you've already encountered and their corresponding indices.
 
 ### 2. Time and Space Complexity Analysis
-
-- **Time Complexity**: O(N)
+- **Time Complexity:** O(n)
+  - The solution iterates through the list `nums` exactly once, where `n` is the number of elements in `nums`. Each lookup in the hash map (to check for the complement) and insertion (to add current number and index) is on average O(1), leading to an overall linear time complexity.
   
-  The function iterates through the `nums` array exactly once, performing O(1) operations for checking membership in the dictionary and inserting into the dictionary for each element. Thus, the overall time complexity is linear with respect to the number of elements, N, in the `nums` array.
+- **Space Complexity:** O(n)
+  - In the worst case, if no two numbers sum up to `target`, we would end up storing all `n` numbers in the `seen` dictionary. Therefore, the space complexity is also linear in relation to the size of the input list.
 
-- **Space Complexity**: O(N)
+### 3. Why This Approach is Efficient
+This approach is efficient for several reasons:
 
-  In the worst case, all the numbers in the `nums` list need to be stored in the `seen` dictionary. Therefore, in terms of space, the complexity is linear, O(N), as well.
+- **Single Pass Solution:** The algorithm makes only one pass through the input list, which minimizes the number of iterations and comparisons. This is crucial for performance, especially with large inputs.
+- **Constant Time Lookups:** Using a hash map allows for average-case constant time complexity for both insertions and lookups, significantly speeding up the search for complements compared to a brute-force solution, which would require a nested loop with O(n^2) time complexity.
+- **Immediate Return:** The solution returns immediately upon finding the two indices, further optimizing performance since it does not need to continue checking the rest of the list once a valid pair is found.
 
-### 3. Efficiency of the Approach
-
-This approach is efficient for the following reasons:
-
-- **Single Pass**: The algorithm solves the problem in a single pass through the array, which significantly reduces the time complexity compared to a brute-force solution that would require nested loops (O(N^2)).
-- **Immediate Lookup**: By using a hash map, the algorithm allows for average O(1) time complexity for both insert and lookup operations. This enables quick checks for the existence of the `complement`.
-- **Optimal for Unique Constraints**: While it assumes there are exactly one solution and does not handle duplicate elements differently, this method still effectively captures the solution under the typical assumption of the problem's constraints.
-
-Overall, the use of a hash map provides a practical solution to the "Two Sum" problem, ensuring both efficiency and simplicity.
+Overall, the combination of these elements results in an efficient and effective solution to the "Two Sum" problem.
 
 Runtime: N/A
 Memory: N/A
