@@ -1,54 +1,58 @@
 """
-# Explanation of LeetCode Solution for "Time Needed to Buy Tickets"
+# Explanation of the LeetCode Solution for "Time Needed to Buy Tickets"
 
-## 1. Approach Explanation
+## 1. Brief Explanation of the Approach
+The problem requires finding out how much time it will take for a person, standing at position `k` in a queue, to buy their tickets when the queue is represented by a list of integers (`tickets`), where each integer indicates the number of tickets each person in front has to buy. 
 
-The solution utilizes a queue (specifically, a deque) to simulate a ticket-buying process where each person in line buys one ticket at a time. The algorithm operates as follows:
-
-- **Initialization**: A deque is initialized with tuples containing the number of tickets each person has and their respective index in the input list.
-  
-- **While Loop**: The loop continues until the deque is empty:
-  - A person (the first in line) is dequeued. Their ticket count is decreased by one, simulating the purchase of a ticket, and a time counter is incremented.
-    
-  - After the ticket purchase, the algorithm checks if the dequeued person is the target person (identified by index `k`) and whether they have no tickets left. If both conditions are true, the total time taken so far is returned as the result.
-    
-  - If the dequeued person still has tickets remaining, they are re-enqueued to get back in line.
-  
-The process continues until the target person successfully buys their tickets.
+The approach taken in the solution is as follows:
+- The solution calculates the total time taken for each person in the queue to buy their tickets using simple arithmetic. 
+- It initiates a variable `total`, which will accumulate the total time spent at the counter.
+- The target refers to the number of tickets the person at position `k` in the queue has.
+- The solution iterates through the `tickets` list:
+  - If the current person's index is less than or equal to `k`, it adds the lesser of their ticket count or the target ticket count to `total`.
+  - If the current person's index is greater than `k`, it adds the lesser of their ticket count or one less than the target, since the target person will finish buying their tickets before those behind them can fully count the target's tickets.
+- At the end of the iteration, `total` reflects the total time taken for the person at index `k` to acquire their tickets.
 
 ## 2. Time and Space Complexity Analysis
+- **Time Complexity**: O(N), where N is the total number of people in the queue. The solution involves a single loop that goes through the list of tickets once.
+- **Space Complexity**: O(1), as the solution only uses a fixed amount of space (for the `total` and `target` variables) regardless of input size. The solution does not use any additional data structures whose size grows with input.
 
-- **Time Complexity**: The worst-case time complexity is O(N), where N is the total number of tickets (sum of all tickets in the list). In the worst-case scenario, each person in the queue buys one ticket per iteration, and they may need to go through the queue multiple times. Thus, the total number of operations is proportional to the total number of ticket purchases.
+## 3. Why This Approach is Efficient
+This approach is efficient for a couple of reasons:
+- It avoids the need for a queue or deque data structure, simplifying the logic and removing the overhead of managing a queue.
+- Instead of simulating the ticket buying process, which can involve many iterations and increases time complexity (as seen in some alternative approaches), it computes the total time directly through iteration and conditional checks.
+- By only making a single pass through the list and using minimal additional storage, it maximizes performance in both speed and memory usage, making it suitable for larger inputs.
 
-- **Space Complexity**: The space complexity is O(N) due to the storage of the initial deque that contains all the tuples of ticket counts and their respective indices. This accounts for storing all the people initially in the queue.
-
-## 3. Efficiency of the Approach
-
-This approach is efficient for several reasons:
-
-- **Simulation of Real Process**: It effectively simulates the actual ticket-buying process in a straightforward manner using a queue, which reflects the FIFO (First-In-First-Out) nature of people waiting in line.
-
-- **Dynamic Handling**: By re-adding individuals with remaining tickets back to the queue, the algorithm dynamically adjusts to changes, ensuring that no person is skipped in the process.
-
-- **Simpler Logic**: Compared to more complex algorithms, this solution’s logic is simpler and easier to understand, making it maintainable and less prone to errors.
-
-Overall, this approach efficiently captures the dynamics of the problem while keeping the implementation straightforward and intuitive.
+Overall, the solution efficiently calculates the required time in a straightforward manner while adhering to optimal time and space complexities.
 
 Runtime: undefined
-Memory: 17644000
+Memory: 17656000
 """
+
+# class Solution:
+#     def timeRequiredToBuy(self, tickets: List[int], k: int) -> int:
+#         q = Deque([(t, i) for i, t in enumerate(tickets)])
+#         time = 0
+#         while q:
+#             tickets, index = q.popleft()
+#             time += 1
+#             tickets -= 1
+#             if index == k and tickets == 0:
+#                 return time
+
+#             if tickets > 0:
+#                 q.append((tickets, index))
+#         return -1
 
 class Solution:
     def timeRequiredToBuy(self, tickets: List[int], k: int) -> int:
-        q = Deque([(t, i) for i, t in enumerate(tickets)])
-        time = 0
-        while q:
-            tickets, index = q.popleft()
-            time += 1
-            tickets -= 1
-            if index == k and tickets == 0:
-                return time
-
-            if tickets > 0:
-                q.append((tickets, index))
-        return -1
+        total = 0
+        target = tickets[k]
+        
+        for i, t in enumerate(tickets):
+            if i <= k:
+                total += min(t, target)
+            else:
+                total += min(t, target - 1)
+                
+        return total
