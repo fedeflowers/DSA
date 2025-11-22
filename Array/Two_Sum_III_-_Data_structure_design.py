@@ -1,57 +1,79 @@
 """
-# Explanation of the LeetCode Solution for "Two Sum III - Data Structure Design"
+```markdown
+# Explanation of "Two Sum III - Data structure design" Solution
 
-## 1. A Brief Explanation of the Approach
+## 1. Brief Explanation of the Approach
 
-The problem of "Two Sum III" requires a data structure that allows adding numbers and subsequently checking if any two of the added numbers sum up to a specific target.
+The provided solution implements a `TwoSum` class that is designed to efficiently allow the addition of numbers and find if any two numbers add up to a specific target value. Here’s how it works:
 
-The given solution uses a class called `TwoSum` which has two main components:
-
-- `self.knowledge`: This is a list that stores all the numbers that have been added to the `TwoSum` object.
-- `self.sums`: This is a set used to store all possible sums that can be formed by adding pairs of numbers.
-
-### Key Methods:
-1. **add(number: int)**: Whenever a new number is added:
-   - It iterates through the existing numbers stored in `self.knowledge`.
-   - For each existing number, it computes the sum of that number and the new number, storing the result in `self.sums`.
-   - Finally, the new number is appended to `self.knowledge`.
-
-2. **find(value: int)**: This method checks if the provided `value` (target sum) exists in the `self.sums` set, returning `True` if it does and `False` otherwise.
+- **Data Structure**: 
+  - A dictionary (`self.counts`) is used where the keys are the numbers added using the `add` method, and the values are their respective counts. This helps in tracking duplicate numbers.
+  
+- **add Method**: 
+  - Whenever a number is added, it increments the count of that number in the `self.counts` dictionary. If the number does not already exist in the dictionary, it's initialized to 1.
+  
+- **find Method**: 
+  - To check if there are two numbers that sum up to a given target value, the method iterates through the keys of `self.counts`. For each number, it computes the needed complement (`value - num`).
+  - If the complement exists in the dictionary, it further checks if either the complement is different from the current number or if the current number appears more than once (to handle cases where the same number can be used twice to form a sum).
 
 ## 2. Time and Space Complexity Analysis
 
-### Time Complexity:
-- **add(number: int)**: The time complexity is \(O(N)\), where \(N\) is the number of elements currently stored in `knowledge`. This is because for each number you add, you iterate through all existing numbers to compute their sums with the new number and store them in `sums`.
-- **find(value: int)**: The time complexity is \(O(1)\) due to the constant time complexity for membership testing in a set.
-
-### Space Complexity:
-- The space complexity is \(O(N)\), where \(N\) is the number of unique numbers added to the `TwoSum` object. This is due to storing both the individual numbers in `self.knowledge` and the sums in `self.sums`.
+- **Time Complexity**:
+  - The `add` method has a time complexity of O(1) because it only requires updating the count in the dictionary, which is an average O(1) operation.
+  - The `find` method has a time complexity of O(n) in the worst case, where n is the number of unique numbers in `self.counts`. This is because we might need to check every number to see if a valid pair exists that sums to the target.
+  
+- **Space Complexity**:
+  - The space complexity is O(n), where n is the number of unique numbers that have been added. This is due to the `self.counts` dictionary storing each number along with its count.
 
 ## 3. Why This Approach is Efficient
 
-The efficiency of this approach stems from the use of a set (`self.sums`) to store pairs of sums, which allows for quick lookup times when using the `find` method. This significantly speeds up the process of checking if a pair of previously added numbers sum to a specific target. 
+This approach is efficient due to the following reasons:
 
-While the add operation has linear complexity due to the iteration through previous numbers, the amortized efficiency is acceptable given that typical usage might involve multiple finds relative to fewer adds, thus allowing for frequent quick lookups in practice. 
+- **Effectiveness in Handling Duplicates**: The use of a dictionary to maintain counts allows for effective handling of scenarios where the same number is added multiple times. This is critical in cases like finding two occurrences of `3` to sum to `6`.
 
-In summary, the design efficiently balances the need to add numbers while permitting rapid sum queries by leveraging a straightforward data structure mix of a list for storage and a set for fast access.
+- **Fast Insertions**: The `add` method operates at O(1) time complexity, making it efficient when inserting numbers.
+
+- **Flexible Lookup**: The `find` method, while O(n) in the worst case, benefits from the dictionary structure which allows for quick lookups of complements. This makes it effective in practice, especially for scenarios where the number of unique entries is much smaller than the total number of additions.
+
+This design allows for effective use of both time and space while providing a simple interface to add numbers and find sums, thus making it a suitable solution for the problem at hand.
+```
 
 Runtime: undefined
-Memory: 25336000
+Memory: 23368000
 """
+
+#brute force
+# class TwoSum:
+
+#     def __init__(self):
+#         self.knowledge = []
+#         self.sums = set()
+
+#     def add(self, number: int) -> None:
+#         for el in self.knowledge:
+#             self.sums.add(el + number)
+#         self.knowledge.append(number)
+
+#     def find(self, value: int) -> bool:
+#         return value in self.sums
 
 class TwoSum:
 
     def __init__(self):
-        self.knowledge = []
-        self.sums = set()
+        # Map number -> count to handle duplicates (e.g., finding 3+3=6)
+        self.counts = {}
 
     def add(self, number: int) -> None:
-        for el in self.knowledge:
-            self.sums.add(el + number)
-        self.knowledge.append(number)
+        self.counts[number] = self.counts.get(number, 0) + 1
 
     def find(self, value: int) -> bool:
-        return value in self.sums
+        for num in self.counts:
+            complement = value - num
+            if complement in self.counts:
+                # Check if complement is the same number (need count > 1)
+                if complement != num or self.counts[num] > 1:
+                    return True
+        return False
 
 # Your TwoSum object will be instantiated and called as such:
 # obj = TwoSum()
