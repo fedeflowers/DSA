@@ -1,36 +1,53 @@
 """
-## Explanation of the Solution
+```markdown
+# Explanation of the "Maximum Number of Ones" Solution
 
-### 1. Brief Explanation of the Approach
-The problem "Maximum Number of Ones" aims to determine the maximum number of ones that can be placed in a grid defined by its `width`, `height`, and a repeating square block of size `sideLength x sideLength`. You are allowed to place at most `maxOnes` ones in this grid.
+## 1. Brief Explanation of the Approach
 
-The solution involves the following steps:
+The provided solution aims to determine the maximum number of `1`s that can be placed in a 2D grid of dimensions `width` x `height`, where the `1`s are arranged in repeating blocks of size `sideLength` x `sideLength`. We have a restriction on the number of `1`s being added, denoted by `maxOnes`. 
 
-- **Weight Calculation**: For each cell in the `sideLength x sideLength` block, the algorithm computes how often that cell will be repeated in the overall grid when the block is tiled across the entire width and height of the grid. This is captured in a weight array, where each element corresponds to the number of times a particular cell will contribute to the grid.
-  
-- **Weight Sorting**: After calculating the weights for all cells in the block, the weights are sorted in descending order. This allows for easily selecting the cells that contribute the most ones to the grid.
+### Step-by-Step Process:
 
-- **Optimal Selection**: Finally, the algorithm sums the weights of the top `maxOnes` positions, which yields the maximum number of ones that can be placed in the grid under the constraints specified.
+1. **Calculate Weights**: 
+   - For each cell `(r, c)` in a `sideLength` x `sideLength` block, the algorithm computes how many times that specific cell will appear in the entire grid based on its row and column position. 
+   - The weights are calculated using:
+     - `num_rows = (height - 1 - r) // sideLength + 1` indicates how many times row `r` will be repeated within the grid.
+     - `num_cols = (width - 1 - c) // sideLength + 1` indicates how many times column `c` will be repeated.
+   - The overall contribution (weight) of each cell is the product of the row and column repetitions: `num_rows * num_cols`.
 
-### 2. Time and Space Complexity Analysis
+2. **Sort Weights**: 
+   - Once all weights are determined for each cell in the block, they are sorted in descending order. This allows us to easily identify which cells can contribute the most `1`s.
+
+3. **Select Top Weights**: 
+   - The final step involves summing the top `maxOnes` values from the sorted weights. This sum represents the maximum number of `1`s that can be placed in the grid, constrained by the `maxOnes` limit.
+
+## 2. Time and Space Complexity Analysis
+
 - **Time Complexity**: 
-  - The nested loops for calculating weights run in `O(sideLength^2)` since both rows (`r`) and columns (`c`) iterate through `sideLength`. 
-  - Sorting the weights array will take `O(n log n)`, where `n` is the number of cells in the grid (which equates to `sideLength^2`).
-  - Thus, the overall time complexity of the solution is `O(sideLength^2 log(sideLength^2))`.
-
+  - The algorithm involves nested loops iterating through a `sideLength` x `sideLength` grid, resulting in a complexity of `O(sideLength^2)` for calculating weights. Sorting the weights takes `O(n log n)`, where `n` is the number of weights (which equals `sideLength^2`).
+  - Thus, the overall time complexity is:
+    \[
+    O(sideLength^2 \log(sideLength^2))
+    \]
+  
 - **Space Complexity**: 
-  - The main space usage comes from the `weights` list, which has `sideLength^2` elements, resulting in a space complexity of `O(sideLength^2)`.
+  - The space required is predominantly for storing the weights, which has a size of `O(sideLength^2)`. Therefore, the space complexity is:
+    \[
+    O(sideLength^2)
+    \]
 
-### 3. Why This Approach is Efficient
-This approach is efficient because it:
-- Focuses directly on the contributions of each cell in the small repeating block rather than examining every cell in the entire grid, which would lead to poor performance with larger dimensions.
-- The use of sorting allows for quickly selecting the cells with the highest contributions, ensuring that we maximize the total number of ones placed in a controlled manner, balancing the precision of contributions against the upper limit imposed by `maxOnes`.
-- The calculations are based entirely on the mathematical properties of the grid and the tiling aspect, thereby ensuring that the algorithm runs in polynomial time relative to the block size rather than the potentially much larger grid size. This leads to scalability in handling larger grids efficiently.
+## 3. Why This Approach is Efficient
 
-By utilizing these methodologies, the solution effectively calculates the maximum number of ones without the need to simulate the entire grid directly.
+This approach efficiently utilizes the repeating structure of the grid formed by `sideLength` x `sideLength` blocks. By calculating the contribution of each block cell to the grid once and leveraging the sorted weights, the algorithm minimizes redundant calculations. 
+
+- The use of mathematical calculations to determine repetitions avoids the need to construct and analyze the entire grid, which could be time and space-intensive. 
+- Sorting the weights ensures that the algorithm can quickly access the highest contributing cells, thereby minimizing computational overhead when selecting the top `maxOnes`.
+
+Overall, the method efficiently navigates through the problem parameters, resulting in a solution that scales effectively with inputs.
+```
 
 Runtime: undefined
-Memory: 18160000
+Memory: 17704000
 """
 
 class Solution:
@@ -43,7 +60,11 @@ class Solution:
             for c in range(sideLength):
                 # Calculate how many times row 'r' repeats in the total height
                 # Formula: (total_rows - 1 - current_row) // step + 1
-                num_rows = (height - 1 - r) // sideLength + 1
+
+                # fai prima le righe e poi le colonne, height -1 perchè gli indici partono da 0,
+                #  - r perchè a l'indice da cui inizi a contare, quindi ci sono height - 1 - r posti dopo il primo,
+                #  //sidelegth è quanti ce ne stanno in questi spazi, e il + 1 finale è per contare l'indice 0
+                num_rows = (height - 1 - r) // sideLength + 1 
                 
                 # Calculate how many times col 'c' repeats in the total width
                 num_cols = (width - 1 - c) // sideLength + 1
@@ -56,4 +77,6 @@ class Solution:
         
         # Sum the top 'maxOnes' weights
         return sum(weights[:maxOnes])
+
+
 
