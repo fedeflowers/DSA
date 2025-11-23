@@ -1,64 +1,34 @@
 """
-## Explanation of the Approach
+```markdown
+## Explanation of the LeetCode Solution for "Greatest Sum Divisible by Three"
 
-The given solution is designed to solve the problem "Greatest Sum Divisible by Three" using dynamic programming. The main objective is to find the maximum sum of elements from the input list `nums` such that this sum is divisible by 3.
+### 1. Brief Explanation of the Approach
+The problem requires finding the maximum sum of a subset of numbers from an array such that the sum is divisible by three. The solution utilizes Dynamic Programming (DP) to maintain the maximum sum possibilities based on remainders when divided by 3 (0, 1, and 2). 
 
-### Key Points of the Approach:
+Instead of keeping a full DP table, the algorithm maintains a compact array `dp` of size 3, where:
+- `dp[0]` stores the maximum sum where the sum is `0 mod 3`
+- `dp[1]` stores the maximum sum where the sum is `1 mod 3`
+- `dp[2]` stores the maximum sum where the sum is `2 mod 3`
 
-1. **Dynamic Programming (DP) Table**: 
-   The DP table is represented by an array `dp` where:
-   - `dp[0]` holds the maximum sum that gives a remainder of 0 when divided by 3.
-   - `dp[1]` holds the maximum sum that gives a remainder of 1 when divided by 3.
-   - `dp[2]` holds the maximum sum that gives a remainder of 2 when divided by 3.
+For each number in the input list `nums`, the algorithm updates potential maximum sums by considering both including and excluding each number, adjusting the appropriate remainder. The crucial part of the transition is calculating the previous state of the remainder needed to achieve the current remainder after including the number.
 
-2. **Base Case Initialization**: 
-   We initialize `dp` with:
-   - `dp[0] = 0` (sum of 0 is divisible by 3)
-   - `dp[1] = float('-inf')` (there cannot be a valid sum with remainder 1 initially)
-   - `dp[2] = float('-inf')` (there cannot be a valid sum with remainder 2 initially)
-
-3. **Transition Process**:
-   For each number in `nums`, we look at the `prev_dp`, which is a snapshot of the current state of `dp` before updates:
-   - For each possible remainder `r` (0, 1, 2), we calculate the potential previous remainder (`old_rem`) that will result in `r` when adding the current number `num`.
-   - Using the formula: 
-     \[
-     dp[r] = \max(prev\_dp[r], prev\_dp[old\_rem] + num)
-     \]
-   - This transition ensures that we either take the previous maximum for that remainder or include the current number and use the maximum from the complementary remainder.
-
-4. **Final Output**:
-   The answer (i.e., the greatest sum that is divisible by three) is given by `dp[0]` after processing all numbers.
-
-## Time and Space Complexity Analysis
-
-- **Time Complexity**: 
-  The algorithm iterates through the list of numbers (`n` elements) and, for each number, goes through three possible remainders (0, 1, 2). Thus, the time complexity is:
-  \[
-  O(n)
-  \]
+### 2. Time and Space Complexity Analysis
+- **Time Complexity**: O(N), where N is the length of the input array `nums`. The solution iterates through each element of `nums` and performs a constant amount of work for each element (updating the `dp` array).
   
-- **Space Complexity**: 
-  The space is primarily utilized by the `dp` array which has a fixed size of 3 (to store sums with different remainders). The previous state is stored in `prev_dp`, which is also a fixed size array. Therefore, the space complexity is:
-  \[
-  O(1)
-  \]
+- **Space Complexity**: O(1). The solution employs a fixed-size DP array of length 3 to store the results for the corresponding remainders. Thus, it uses constant additional space, independent of the input size.
+
+### 3. Why This Approach is Efficient
+This approach is efficient due to the following reasons:
+- **Reduced State Space**: By focusing only on the remainders when dividing by 3, the DP storage is minimized compared to using a full 2D table tracking the index and the remainder. Since the properties of modularity are cyclic, we only need to maintain information about the three possible remainders.
   
-## Why This Approach is Efficient
+- **Dynamic Transition**: The algorithm effectively updates the maximum sums without needing to revisit previous states, relying on the mathematical properties of remainders to efficiently calculate the resulting maximum sums.
+  
+- **Single Pass through Input**: The solution efficiently processes the input in a single pass rather than recursively evaluating all subsets (as in brute force approaches), yielding significant performance benefits for larger inputs.
+```
 
-1. **Optimized Space Usage**: 
-   Instead of using a two-dimensional DP table which grows with the number of elements, this solution reduces space usage to a constant size array of size 3. This optimally utilizes memory while still storing necessary information for all possible states.
-
-2. **Avoiding Redundancy**: 
-   The algorithm efficiently calculates the new maximum sums based on previously computed values without recalculating states. This helps in shortening the computation time significantly compared to a naive recursive approach.
-
-3. **Linear Time**: 
-   The linear time complexity of the solution makes it feasible to handle large input sizes efficiently, as it processes each number exactly once and leverages a constant number of operations for each number.
-
-4. **Directly Related to Problem Requirements**: 
-   The usage of remainders aligns perfectly with the problem's requirement to check divisibility by 3, making this approach both intuitive and appropriate for the task at hand.
 
 Runtime: undefined
-Memory: 21664000
+Memory: 21776000
 """
 
 class Solution:
@@ -87,7 +57,7 @@ class Solution:
         
         # In each cell dp[index][remainder], we store the maximum sum achievable using the first index numbers that results in that specific remainder
         #remainder1 + reminder2 = 3
-        #dp[i][r] = max(dp[i-1][r], dp[i-1][r - num % 3] + num)
+        #dp[i][r] = max(dp[i-1][r], dp[i-1][(r - num % 3 + 3) % 3] + num)
         # first = exclude, second = include the current num by going back to complementary remainder
 
         # FULL DP TABLE
@@ -112,8 +82,8 @@ class Solution:
         #         exclude = dp[i-1][r]
                 
         #         # Option 2: Include the current number
-        #         # Calculate required previous remainder: target - current
-        #         old_rem = r - current_rem
+        #         # Calculate required previous remainder: (target - current + 3) % 3
+        #         old_rem = (r - current_rem + 3) % 3
         #         include = dp[i-1][old_rem] + num
                 
         #         dp[i][r] = max(exclude, include)
@@ -130,7 +100,7 @@ class Solution:
             for r in range(3):
                 # Calculate which previous remainder (old_rem) would lead to 
                 # remainder 'r' if we add 'num'
-                old_rem = r - num % 3
+                old_rem = (r - num % 3 + 3) % 3
                 
                 # Apply the transition formula
                 dp[r] = max(prev_dp[r], prev_dp[old_rem] + num)
