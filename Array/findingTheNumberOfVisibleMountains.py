@@ -1,49 +1,43 @@
 """
 ```markdown
-## Solution Explanation for "Finding the Number of Visible Mountains"
+# Explanation of the Solution for "Finding the Number of Visible Mountains"
 
-### 1. Brief Explanation of the Approach
-The objective of the problem is to determine how many mountains are visible given a list of peak coordinates represented as `[x, y]`. A mountain is defined by its x-coordinate (base center) and height (y-coordinate). 
+## 1. Approach Overview
 
-To solve this problem, the approach involves the following steps:
+The provided solution identifies visible mountains from a list of peaks, where each peak is defined by its height (x) and radius (y). Each mountain can be represented as an interval on a number line, calculated as `[start, end]` where:
+- `start = x - y` (leftmost point of the mountain),
+- `end = x + y` (rightmost point of the mountain).
 
-1. **Transform Peaks to Intervals:** Each mountain can be represented as an interval on the x-axis defined by its left and right boundaries. For a peak at `(x, y)`, the left boundary is `x - y` and the right boundary is `x + y`. Thus, we create a list of tuples representing these intervals.
+### Key Steps:
+1. **Transform Peaks to Intervals**: Convert the list of peaks into intervals representing the range covered by each mountain.
+2. **Count Duplicates**: Use a `Counter` to track the frequency of each interval to handle cases where multiple identical mountains overlap.
+3. **Sort Intervals**: Sort the intervals first by their start points in ascending order, and then by their end points in descending order. This sorting ensures that when iterating through the intervals, if a mountain's end is covered by another mountain with a lower start point, it will be correctly assessed.
+4. **Count Visible Mountains**: Iterate through the sorted intervals, checking whether each interval’s end goes beyond the maximum end encountered so far. If it does, it is counted as visible unless it is a duplicate mountain.
 
-2. **Count Frequencies of Intervals:** To handle duplicate mountains (i.e., mountains with the same intervals), we utilize the `Counter` from the `collections` module to count occurrences of each interval.
+## 2. Time and Space Complexity Analysis
 
-3. **Sort the Intervals:** We sort the intervals primarily by their starting point in ascending order and, in cases where start points are equal, by their end point in descending order. This sorting helps in efficiently determining visibility.
-
-4. **Count Visible Mountains:** Iterate through the sorted intervals, tracking the maximum end point encountered so far (`max_end`). If the current mountain's end extends beyond `max_end`, it means it is visible. However, we only count mountains that are unique (not duplicates) using the frequency counts from the previous step.
-
-### 2. Time and Space Complexity Analysis
-- **Time Complexity:** 
-  - Constructing the intervals from peaks takes \(O(N)\), where \(N\) is the number of peaks.
-  - Counting occurrences of intervals with `Counter` also takes \(O(N)\).
-  - Sorting the intervals takes \(O(N \log N)\).
-  - Finally, iterating through the sorted intervals takes \(O(N)\).
+- **Time Complexity**: 
+  - Creating intervals: O(N), where N is the number of peaks.
+  - Counting frequencies: O(N).
+  - Sorting intervals: O(N log N).
+  - Iterating through sorted intervals: O(N).
   
-  Overall, the time complexity is dominated by the sorting step, leading to \(O(N \log N)\).
+  Overall, the time complexity is dominated by the sorting step: **O(N log N)**.
 
-- **Space Complexity:** 
-  - Storing the intervals takes \(O(N)\).
-  - The `Counter` object also takes \(O(N)\) in the worst case where all intervals are unique.
-
-Thus, the space complexity is \(O(N)\).
-
-### 3. Why This Approach is Efficient
-This approach is efficient due to the following reasons:
-
-- **Interval Representation:** By transforming the problem into an interval representation, we can leverage sorting and linear scans, which are standard techniques for visibility and overlap problems. Sorting allows for straightforward comparisons between mountains.
+- **Space Complexity**:
+  - The space required for the intervals is O(N) and for the Counter is also O(N) in the worst case.
   
-- **Duplicate Handling:** Using a `Counter` to track duplicate intervals prevents over-counting and accurately determines visibility.
+  Thus, the total space complexity is **O(N)**.
 
-- **Time Complexity:** The \(O(N \log N)\) time complexity is performant enough for typical constraints found in competitive programming, allowing the solution to handle larger inputs within reasonable limits.
+## 3. Efficiency of the Approach
 
-Overall, the combination of interval representation, sorting, and careful counting results in an effective and optimal strategy for solving the problem of visible mountains.
+This approach is efficient due to its combination of sorting and linear traversal, which elegantly handles the problem of overlapping mountains and duplicates. The sorting step organizes the intervals so that the check for visibility becomes straightforward and is executed in a single pass through the sorted intervals. Moreover, by leveraging a Counter, we efficiently manage duplicates without needing nested loops or complex data structures, maintaining both clarity and performance.
+
+Overall, the algorithm's structure allows it to operate within tight time and space constraints, providing an effective solution to the problem of counting visible mountains.
 ```
 
-Runtime: undefined
-Memory: 66248000
+Runtime: N/A
+Memory: N/A
 """
 
 from collections import Counter
