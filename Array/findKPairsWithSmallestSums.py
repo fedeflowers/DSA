@@ -1,55 +1,42 @@
 """
-# Explanation of the LeetCode Solution for "Find K Pairs with Smallest Sums"
+```markdown
+# Explanation of "Find K Pairs with Smallest Sums" Solution
 
-## 1. Brief Explanation of the Approach
-
-The problem at hand requires us to find the `k` pairs with the smallest sums from two given arrays, `nums1` and `nums2`. This solution employs a min-heap (priority queue) to efficiently extract the smallest sum pairs.
-
-Here’s a step-by-step walkthrough of the algorithm:
+## 1. Approach Explanation
+The solution utilizes a min-heap (priority queue) to efficiently find the k smallest pairs from two sorted arrays, `nums1` and `nums2`. The pairs are formed by taking one element from each array such that their sum is minimized.
 
 - **Initialization**: 
-  - An empty list `res` is initialized to store the result pairs.
-  - A min-heap `pq` is created, which will store tuples of the form `(sum, index in nums1, index in nums2)`.
-  
-- **Heap Push**:
-  - The first element (the pair with the smallest sum) formed by taking the first elements of both `nums1` and `nums2` is pushed onto the heap.
+  - We start by pushing the initial pair `(nums1[0] + nums2[0], 0, 0)` into the heap. This tuple includes the sum and the indices of the respective elements in `nums1` and `nums2`.
+  - A `visited` set is used to keep track of pairs of indices that have already been processed to avoid duplicates.
 
-- **Visited Set**:
-  - A set `visited` is maintained to keep track of indices that have already been processed, preventing duplicate pairs from being added to the heap.
-
-- **Main Loop**:
-  - While the min-heap is not empty and `k` pairs have not yet been found, the smallest element is popped from the heap.
-  - This element is added to the `res` list as the current smallest sum pair.
-  - The algorithm checks two potential pairs: 
-    - The next number in `nums1` with the current number in `nums2` (if it exists and hasn't been processed).
-    - The current number in `nums1` with the next number in `nums2` (if it exists and hasn't been processed).
-  - Each valid pair is pushed to the heap, and the associated indices are added to the visited set.
+- **Main Loop**: 
+  - With a while loop, we continue until the priority queue is empty or we have found k pairs.
+  - For each iteration, we pop the smallest element from the heap, which gives us the current smallest sum and its corresponding indices.
+  - We then push the next possible pairs into the heap:
+    - Move down in `nums1` by increasing the index of `nums1` (i.e., `(i + 1, j)`).
+    - Move right in `nums2` by increasing the index of `nums2` (i.e., `(i, j + 1)`).
+  - If these new index pairs have not been visited yet, they are added to the heap and marked as visited.
   
-- **Termination**:
-  - The loop continues until `k` pairs have been collected, at which point the result is returned.
+- **Output**: After k iterations, we return the list of pairs found.
 
 ## 2. Time and Space Complexity Analysis
+- **Time Complexity**: O(k log k)
+  - The `heappop` and `heappush` operations on the heap take O(log k) time, and since we are pushing at most k pairs to the heap, the overall complexity for pulling k smallest pairs becomes O(k log k).
 
-- **Time Complexity**: 
-  - The worst-case complexity is `O(k log k)`. Each insertion and extraction operation in the heap takes `O(log k)`, and since we are looking for `k` pairs, we could potentially perform this operation `k` times.
-  
-- **Space Complexity**: 
-  - The space complexity is `O(k)` for the heap to store at most `k` pairs, and `O(n + m)` for the visited set (where `n` and `m` are the lengths of `nums1` and `nums2`, respectively), though in practice, space will be primarily dominated by the heap when `k` is smaller than the lengths of the lists.
+- **Space Complexity**: O(k)
+  - The space complexity mainly comes from the heap and the `visited` set which can hold at most k pairs.
 
-## 3. Why This Approach is Efficient
+## 3. Efficiency of the Approach
+This approach is efficient because:
+- It leverages the properties of the min-heap to always expand the current smallest sum, thereby ensuring we generate pairs in increasing order of their sums without having to generate all possible pairs beforehand.
+- The `visited` set ensures we avoid processing the same index combination multiple times, reducing unnecessary computations.
+- The algorithm operates well within expected time limits for large inputs, especially since it only explores relevant candidates for the smallest pairs based on sorted input arrays.
 
-This approach is efficient due to the following reasons:
-
-- **Min-Heap Utilization**: Using a min-heap allows us to always retrieve the current smallest sum in logarithmic time. This is much more efficient than sorting the entire list of pairs, which would take `O(n * m log(n * m))` time.
-
-- **Avoiding Duplicates**: By employing a `visited` set, we avoid inserting duplicate pairs into the heap, significantly reducing unnecessary computations.
-
-- **Incremental Pair Exploration**: The algorithm only explores pairs that are promising (i.e., pairs that involve the current smallest pair instead of blindly creating all combinations). This locality for exploring adjacent indices helps to ensure we stay closer to the smallest sums.
-
-Overall, this algorithm cleverly balances the need for efficiency with the requirement of finding only the `k` smallest sums, yielding optimal performance for this problem.
+Overall, this method is both focused and systematic, ensuring both clarity and performance.
+```
 
 Runtime: undefined
-Memory: 35388000
+Memory: 35520000
 """
 
 class Solution:
@@ -64,7 +51,11 @@ class Solution:
         while pq and k > 0 :
             _, i, j= heapq.heappop(pq)
             res.append([nums1[i], nums2[j]])
+            #Without the visited set, the pair at indices (1, 1) would be added to the heap twice:
 
+            # Once when you are at (0, 1) and move Down.
+
+            # Once when you are at (1, 0) and move Right.
             if i + 1 < len(nums1) and (i+1, j) not in visited:
                 heapq.heappush(pq, (nums1[i + 1] + nums2[j], i + 1, j))
                 visited.add((i+1, j))
