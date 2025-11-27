@@ -1,42 +1,44 @@
 """
-## Solution Explanation for "Combination Sum"
+```markdown
+## Explanation of the "Combination Sum" Solution
 
 ### 1. Brief Explanation of the Approach
+The solution to the "Combination Sum" problem uses a Depth First Search (DFS) approach to explore all possible combinations of the candidate numbers that can sum up to a given target. The algorithm operates as follows:
 
-The given solution employs a Depth-First Search (DFS) strategy to explore all possible combinations of the input numbers (candidates) that can sum up to the specified target. The key components of the approach are as follows:
+- **Parameters**: The `combinationSum` method takes two parameters: `candidates` (a list of integers) and `target` (the target sum we want to achieve).
+- **Result Storage**: A list `res` is initialized to store the valid combinations.
+- **DFS Function**: The `dfs` function is defined to perform the recursive search. It takes three parameters:
+  - `index`: The current index in the `candidates` list.
+  - `comb`: The current combination being constructed.
+  - `s`: The current sum of the `comb`.
 
-- **Recursive Function (`dfs`)**: This helper function is responsible for exploring combinations. It takes three parameters:
-  - `index`: The current position in the `candidates` list being considered.
-  - `comb`: The current combination being formed.
-  - `s`: The sum of the current combination.
+The `dfs` function uses the following logic:
+- If the current sum `s` exceeds the target, it terminates that branch of exploration.
+- If the `index` exceeds the length of the candidates list, it also terminates that path.
+- If the current sum `s` is equal to the target, the valid `comb` is added to the results.
+- Two recursive calls are made:
+  1. Including the current candidate in the combination (i.e., keeping the same index).
+  2. Excluding the current candidate and moving to the next index.
 
-- **Base Cases**:
-  - If the current sum (`s`) exceeds the target, the function returns without taking further action.
-  - If the index goes beyond the length of the candidates, the function terminates.
-  - If the current sum equals the target, the valid combination is added to the results (`res`).
-
-- **Recursive Calls**:
-  - The first recursive call keeps the same index and includes the current candidate in the combination.
-  - The second recursive call advances to the next index without including the current candidate.
-
-This exploration continues until all combinations are considered, ultimately leading to the collection of all unique combinations that fulfill the sum requirement.
+The DFS starts with an empty combination and a sum of zero. The function ultimately returns all the combinations found that add up to the target.
 
 ### 2. Time and Space Complexity Analysis
-
-- **Time Complexity**: The time complexity of this approach can be described as exponential, specifically O(2^N), where N is the number of candidates. In the worst case, you explore every possible subset of candidates, leading to a tree with depth N that branches out maximum at each level due to two choices (include or not include the current candidate).
-
-- **Space Complexity**: The space complexity is O(N), where N represents the depth of the recursion stack. This holds true because the depth can grow to N if all candidates are included in a valid combination. Additionally, the space used for storing the result combinations could contribute to space complexity but is typically not counted separately in analyses as we focus on temporary constructs.
+- **Time Complexity**: The time complexity is difficult to precisely quantify since it can vary significantly based on the input. In general, we can approximate it as `O(2^N)` where `N` is the number of candidates, as each candidate can either be included or excluded in the combination. However, this can be reduced significantly depending on how the candidates and target are structured.
+  
+- **Space Complexity**: The space complexity is `O(N)` due to the depth of the recursion stack and the storage of potentially valid combinations in the result list. In the worst case, all candidates yield a valid combination, leading to exponential space usage due to deep recursion.
 
 ### 3. Why This Approach is Efficient
+This approach is efficient because:
+- It systematically explores all potential combinations through recursion, allowing for backtracking once a branch exceeds the target or runs out of candidates.
+- The use of a helper function (`dfs`) helps maintain clarity in the code while managing state (current index, current combination, and cumulative sum).
+- It avoids duplicate computations by not changing the index when the same candidate is included multiple times (unlike situations where combinations need to be distinct).
+- The base cases within the recursion efficiently cut off unnecessary exploratory paths that exceed the target or lack available candidates.
 
-This approach leverages the recursive exploration of possible combinations, ensuring that all candidates are considered while effectively handling cases where the sum exceeds the target. The pruning of branches (returning early) when the sum exceeds the target contributes significantly to efficiency, as it avoids unnecessary calculations and allows the function to skip over many invalid combinations.
-
-Moreover, the use of a single list (`comb`) for building combinations avoids the overhead of copying entire lists for every combination. Hence, the solution remains clean and focuses on exploring all paths efficiently while discarding unfruitful ones early.
-
-In summary, the DFS approach is efficient for finding all combinations by dividing the problem into manageable subproblems while discarding invalid states quickly.
+Overall, the DFS approach is a suitable technique for problems involving combinations and subset summations, balancing clarity, systematic exploration, and the handling of constraints effectively.
+```
 
 Runtime: undefined
-Memory: 17860000
+Memory: 17808000
 """
 
 class Solution:
