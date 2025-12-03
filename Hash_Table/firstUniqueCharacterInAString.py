@@ -1,46 +1,65 @@
 """
 ```markdown
-## Explanation of the Solution
+### Explanation of the Approach
 
-### 1. Brief Explanation of the Approach
-The provided solution determines the index of the first non-repeating character in a given string `s`. The approach uses two dictionaries:
-- `counter`: to keep track of the count of each character in the string.
-- `indexes_single`: to store the index of characters that have been identified as unique (i.e., they appear only once in the string).
+The solution for the "First Unique Character in a String" problem employs a two-step approach:
 
-The algorithm proceeds as follows:
-1. It iterates over each character `l` in the string `s`, using `enumerate` to also capture the index `i`.
-2. For each character:
-   - It updates the `counter` dictionary with the count of that character.
-   - It updates the `indexes_single` dictionary with the index of the character.
-   - If the character's count in `counter` reaches 2 or more, it removes the character from the `indexes_single` dictionary as it is no longer unique.
-3. After processing all characters, if there are any characters left in `indexes_single`, it returns the smallest index among those characters. If all characters are non-unique, it returns -1.
+1. **Counting Character Occurrences**: It utilizes the `collections.Counter` from the Python standard library to build a frequency dictionary where each character in the string is counted, effectively capturing how many times each character appears in the input string `s`.
 
-### 2. Time and Space Complexity Analysis
-- **Time Complexity**: O(N), where N is the length of the string `s`. The solution processes each character in the string exactly once in a single pass.
-- **Space Complexity**: O(1) considering the character set is constant, as the space used for dictionaries is proportional to the number of unique characters. In the worst-case scenario, for alphabets (assuming no special characters), the space complexity can be considered O(1) because there are a limited number of characters (e.g., 26 for lowercase letters).
+2. **Finding the First Unique Character**: After establishing the frequency counts, the code iterates through the string again using `enumerate`, which allows both the index and the character to be accessed. It checks the frequency of each character. The first character that has a count of 1 (unique) is returned by its index. If no unique character exists, the function returns -1.
 
-### 3. Why This Approach is Efficient
-This approach is efficient due to its use of a single pass (O(N) time complexity) to gather necessary information about character counts and their indices. Instead of using additional data structures like lists to store unique characters, it utilizes dictionaries to ensure constant-time lookups and updates. The maintenance of indices only for characters that could potentially be unique allows for a quick retrieval of the first non-repeating character at the end of the process. Overall, this method minimizes overhead and efficiently achieves the goal of identifying the first unique character.
+### Time and Space Complexity Analysis
+
+- **Time Complexity**: The overall time complexity of this solution is O(N), where N is the length of the input string `s`. This is because the solution makes two passes over the string: one for counting the characters and another for finding the first unique character.
+
+- **Space Complexity**: The space complexity is O(K), where K is the number of unique characters in the string. The dictionary created by `Counter` will store entries for each unique character in the string.
+
+### Why This Approach is Efficient
+
+This approach is efficient for several reasons:
+
+1. **Single Pass for Counting**: Using `collections.Counter` allows for an efficient counting of characters in a single pass over the string. This avoids the need for nested loops or multiple scans of the string.
+
+2. **Immediate Retrieval for Index**: The second pass to find the first unique character checks a precomputed count, making it efficient to check uniqueness (a constant-time operation) as it iterates.
+
+3. **Simplicity and Readability**: The use of standard library features like `Counter` not only simplifies the code but also enhances readability, making it easier for others to understand and maintain.
+
+Overall, while solving the problem within the constraints, this approach balances clear logic and efficient execution.
 ```
 
 Runtime: undefined
-Memory: 17912000
+Memory: 18228000
 """
+
+# class Solution:
+#     def firstUniqChar(self, s: str) -> int:
+#         #l : count
+#         #l : index
+#         #se count > 1 tolgo index da set?
+#         counter = {}
+#         indexes_single = {}
+#         for i, l in enumerate(s):
+#             counter[l] = counter.get(l, 0) + 1
+#             indexes_single[l] = i
+#             if counter[l] >= 2:
+#                 del indexes_single[l]
+
+#         if len(indexes_single) >= 1:
+#             return min(indexes_single.values())
+#         return -1
+        
 
 class Solution:
     def firstUniqChar(self, s: str) -> int:
-        #l : count
-        #l : index
-        #se count > 1 tolgo index da set?
-        counter = {}
-        indexes_single = {}
-        for i, l in enumerate(s):
-            counter[l] = counter.get(l, 0) + 1
-            indexes_single[l] = i
-            if counter[l] >= 2:
-                del indexes_single[l]
-
-        if len(indexes_single) >= 1:
-            return min(indexes_single.values())
-        return -1
+        """
+        :type s: str
+        :rtype: int
+        """
+        # build hash map: character and how often it appears
+        count = collections.Counter(s)
         
+        # find the index
+        for idx, ch in enumerate(s):
+            if count[ch] == 1:
+                return idx     
+        return -1
