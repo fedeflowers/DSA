@@ -1,37 +1,30 @@
 """
-## Explanation of the Solution for "Two Sum BSTs"
+```markdown
+### Explanation of the "Two Sum BSTs" Solution
 
-### 1. Brief Explanation of the Approach
+1. **Approach:**
+   The solution uses a set to keep track of the values from the first binary search tree (BST). 
+   - It first traverses the first BST (`root1`) and collects all of its values into a set called `seen` using a depth-first search (DFS). This allows for O(1) average time complexity when checking for the existence of values.
+   - Next, it performs another DFS on the second BST (`root2`). During this traversal, for each node in `root2`, it checks if the difference between the target sum and the value of the current node (`target - node.val`) exists in the `seen` set.
+   - If such a value exists, it returns `True`, indicating that there are two values (one from each BST) that sum up to the target. If the traversal is completed without finding any such pair, it returns `False`.
 
-The problem requires us to determine if there are two values from two binary search trees (BSTs) such that their sum equals a given target. The solution uses two main steps:
+2. **Time and Space Complexity Analysis:**
+   - **Time Complexity:** O(N + M)
+     - Here, N is the number of nodes in `root1`, and M is the number of nodes in `root2`. 
+     - The first traversal to collect values from `root1` takes O(N), and the second traversal of `root2` takes O(M). Each lookup in the set is O(1) on average.
+   - **Space Complexity:** O(N)
+     - In the worst case, the space used by the `seen` set will be O(N), where N is the number of nodes in `root1`. This is because all the values from `root1` are stored in the set.
 
-1. **Collect Values from First BST**: A depth-first search (DFS) is performed on the first BST (`root1`) to collect all of its node values into a `set`. This allows for O(1) average time complexity when checking for the existence of values.
+3. **Efficiency of the Approach:**
+   - The approach leverages the properties of sets for fast lookups, which significantly reduces the number of comparisons needed to find a matching pair.
+   - By collecting all values of `root1` into a set, the problem transforms into a simpler form: for each node in `root2`, only a single check in the set is required to determine if the complementary value exists.
+   - This makes the algorithm much more efficient compared to a naive O(N * M) brute-force method, which would involve two nested loops to check all possible pairs of values from both trees.
+   - Additionally, the use of DFS ensures that we are able to traverse the BSTs in an efficient manner without needing extra space for storing tree nodes outside of the set.
+```
 
-2. **Search in Second BST**: Another DFS is performed on the second BST (`root2`). For each node, the algorithm checks if the difference between the target and the current node's value exists in the `set` of values collected from the first BST. If it finds a match, it returns `True`. If no match is found after traversing the second tree, it returns `False`.
-
-### 2. Time and Space Complexity Analysis
-
-- **Time Complexity**:
-  - Collecting values from the first BST takes O(N) time, where N is the number of nodes in `root1`. 
-  - Searching in the second BST takes O(M) time, where M is the number of nodes in `root2`. 
-  - The overall time complexity is O(N + M), where N is the size of the first tree, and M is the size of the second tree.
-
-- **Space Complexity**:
-  - The space complexity is primarily determined by the size of the `set` used to store values from the first BST. This leads to an O(N) space complexity in the worst case (when `root1` is full).
-  - Additionally, the recursion stack during DFS might take up to O(H) space, where H is the height of the trees. In the worst case (a completely unbalanced tree), this could also be O(N), but we denote space complexity by the maximum size of the set, hence O(N).
-
-### 3. Why This Approach is Efficient
-
-This approach is efficient due to the properties of the data structures involved:
-
-- **Use of Set**: The use of a `set` allows for very fast membership testing (average O(1)), making the solution much quicker compared to searching through a list or array.
-- **Depth-First Search**: The algorithm leverages DFS to traverse the trees, which is generally efficient for tree structures and operates in linear time relative to the number of nodes.
-- **Separation of Concerns**: By separating the concerns of collecting values and searching for pairs, the code remains clean and easy to understand. It efficiently divides the problem into manageable parts.
-
-Overall, this method efficiently checks for the existence of a pair whose sum is equal to the target by utilizing the unique properties of sets and the structure of binary trees.
 
 Runtime: undefined
-Memory: 21004000
+Memory: 21184000
 """
 
 # Definition for a binary tree node.
@@ -73,7 +66,7 @@ Memory: 21004000
 #         return False
 
 
-#gemini:
+#gemini, it doesn't use the fact that they are binary sercfh trees...:
 class Solution:
     def twoSumBSTs(self, root1: Optional[TreeNode], root2: Optional[TreeNode], target: int) -> bool:
         # Set to store values from the first tree
