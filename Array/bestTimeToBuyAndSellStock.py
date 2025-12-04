@@ -1,31 +1,43 @@
 """
-## Solution Explanation for "Best Time to Buy and Sell Stock"
+```markdown
+## Explanation of the LeetCode Solution for "Best Time to Buy and Sell Stock"
 
 ### 1. Approach Explanation
-The solution utilizes a single pass through the `prices` list to find the maximum profit that could be made from buying and selling stock. The key idea is to keep track of the minimum stock price encountered so far (`prev_min`) and update the maximum profit (`res`) as we process each price. Here's how the algorithm works:
+The solution uses a single pass through the list of prices to determine the maximum profit that can be made from buying and selling a stock. Here's a breakdown of the method:
 
-- Initialize `prev_min` to infinity, which will store the minimum price seen thus far.
-- Initialize `res` to zero, which will hold the maximum profit calculated.
-- Iterate through each price in the `prices` list:
-  - If `prev_min` is not infinity (which it won't be after the first iteration), calculate the potential profit by subtracting `prev_min` from the current price `p`. Update `res` with the maximum value between the existing `res` and the calculated profit.
-  - Update `prev_min` to be the minimum of itself and the current price `p`.
-- After processing all prices, return the maximum profit.
+- **Initialization**: 
+  - `prev_min` is initialized to positive infinity (`float("inf")`) to track the minimum price encountered so far.
+  - `res` is initialized to zero to keep track of the maximum profit.
+
+- **Iteration Over Prices**:
+  - For each price `p` in the list of `prices`:
+    - If `prev_min` is not infinity (which will always be true after the first iteration since `prev_min` will be updated), calculate the profit as `p - prev_min`.
+    - Update `res` to be the maximum of its current value and the calculated profit.
+    - Update `prev_min` to be the minimum between its current value and the current price `p`.
+
+- **Result**:
+  - After iterating through all the prices, `res` contains the maximum profit possible.
+
+This approach leverages the fact that the best time to sell is always after the best time to buy, making it unnecessary to consider all combinations of buy and sell days; instead, you can keep track of only the minimum price seen so far and calculate the profit dynamically.
 
 ### 2. Time and Space Complexity Analysis
-- **Time Complexity**: O(N), where N is the number of prices in the `prices` list. This is because we perform a single iteration over the list.
-- **Space Complexity**: O(1). We are using a constant amount of space (only a few variables), regardless of the input size since we do not use any additional data structures that grow with input size.
+- **Time Complexity**: O(N)
+  - The algorithm makes a single pass through the `prices` list, where `N` is the number of elements in the list. Each price is processed in constant time.
+
+- **Space Complexity**: O(1)
+  - The algorithm uses a constant amount of extra space, regardless of the input size. Only a few variables (`prev_min` and `res`) are utilized.
 
 ### 3. Efficiency of the Approach
-This approach is efficient for several reasons:
+This approach is efficient because:
+- It traverses the list just once (O(N)) which is optimal for this problem compared to approaches that may involve nested loops (O(N^2)).
+- It effectively reduces the problem to maintaining two variables, which results in minimal memory usage.
+- The logic is simple and clear, improving code readability and maintainability.
 
-- **Single-pass**: It only requires one full scan of the prices list, making it time-efficient. This is a significant advantage over approaches that might involve nested loops, which would increase time complexity to O(N²).
-- **Constant space use**: By using just a few variables to track the minimum price and maximum profit, we keep memory usage low, which is often crucial for large inputs.
-- **Simple updates**: The operations performed during the iteration involve basic comparisons and arithmetic, which are fast and straightforward.
-
-Overall, this algorithm effectively finds the maximum possible profit from a series of stock prices with minimal computational resources.
+Overall, this solution strikes a perfect balance between efficiency and simplicity, making it a preferred approach for solving the "Best Time to Buy and Sell Stock" problem.
+```
 
 Runtime: undefined
-Memory: 26860000
+Memory: 26852000
 """
 
 class Solution:
