@@ -1,84 +1,77 @@
 """
 ```markdown
-# Explanation of the LeetCode Solution for "Minimum Time to Complete All Deliveries"
+## Solution Explanation for "Minimum Time to Complete All Deliveries"
 
-## 1. Brief Explanation of the Approach
+### 1. Approach Explanation
 
-The solution aims to determine the minimum amount of time required for two drones to complete their respective deliveries while considering their recharging times. The approach uses a binary search technique combined with a helper function to check if a given time `t` is sufficient for the drones to complete their deliveries.
+The problem requires finding the minimum time necessary for a drone to complete a certain number of deliveries, taking into account that the drone has two different resting times for two sets of deliveries.
 
-### Breakdown of the Code:
+The solution uses a binary search approach combined with a helper function `enough_time` which checks if the drone can complete the required deliveries within a given time:
 
-- **Input Parameters**: 
-  - `d`: A list containing two integers representing the number of deliveries that Drone 1 and Drone 2 need to make.
-  - `r`: A list containing two integers that represent the recharging times for Drone 1 and Drone 2 respectively.
+- **LCM Calculation**: First, the least common multiple (LCM) of the two resting periods, `r1` and `r2`, is calculated. This LCM helps determine how many complete cycles of both resting schedules fit into the given time.
+  
+- **Chores Calculation**: The helper function calculates:
+  - `chores_1`: The total number of deliveries the drone can complete for the first set (based on `r1`) within the specified time.
+  - `chores_2`: The total number of deliveries it can complete for the second set (based on `r2`).
+  - `common_chores`: The total number of deliveries it can complete for the tasks that require both resting times (e.g., when both deliveries are factored in).
+  
+- **Conditions Check**: The function then checks if:
+  - The chores completed for set 1 (`chores_1`) are at least equal to the required deliveries (`d1`).
+  - The chores for set 2 (`chores_2`) are at least `d2`.
+  - The common chores calculated are at least the sum of both required deliveries (`d1 + d2`).
+  
+- **Binary Search**: In the `minimumTime` function, binary search is used to find the minimum time required to satisfy the conditions: 
+  - `low` represents the lowest possible time (starting with 0).
+  - `high` is set to a maximum possible time based on the sum of deliveries multiplied by the greater resting period, ensuring enough leeway to cover maximum delivery times.
+  
+  During each iteration, the mid-point is calculated, and the `enough_time` function is called to verify if the current mid-point time can satisfy the delivery requirements. If it can, the result is updated, and the search continues for potentially smaller times; if not, the search continues in higher time frames.
 
-- **Calculating LCM**:
-  - The least common multiple (LCM) of the recharge times `r1` and `r2` is computed to manage the time synchronization of both drones while they are recharging.
+### 2. Time and Space Complexity Analysis
 
-- **is_sufficient Function**:
-  - This function determines whether a given time `t` is sufficient to complete all deliveries.
-  - It calculates the number of time slots available for each drone to operate based on their recharge periods.
-  - It ensures that:
-    - Drone 1 has enough operational slots to complete its deliveries.
-    - Drone 2 has enough operational slots to complete its deliveries.
-    - The combined operational slots for both drones can cover all deliveries.
+- **Time Complexity**: 
+  - The binary search runs in **O(log(max_time))**, where `max_time` is equivalent to `(d1 + d2) * max(r1, r2) * 2`. In each iteration of the binary search, the `enough_time` function is called, which itself performs a constant amount of work (calculating some basic arithmetic and the gcd of two numbers). Thus, the overall time complexity is **O(log(max_time))**.
 
-- **Binary Search**:
-  - A binary search is utilized to efficiently find the minimum time required.
-  - The search space is defined from `1` to `(d1 + d2) * 2`, which is a safe upper bound.
-  - If a midpoint time `mid` is sufficient, the search continues in the lower half. If not, it searches the upper half.
+- **Space Complexity**: 
+  - The space complexity is **O(1)**, as the algorithm only uses a fixed amount of extra space (for variables) regardless of the input size.
 
-## 2. Time and Space Complexity Analysis
+### 3. Why This Approach is Efficient
 
-### Time Complexity:
-- The `is_sufficient` function runs in constant time O(1) since it involves a few arithmetic operations and calculations related to the number of deliveries. 
-- The binary search operates in O(log(n)), where `n` is up to `(d1 + d2) * 2`.
-- Therefore, the overall time complexity of the solution is O(log(n)), where `n` is equal to the determined upper limit on time.
+This approach is efficient for the following reasons:
 
-### Space Complexity:
-- The space complexity is O(1) as the algorithm uses a fixed amount of extra space for variables and does not grow with the input size.
+- **Binary Search**: By using binary search to find the minimum time, the algorithm operates logarithmically with respect to the possible maximum time, making it significantly faster than a linear search or brute force approach, especially as the number of deliveries increases.
 
-## 3. Why this Approach is Efficient
+- **Mathematical Optimization**: The calculation of LCM and the arithmetic operations in the `enough_time` function allow for efficient checks of whether the drone can complete the necessary deliveries without simulating each possible delivery in detail.
 
-The use of binary search significantly optimizes the search for the minimum time by reducing the potential search space logarithmically. This makes the solution feasible even for larger values of deliveries, avoiding a direct linear or brute force check for every possible time, which could lead to inefficiencies for larger inputs. The constant time checks within the `is_sufficient` function ensure that each midpoint evaluation is quick, leading to an overall efficient solution.
+- **Early Stopping**: The checks are designed to quickly eliminate impossible timeframes, thus rapidly narrowing down the search space.
+
+Overall, this combination allows the solution to efficiently reach the correct answer in a reasonable time.
 ```
 
 Runtime: undefined
-Memory: 17796000
+Memory: 17648000
 """
 
 class Solution:
-    def minimumTime(self, d: List[int], r: List[int]) -> int:
-        d1, d2 = d
-        r1, r2 = r
-        
-        # Calculate LCM for the combined constraint
-        lcm_r = (r1 * r2) // math.gcd(r1, r2)
-        
-        def is_sufficient(t):
-            # Slots available for Drone 1 (not recharging at r1)
-            avail_1 = t - (t // r1)
-            # Slots available for Drone 2 (not recharging at r2)
-            avail_2 = t - (t // r2)
-            # Slots available for either (not recharging at BOTH r1 and r2)
-            avail_total = t - (t // lcm_r)
-            
-            return (avail_1 >= d1 and 
-                    avail_2 >= d2 and 
-                    avail_total >= (d1 + d2))
+    def enough_time(self, time: int, r1: int, r2: int, d1: int, d2: int) -> bool:
+        lcm = (r1 * r2 ) // math.gcd(r1,r2) # to understand common resting times
+        chores_1 = time - (time // r1) # the drone can make these deliveries
+        chores_2 = time - (time // r2)
+        common_chores = time - (time // lcm)
 
-        # Binary Search
-        low = 1
-        high = (d1 + d2) * 2  # Safe upper bound
-        
-        ans = high
-        
+        return chores_1 >= d1 and chores_2 >= d2 and common_chores >= (d1+d2)
+
+    def minimumTime(self, d: List[int], r: List[int]) -> int:
+        d1,d2 = d
+        r1,r2 = r
+        low = 0
+        high = (d1 + d2) * max(r1, r2) * 2
+        res = 0
         while low <= high:
             mid = (low + high) // 2
-            if is_sufficient(mid):
-                ans = mid
+            if self.enough_time(mid, r1, r2, d1, d2):
+                res = mid
                 high = mid - 1
             else:
                 low = mid + 1
-                
-        return ans
+
+        return res        
