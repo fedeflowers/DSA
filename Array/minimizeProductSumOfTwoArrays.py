@@ -1,53 +1,39 @@
 """
 ```markdown
-## Explanation of the Approach
+# Explanation of the LeetCode Solution for "Minimize Product Sum of Two Arrays"
 
-The goal of the "Minimize Product Sum of Two Arrays" problem is to minimize the sum of the products of two arrays, `nums1` and `nums2`. The strategy is to match the smallest values from one array with the largest values from the other array to minimize the overall product sum.
+## 1. Brief Explanation of the Approach
 
-### Steps in the Solution:
+The problem requires us to minimize the product sum of two arrays, `nums1` and `nums2`. To achieve this, the optimal strategy is to pair the smallest elements of the first array with the largest elements of the second array. This way, it minimizes the contribution of higher values in the product sum, as large values in one array will counterbalance smaller values in the other.
 
-1. **Heap Creation**:
-   - The first array, `nums1`, is transformed into a min-heap using `heapq.heapify()`, which allows us to efficiently get the smallest element.
-   - The second array, `nums2`, is transformed into a max-heap. To do this with Python's `heapq`, which only provides a min-heap, we push the negative of each element. Thus, when we pop from this heap, we retrieve the largest element by taking the negative of the popped value.
+The solution utilizes heaps (priority queues) to efficiently retrieve the smallest and largest elements from the two arrays:
+- It first converts `nums1` into a min-heap (to easily access the smallest element).
+- It transforms `nums2` into a max-heap by negating its elements (since Python only has a min-heap natively). This allows easy access to the largest elements.
+- The algorithm then pops the smallest element from `nums1` and the largest element from `nums2` repeatedly, multiplying them together and adding the result to a running total (`res`).
 
-2. **Calculating the Result**:
-   - The solution iterates while both heaps are not empty. In each iteration, it pops the smallest element from `nums1` and the largest element from `nums2`, computes the product of these two, and accumulates this product into the result variable `res`.
+Finally, the accumulated sum `res` is returned as the result.
 
-3. **Return Result**:
-   - Finally, it returns the accumulated result which represents the minimized product sum.
+## 2. Time and Space Complexity Analysis
 
-## Time and Space Complexity Analysis
+- **Time Complexity**: The time complexity is O(N log N), where N is the number of elements in the arrays. This complexity arises from:
+  - Heapifying both arrays, which each takes O(N).
+  - The while loop runs N times, and each pop operation from a heap takes O(log N).
 
-### Time Complexity:
-- The heapification of `nums1` and `nums2` takes `O(N)` time each (where N is the number of elements in the arrays).
-- Popping from each heap takes `O(log N)`, and since we pop elements in a loop which iterates N times, this gives an additional `O(N log N)` component.
-- **Total Time Complexity**: The overall complexity is dominated by the iterations through the heaps leading to an effective time complexity of:
-  \[
-  O(N \log N)
-  \]
+- **Space Complexity**: The space complexity is O(N) due to the storage required for the heaps. Two additional arrays are created to heapify `nums1` and `nums2`, leading to this space usage.
 
-### Space Complexity:
-- The space complexity is primarily O(N) since we are using heaps to store the modified elements of the input arrays.
-- **Total Space Complexity**: The overall space complexity is:
-  \[
-  O(N)
-  \]
-
-## Why This Approach is Efficient
+## 3. Why This Approach is Efficient
 
 This approach is efficient for several reasons:
+- **Optimal Pairing**: By directly using heaps to access the smallest and largest elements, the algorithm ensures that each pairing is optimal for minimizing the product sum.
+- **Reduced Complexity**: The use of heaps reduces the need for additional sorting (O(N log N) as opposed to O(N log N) for sorting, which is already utilized in heapification).
+- **Iterative Calculation**: The direct multiplication and accumulation of the product sum during the while loop minimizes the number of operations and also maintains clarity in the logic, avoiding unnecessary intermediate storage or calculations.
 
-1. **Optimal Pairing**: By leveraging a min-heap for `nums1` and a max-heap for `nums2`, we ensure that in each step, the smallest element from `nums1` is paired with the largest element from `nums2`, which minimizes the product for that specific pair. This greedy strategy directly leads to minimizing the total sum.
+Overall, this method balances efficiency and simplicity, making it a suitable solution for the problem.
 
-2. **Complexity Management**: The combination of heap operations (which are `log N` efficient) and the linear nature of array processing provides a scalable solution conducive to handling large input sizes.
-
-3. **Flexibility**: The technique can be adapted to various similar problems where you need to optimize the pairing of two lists based on some criteria.
-
-In summary, the use of heaps not only simplifies the required operations but also allows for an efficient computation of the minimized product sum.
 ```
 
 Runtime: undefined
-Memory: 26100000
+Memory: 25968000
 """
 
 class Solution:
@@ -58,7 +44,6 @@ class Solution:
         heap2 = [-el for el in nums2] # max heap
         heapq.heapify(heap2)
         res = 0
-        print(heap1, heap2)
         while heap1 and heap2:
             min_1 = heapq.heappop(heap1)
             max_2 = -heapq.heappop(heap2)
