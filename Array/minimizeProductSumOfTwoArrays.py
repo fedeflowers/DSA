@@ -1,33 +1,33 @@
 """
 ```markdown
-## Explanation of the Solution for Minimize Product Sum of Two Arrays
+# Solution Explanation for "Minimize Product Sum of Two Arrays"
 
-### 1. Brief Explanation of the Approach
+## 1. Approach Overview
+The problem of minimizing the product sum of two arrays can be effectively tackled using counting sort. The main idea is to make use of the constraints of the problem, specifically that the values in the input arrays are restricted within the range of [1, 100]. 
 
-The problem "Minimize Product Sum of Two Arrays" involves finding two arrays such that the sum of their products is minimized. The optimal way to achieve this is by matching the smallest elements of one array with the largest elements of another array.
+Here’s how the approach works:
+- Two frequency arrays, `freq1` and `freq2`, are initialized to keep track of the occurrences of each number in `nums1` and `nums2`, respectively.
+- Both arrays are filled based on the counts of the elements present in the input arrays.
+- Using two pointers, `idx1` and `idx2`, we traverse the possible values. `idx1` starts from 1 (the minimum possible value) and `idx2` starts from 100 (the maximum possible value).
+- At each step, we take the minimum count from both frequency arrays and compute the contribution to the product sum by multiplying the current values pointed to by `idx1` and `idx2`. These values are then multiplied by the number of pairs formed (`take`), which is the minimum of the available counts from both arrays.
+- After calculating the contribution, the counts for those values are decremented, and we continue until one of the arrays runs out of values.
 
-In this solution, we utilize the following steps:
-- **Sorting**: We sort the first array (`nums1`) in ascending order and the second array (`nums2`) in descending order. This setup aligns the smallest elements of `nums1` with the largest elements of `nums2`.
-- **Pairing and Summation**: We then calculate the product sum for the paired elements using a generator expression, which efficiently computes the sum of products in a single pass.
-
-### 2. Time and Space Complexity Analysis
-
-- **Time Complexity**: The sorting of both arrays takes O(n log n) time, where n is the length of the arrays. The subsequent summation of products takes O(n) time. Therefore, the overall time complexity is O(n log n).
+## 2. Time and Space Complexity Analysis
+- **Time Complexity:** O(N + K)
+  - Where **N** is the total number of elements in the two input arrays (sum of lengths of `nums1` and `nums2`), and **K** is the range of the numbers (which is constant, i.e., K = 100 for this problem). The operations performed during the frequency counting and the subsequent processing of the elements are linear with respect to the input size.
   
-- **Space Complexity**: The space used is O(1) beyond the input arrays (not counting input storage), as we only store some temporary variables. The sorting operation could utilize additional space in some implementations of sorting algorithms, but without persistent additional data structures in this context, we can consider the space complexity as O(1).
+- **Space Complexity:** O(K)
+  - Two frequency arrays of size 101 are used, leading to a constant space overhead. The space complexity does not depend on the input size because the maximum number of unique values is fixed at 100.
 
-### 3. Why This Approach is Efficient
-
-This approach is efficient for a few reasons:
-- **Direct Pairing**: By sorting the arrays and directly pairing the largest and smallest elements, we minimize the contributions to the final sum, ensuring that larger values do not multiply with smaller counterparts, which would increase the product sum unnecessarily.
-- **Simple Implementation**: The algorithm is straightforward and easy to implement, thanks to the built-in sorting functions and comprehension syntax available in Python.
-- **Optimal Performance**: The O(n log n) sorting step is unavoidable for many algorithms on unsorted data, and this approach utilizes that step to produce the optimum pairing with minimal overhead and extra operations.
-
-Overall, the combination of sorting and direct multiplicative pairing leads to a clear, fast, and effective solution for minimizing the product sum of two arrays.
+## 3. Efficiency of the Approach
+This approach is efficient for several reasons:
+- The counting sort strategy leverages the constraints of the input values, allowing us to effectively reduce the problem complexity compared to sorting or heap operations.
+- The overall linear time complexity allows for quick execution, crucial for large input sizes.
+- By effectively reducing the problem to operations on fixed-size arrays, it minimizes overhead in memory operations and execution time, making it well-suited for competitive programming scenarios or resource-limited environments.
 ```
 
 Runtime: undefined
-Memory: 22492000
+Memory: 22540000
 """
 
 # class Solution:
@@ -47,8 +47,34 @@ Memory: 22492000
 
 
 # optimized: same O(nlogn) but faster
+# class Solution:
+#     def minProductSum(self, nums1: List[int], nums2: List[int]) -> int:
+#         nums1.sort()
+#         nums2.sort(reverse=True)
+#         return sum(x * y for x, y in zip(nums1, nums2))
+
+# counting sort: O(n + k)
 class Solution:
     def minProductSum(self, nums1: List[int], nums2: List[int]) -> int:
-        nums1.sort()
-        nums2.sort(reverse=True)
-        return sum(x * y for x, y in zip(nums1, nums2))
+        # Optimized for value range [1, 100]. Complexity: O(N + K)
+        freq1 = [0] * 101
+        freq2 = [0] * 101
+        
+        for x in nums1: freq1[x] += 1
+        for x in nums2: freq2[x] += 1
+        
+        idx1, idx2 = 1, 100
+        res = 0
+        
+        while idx1 <= 100 and idx2 > 0:
+            if freq1[idx1] == 0:
+                idx1 += 1
+            elif freq2[idx2] == 0:
+                idx2 -= 1
+            else:
+                take = min(freq1[idx1], freq2[idx2])
+                res += take * idx1 * idx2
+                freq1[idx1] -= take
+                freq2[idx2] -= take
+                
+        return res
