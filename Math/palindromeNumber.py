@@ -2,39 +2,42 @@
 ```markdown
 ## Explanation of the LeetCode Solution for "Palindrome Number"
 
-### 1. Approach Explanation
+### 1. Brief Explanation of the Approach
+The solution to the Palindrome Number problem can be broken down into systematic checks and manipulations of the number `x`. 
 
-The given solution checks if an integer \( x \) is a palindrome (i.e., it reads the same forwards and backwards). The approach involves the following key steps:
-
-- **Initial Checks**: 
-  - If \( x \) is negative, it cannot be a palindrome (return False).
-  - If \( x \) ends with a `0` and is not `0` itself, it cannot be a palindrome (since a palindrome cannot start with zero). Thus, return False.
-
-- **Reversing Half of the Number**: 
-  - The algorithm then initializes a variable `revertedNumber` to store the reverse of the digits of \( x \).
-  - By reversing only half of the digits, the algorithm avoids creating a complete reversed string, which can increase space usage. 
-  - The while loop continues until `x` is less than or equal to `revertedNumber`. This way, we compare the digits progressively, essentially building the reversed number.
-
-- **Final Comparison**: 
-  - After the loop, there are two scenarios to check:
-    - If \( x \) is equal to `revertedNumber`: this means we have found a palindrome.
-    - If \( x \) is equal to `revertedNumber // 10`: this accounts for cases with an odd number of digits where the middle digit can be ignored (e.g., in 12321, after processing we might have \( x = 12 \) and `revertedNumber = 123`).
+- **Initial Checks**:
+  - If `x` is negative, it can't be a palindrome since palindromes read the same forward and backward.
+  - If `x` ends with a `0` and is not `0` itself, it can't be a palindrome (e.g., `10`, `20`, etc.), since the first digit (in the forward direction) would be non-zero while the last digit (in the reverse direction) would be zero.
+  
+- **Main Logic**:
+  - The algorithm proceeds by reversing half of the number. This is achieved using a `while` loop that continues until `x` is greater than `revertedNumber`.
+  - In each iteration of the loop, the last digit of `x` is retrieved using `% 10` and added to `revertedNumber`. 
+  - Simultaneously, `x` is reduced by removing its last digit using integer division by `10`.
+  
+- **Final Comparison**:
+  - Once the loop ends, there are two scenarios to check for a palindrome:
+    - If the length of the palindrome is even, `x` should be equal to `revertedNumber`.
+    - If the length is odd, the middle digit can be ignored. Thus, `x` should be equal to `revertedNumber // 10`.
 
 ### 2. Time and Space Complexity Analysis
 
-- **Time Complexity**: \( O(\log_{10} n) \)
-  - The loop runs a number of times proportional to the number of digits in \( x \), which is \( \log_{10} n \).
+- **Time Complexity**: 
+  - The time complexity is **O(log10(n))**, where `n` is the value of `x`. This is because the algorithm essentially reduces the number of digits in `x` by half through integer division during the palindrome check.
+  
+- **Space Complexity**: 
+  - The space complexity is **O(1)** since only a fixed amount of additional space is used (i.e., `revertedNumber`) regardless of the size of `x`. We are not utilizing any data structures that scale with input size.
 
-- **Space Complexity**: \( O(1) \)
-  - The solution only uses a few variables (`revertedNumber` and \( x \)), making use of integer operations without extra space for arrays or strings.
+### 3. Why this Approach is Efficient
+This approach is efficient because:
+- It avoids converting the integer `x` into a string or array, which would require additional space.
+- By only reversing half of the number, it minimizes operations while still accurately determining if the number is a palindrome, hence optimizing the time complexity.
+- The checks for negative numbers and trailing zeros significantly reduce unnecessary computations, allowing the algorithm to quickly rule out non-palindrome scenarios.
 
-### 3. Efficiency of This Approach
-
-This approach is efficient mainly due to its use of constant space and minimal comparisons. By only reversing half of the number, it reduces the amount of processing required while ensuring correctness. Additionally, special cases are handled before performing any significant calculations, thus avoiding unnecessary operations for known non-palindrome cases. The overall performance is optimal for this problem since it leverages mathematical properties of numbers and minimizes memory overhead.
+Overall, this solution effectively utilizes mathematical operations to arrive at a correct and efficient determination of whether a number is a palindrome.
 ```
 
 Runtime: undefined
-Memory: 17616000
+Memory: 17896000
 """
 
 # class Solution:
@@ -50,7 +53,7 @@ Memory: 17616000
 
 #         return l == l[::-1]
         
-
+#We divided the input by 10 for every iteration, so the time complexity is O(log10(n))
 class Solution:
     def isPalindrome(self, x: int) -> bool:
         # Special cases:
