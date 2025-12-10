@@ -1,41 +1,38 @@
 """
-```markdown
-# Explanation of the LeetCode Solution for "Count the Number of Computer Unlocking Permutations"
+## Explanation of the Solution
 
-## 1. Brief Explanation of the Approach
+### 1. Brief Explanation of the Approach
 
-The solution provided aims to count the number of valid permutations of a list of complexities that represent the levels of security for unlocking computers. The main condition for the permutation to be valid is that the first element (`complexity[0]`) must always be less than the minimum of the remaining elements in the list. If this condition is not met (i.e., if the first element is greater than or equal to the minimum of the rest), it is impossible to form a valid permutation, and the function immediately returns `0`.
+The problem requires us to count the number of valid permutations to unlock computers based on their complexity levels. The key insight is that the first complexity value must be less than all subsequent complexity values for any valid permutation to be possible. In the solution:
 
-If the first condition is satisfied, the method calculates the number of valid permutations by computing the factorial of the number of elements minus one (`len(complexity) - 1`). This is because once the first element is fixed (the first element is always included in permutations), permutations are only considered for the remaining elements.
+- The `complexity` list is checked to see if the first element is greater than or equal to the minimum value of the other elements.
+- If it is not, it immediately indicates that no valid permutations can be formed, and the function returns 0.
+- If the condition is satisfied, the number of valid permutations is simply calculated as the factorial of the total number of computers minus one (since we already have one fixed computer). This is done using `math.factorial`.
 
-The result is taken modulo \(10^9 + 7\) to manage large numbers and prevent overflow, which is a standard practice in programming contests.
+### 2. Time and Space Complexity Analysis
 
-## 2. Time and Space Complexity Analysis
+**Time Complexity:** 
+- The time complexity of this solution is O(N), where N is the number of computers in the complexity list. This includes the time to find the minimum value of the complexity list, which requires scanning through the list once.
 
-- **Time Complexity**: The time complexity of this solution is dominated by the computation of the factorial, which is \(O(n)\), where \(n\) is the length of the input list `complexity`. The factorial can be computed in linear time, as the function calls are performed in constant time per multiplication.
+**Space Complexity:** 
+- The space complexity is O(1) since the solution utilizes a constant amount of extra space regardless of the input size (only a few variables are used).
 
-- **Space Complexity**: The space complexity is \(O(1)\) since no additional space that scales with input size is used. The function primarily uses a few variables to store intermediate results, irrespective of the length of the input list.
+### 3. Why This Approach is Efficient
 
-## 3. Why This Approach is Efficient
+This approach is efficient because:
+- It leverages a mathematical property of permutations based on constraints of the problem. By simply checking the first complexity against the rest and using factorial calculations, it avoids the need for generating and counting all possible permutations, which would be computationally expensive.
+- The use of modular arithmetic (with `MOD = 10 ** 9 + 7`) ensures that we can handle large numbers resulting from factorial calculations while maintaining performance within the limits specified by typical problem constraints.
+- The solution is straightforward and operates in linear time with constant space, making it suitable for large inputs. 
 
-This approach is efficient for several reasons:
-
-- **Early Exit**: It immediately checks the key condition that determines the validity of permutations right at the start of the function. If the condition is not met, the function terminates early, avoiding unnecessary calculations or iterations.
-
-- **Mathematical Insight**: The factorial calculation leverages the mathematical properties of permutations. By fixing one element (the first), it reduces the problem size and avoids the complexity of generating all possible arrangements, which would be infeasible for larger lists.
-
-- **Modular Arithmetic**: By using modulo \(10^9 + 7\), the solution maintains efficiency in handling large numbers, which is a common requirement in competitive programming due to potential overflow.
-
-In summary, the solution efficiently checks conditions that can quickly eliminate invalid inputs and calculates the result using mathematical intuition in linear time.
-```
+Overall, the solution is optimized for performance based on the defined constraints and properties of permutations, ensuring correctness while being computationally efficient.
 
 Runtime: undefined
-Memory: 32020000
+Memory: 31940000
 """
 
 class Solution:
     def countPermutations(self, complexity: List[int]) -> int:
-        # if there is an el which is <= than the root, then impossible, or if elements are equal
+        # if there is an el which is <= than the root, then impossible
         prev = 0
         MOD = 10 **9 + 7
         if complexity[0] >= min(complexity[1:]):
