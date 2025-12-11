@@ -1,41 +1,45 @@
 """
-# Explanation of LeetCode Solution for "Add Strings"
+## Explanation of the LeetCode Solution for "Add Strings"
 
-## 1. Approach Explanation
+### 1. Brief Explanation of the Approach
 
-The solution implements a straightforward algorithm to simulate the addition of two numbers represented as strings (`num1` and `num2`). The approach is akin to manual addition where digits are added starting from the least significant digit (the rightmost side) and moving to the most significant digit (the leftmost side), while carefully managing the carry from each digit addition. Here's a breakdown of the key steps:
+The problem "Add Strings" requires adding two non-negative integers represented as strings without converting them to integers directly. The provided solution utilizes a two-pointer technique where digits are processed from the least significant to the most significant (right to left).
 
-- Convert the input strings into lists (`l1` and `l2`) for easier manipulation.
-- Initialize a variable `carry` to 0, which will hold any value carried over from a digit to the next during the addition process.
-- Prepare an empty list `res` to store resulting digits after addition.
-- Use a loop that continues until there are no more digits to process in either string and no carry left:
-  - Pop a digit from `l1` or set it to 0 if `l1` is exhausted.
-  - Similarly, pop a digit from `l2` or set it to 0 if `l2` is exhausted.
-  - Convert the popped characters to integers, compute the sum of the digits along with any carry, and then determine the new carry and the current digit to append to the result.
-- Finally, since the digits were added in reverse order (from least significant to most significant), reverse the `res` list and join its elements to form the final result string. 
+Here's a breakdown of the approach:
 
-## 2. Time and Space Complexity Analysis
+- **Initialization**: Two lists are created from the input strings `num1` and `num2` to facilitate popping digits one at a time. A `carry` variable is initialized to zero to keep track of any value that needs to be carried over to the next significant digit.
 
-### Time Complexity
-- The time complexity is O(max(N, M)), where N and M are the lengths of `num1` and `num2`, respectively. This is because the algorithm essentially processes each digit of the strings once. The maximum length ensures that all digits from both strings are accounted for, including any carry.
+- **Loop through Digits**: A while loop continues until both lists are empty and there is no carry left:
+  - If there are digits remaining in `l1` (from `num1`), the last digit is popped; otherwise, a default value of "0" is assigned.
+  - The same logic applies to `l2` (from `num2`).
+  - The current digit sum is calculated by converting these characters to their respective integer values using ASCII operations: `ord(d1) - ord('0')` converts the character to its integer representation.
 
-### Space Complexity
-- The space complexity is O(max(N, M)) as well, primarily due to the storage of the result list `res`, which can grow to the length of the larger input string if all digits must be kept.
+- **Carry Management**: After calculating the current digit sum, the carry for the next iteration is updated, and the least significant digit (obtained using `% 10`) is added to the result list.
 
-## 3. Efficiency of This Approach
+- **Result Compilation**: After the loop, the result list is reversed to represent the final answer correctly, and the digits are concatenated into a single string.
 
-This approach is efficient for several reasons:
+### 2. Time and Space Complexity Analysis
 
-- **Simplicity and Clarity**: The simulation of manual addition makes the code easy to understand. The use of lists and pops allows straightforward manipulation of the digits.
-- **Handles Varying Lengths**: The algorithm can handle strings of different lengths naturally due to the checks for exhausted lists and the carry.
-- **No Additional Libraries**: The solution does not rely on converting the entire string to an integer (which could lead to overflow issues for very large numbers), making it robust against large inputs.
-- **In-Place Processing**: Popping elements from the end of lists and appending to `res` minimizes the need for creating additional copies of data. 
+- **Time Complexity**: \( O(N + M) \)
+  - Where \( N \) is the length of `num1` and \( M \) is the length of `num2`. This is because the algorithm goes through each digit of both input strings once.
 
-Overall, the algorithm is efficient and effectively handles the addition of two potentially very large numbers represented as strings.
+- **Space Complexity**: \( O(N + M) \)
+  - The space is primarily used for storing the result in a list that can potentially hold all digits of the sum of the two numbers (since they could be of similar size), and also for the lists holding the digits of `num1` and `num2`.
 
+### 3. Why This Approach is Efficient
+
+This approach is efficient due to several reasons:
+
+- **No Type Conversion Overhead**: By avoiding conversion of the entire string into an integer, the code maintains the integrity of very large numbers that might exceed standard integer limits. Instead, it works directly with the string representations.
+
+- **Direct Character Manipulation**: Using ASCII values for digit conversion is a direct way to handle character-to-integer conversions without added complexity.
+
+- **Single Pass Addition**: The method processes both strings in a single pass and handles digit carry naturally, which is in line with how addition is performed manually, making it simpler and more intuitive.
+
+This combination of techniques allows the solution to handle input strings of arbitrary lengths efficiently and correctly.
 
 Runtime: undefined
-Memory: 18516000
+Memory: 18604000
 """
 
 class Solution:
@@ -48,12 +52,13 @@ class Solution:
             if l1:
                 d1 = l1.pop()
             else:
-                d1 = 0
+                d1 = "0"
             if l2:
                 d2 = l2.pop()
             else:
-                d2 = 0
-            curr_digit = int(d1) + int(d2) + carry
+                d2 = "0"
+            # curr_digit = int(d1) + int(d2) + carry # this can be
+            curr_digit = ord(d1) - ord('0') + ord(d2) - ord('0') + carry
             carry = curr_digit // 10
             res.append(str(curr_digit % 10))
 
