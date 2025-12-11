@@ -1,57 +1,63 @@
 """
-## Explanation of the LeetCode Solution for "Move Zeroes"
+## Explanation of the "Move Zeroes" Solution
 
 ### 1. Brief Explanation of the Approach
+The approach taken in this solution is to modify the input list `nums` in-place by moving all the non-zero elements to the front while maintaining their relative order, and then placing all zeroes at the end of the list.
 
-The solution to the "Move Zeroes" problem utilizes a two-pass approach to rearrange the elements of the list `nums` in place. The aim is to shift all non-zero elements to the start of the list while maintaining their relative order, and to move all zeros to the end of the list. 
-
-- **First Pass**: The function iterates through the list. It maintains a variable `start_idx` that tracks the position at which the next non-zero element should be placed. Whenever a non-zero element is encountered, it is copied to the position indicated by `start_idx`, and `start_idx` is incremented. If a zero is encountered, a counter (`count_zeros`) is incremented instead.
-  
-- **Second Pass**: After all non-zero elements have been moved to the front of the list, the remaining positions (from `start_idx` to the end of the list) are filled with zeros using a reverse loop that starts from the end of the list.
-
-Finally, the modified list has all non-zero elements at the beginning and all zeros at the end.
+The logic can be broken down into two main passes through the list:
+- **First Pass**: This pass iterates through the `nums` list. For every non-zero element encountered, it is placed in the position indicated by `start_idx`, which keeps track of where the next non-zero element should go. After placing a non-zero element, `start_idx` is incremented.
+- **Second Pass**: After all non-zero elements have been moved to the front, the second pass fills the remaining positions in the list with zeroes. This starts from the `start_idx` to the end of the list.
 
 ### 2. Time and Space Complexity Analysis
-
-- **Time Complexity**: The overall time complexity of this approach is O(n), where n is the length of the input list `nums`. This is because both passes through the list are linear in complexity; the first pass processes each element once, and the second pass processes the remaining elements, all in a direct manner.
-
-- **Space Complexity**: The space complexity is O(1), as the algorithm only uses a fixed amount of extra space regardless of the input size. It uses a constant amount of additional variables (e.g., `start_idx` and `count_zeros`).
+- **Time Complexity**: O(n), where n is the number of elements in the `nums` list. This is because we are making two passes through the array: one to move the non-zero elements and another to fill in the zeroes. Each pass takes linear time.
+- **Space Complexity**: O(1). The solution modifies the input list in-place without using any additional data structures that scale with input size. The only additional variables used (e.g., `start_idx`) take up constant space.
 
 ### 3. Why This Approach is Efficient
-
 This approach is efficient for several reasons:
+- **In-Place Modification**: The algorithm modifies the input array without needing any extra space for another array. This is useful in scenarios where memory usage is a concern.
+- **Maintaining Order**: By keeping track of the position for the next non-zero element, the algorithm ensures that the relative order of non-zero elements is preserved, which is often required in such problems.
+- **Single Pass for Filling Zeroes**: Instead of counting zeroes during the first pass and then performing additional operations to place them, this method simply uses `start_idx` to determine where to fill zeroes, allowing it to be straightforward and efficient.
 
-- **In-Place Modification**: The algorithm modifies the list in place without requiring any additional arrays or data structures, thus saving space.
-
-- **Preservation of Order**: The solution maintains the relative order of non-zero elements, which is often a requirement in such problems.
-
-- **Linear Time Complexity**: By using only two linear passes over the input list, the approach minimizes the total number of operations needed, making it scalable for larger input sizes.
-
-- **Simple and Intuitive**: The use of clear variable names and straightforward logic makes the algorithm easy to understand and implement, which is advantageous for both learning and practical coding scenarios.
-
-In summary, this two-pass approach efficiently addresses the problem while maintaining both time and space efficiency and preserving the order of the elements.
+By utilizing these steps, the solution effectively handles the requirement to move all zeroes to the end while ensuring that non-zero elements maintain their original order.
 
 Runtime: undefined
-Memory: 19064000
+Memory: 18988000
 """
+
+# class Solution:
+#     def moveZeroes(self, nums: List[int]) -> None:
+#         """
+#         Do not return anything, modify nums in-place instead.
+#         """
+#         # o un bubble sort O(n2), oppure, conto gli zero e sposto gli elementi prima? oppure sposto solo elementi prima
+#         # idea migliore, conto zeri e poi mi tengo index per mettere elementi non zero, alla fine gli zero li inserisco dalla fine
+#         start_idx = 0
+#         count_zeros = 0
+#         for i in range(len(nums)):
+#             if nums[i] != 0:
+#                 nums[start_idx] = nums[i]
+#                 start_idx += 1
+#             else:
+#                 count_zeros += 1
+
+#         for i in range(len(nums)-1, len(nums) - count_zeros - 1, -1):
+#             nums[i] = 0
+
+#         return nums
 
 class Solution:
     def moveZeroes(self, nums: List[int]) -> None:
         """
         Do not return anything, modify nums in-place instead.
         """
-        # o un bubble sort O(n2), oppure, conto gli zero e sposto gli elementi prima? oppure sposto solo elementi prima
-        # idea migliore, conto zeri e poi mi tengo index per mettere elementi non zero, alla fine gli zero li inserisco dalla fine
+        # with only idx
         start_idx = 0
-        count_zeros = 0
         for i in range(len(nums)):
             if nums[i] != 0:
                 nums[start_idx] = nums[i]
                 start_idx += 1
-            else:
-                count_zeros += 1
 
-        for i in range(len(nums)-1, len(nums) - count_zeros - 1, -1):
+        for i in range(start_idx, len(nums)):
             nums[i] = 0
 
         return nums
