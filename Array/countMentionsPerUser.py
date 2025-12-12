@@ -1,52 +1,52 @@
 """
-### Explanation of the Approach
+# Explanation of the LeetCode Solution for "Count Mentions Per User"
 
-The solution for counting mentions per user in a given event stream is implemented by processing a list of events that indicate when users go online, go offline, or are mentioned. The logic is organized to keep track of a user's online status and their mention counts based on specific event types.
+## 1. A Brief Explanation of the Approach
 
-1. **Data Structure Initialization**: 
-   - An array `res` is defined to store the counts of mentions for each user indexed by their IDs.
-   - A dictionary `ids` is used to keep track of user states, where the key is the user ID, and the value is a tuple containing the online timestamp and the number of mentions.
+The solution employs a straightforward simulation of user activities based on a list of events. The key steps involved are as follows:
 
-2. **Sorting Events**: 
-   - The events are sorted primarily by timestamp and secondarily by event type (giving precedence to "ONLINE" events using the value of 1 for being online).
+- **Initialization**: 
+  - A list, `res`, is created to hold the mention counts for each user, initialized to zero.
+  - A dictionary, `ids`, is used to associate each user ID with a tuple containing their online timestamp and the count of mentions.
 
-3. **Event Processing**:
-   - For each event, the code looks at its type (either "OFFLINE", "HERE", "ALL", or mentions for specific users):
-     - **OFFLINE**: Updates the user's online timestamp indicating when they went offline.
-     - **HERE**: If users are currently online, it increments the mention count for all active users.
-     - **ALL**: If all users are there, increment the mention count for every user.
-     - **Specific Mentions**: For mentions like "USER1", the code increments the mention count for those specific users.
+- **Sorting Events**: 
+  - The events list is sorted by timestamp and type (online events prioritized over offline events if they occur at the same time).
 
-4. **Final Count Compilation**:
-   - After processing all events, the mention counts are compiled back into the `res` array to be returned.
+- **Event Processing**:
+  - Each event is processed in order:
+    - For **OFFLINE** events, the user is marked as online for an additional 60 seconds, allowing mentions during this window to be counted.
+    - For **HERE** events, every user has their mention count incremented if they have been online until the timestamp of the event.
+    - For **ALL** events, each user’s mention count is incremented regardless of their current online status.
+    - For specific user mentions, the respective user IDs are extracted, and their mention counts are incremented.
 
-### Time and Space Complexity Analysis
+- **Final Count Retrieval**: 
+  - After processing all events, the mention counts from `ids` are transferred to the result list `res`, which is then returned.
 
-- **Time Complexity**: 
-  - Sorting the events takes \(O(E \log E)\) where \(E\) is the number of events, as each event needs to be compared once for sorting.
-  - The processing of events is done in \(O(E \times U)\) in the worst case where \(U\) is the number of users, especially when processing through all users for "HERE" or "ALL" events.
-  - Thus the overall complexity is \(O(E \log E + E \times U)\).
+## 2. Time and Space Complexity Analysis
 
-- **Space Complexity**: 
-  - The space used for the `res` array is \(O(U)\) where \(U\) is the number of users.
-  - The `ids` dictionary can grow to \(O(U)\) as well, where each user can potentially be a key.
-  - Thus, the total space complexity is \(O(U)\).
+- **Time Complexity**:
+  - Sorting the events takes \(O(E \log E)\), where \(E\) is the number of events.
+  - Processing each event takes \(O(E \cdot U)\) where \(U\) is the number of users (in the worst case, loop through all users).
+  - Thus, the combined time complexity is \(O(E \log E + E \cdot U)\).
 
-### Why This Approach is Efficient
+- **Space Complexity**:
+  - The space complexity is dominated by the `ids` dictionary which stores information for up to \(U\) users in the worst case, i.e., \(O(U)\).
+  - The results list `res` also takes \(O(U)\).
 
-1. **Grouped Processing**: 
-   - By sorting events and handling bulk operations (like counting mentions for all users or those online) effectively, the solution minimizes the need for repetitive checks.
+Therefore, the overall space complexity is \(O(U)\).
 
-2. **Direct Mapping**: 
-   - Using a dictionary allows for quick updates and retrievals of user states. This direct mapping optimizes the efficiency of state management during event processing.
+## 3. Why this Approach is Efficient
 
-3. **Scalable**:
-   - The code is designed to accommodate a range of events and users, making it suitable for larger datasets, although care must be taken with respect to performance if the number of events or users grows significantly.
+This approach is efficient for a few reasons:
 
-Overall, this structured and systematic approach allows the problem to be tackled concisely and efficiently, resulting in manageable time and space complexities.
+- **Sorting**: By sorting the events by timestamp, the solution ensures that all time-sensitive operations (like checking if the user was online) are handled correctly.
+- **Dictionary for User States**: The use of a dictionary allows for efficient retrieval and updating of user states (online status and mention counts).
+- **Simplicity**: The logic is straightforward and relies on a clear and systematic processing of events, avoiding unnecessary complexity.
 
-Runtime: undefined
-Memory: 18224000
+Overall, this solution is both clear and efficient, making it suitable for handling potentially large inputs with many users and events while ensuring accurate mention counts.
+
+Runtime: N/A
+Memory: N/A
 """
 
 class Solution:
