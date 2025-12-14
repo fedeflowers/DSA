@@ -1,58 +1,74 @@
 """
-### Explanation of the Approach
+```markdown
+## Explanation of the Solution for "Number of Ways to Divide a Long Corridor"
 
-The problem "Number of Ways to Divide a Long Corridor" involves finding the number of valid ways to partition a corridor represented as a string, with characters 'S' (representing seats) and '.' (representing empty spaces). The goal is to ensure that every two adjacent 'S' can be separated by using the empty spaces, and, importantly, there should be an even number of 'S' overall in the corridor to make valid pairs.
+### 1. Brief Explanation of the Approach
+This solution aims to find the number of ways to divide a corridor filled with seats ('S') into pairs. The corridor is represented as a string, and the goal is to ensure that every pair of seats is separated by at least one empty section. Here is a breakdown of the process:
 
-The solution follows these steps:
+- **Step 1**: Indices of all seats are collected in a list called `seats`.
+- **Step 2**: The function checks if the number of seats is even and greater than zero. If not, it returns 0 as it is not possible to form pairs.
+- **Step 3**: The program iterates through the indices of the seats in steps of two (to access the pairs). For each pair, it calculates the gaps between the end of one pair and the start of the next pair. The product of these gaps gives the total number of ways to place the pairs of seats while ensuring they are separated, and is done modulo \(10^9 + 7\).
 
-1. **Count Validation**: First, it checks if the total count of 'S' is odd or zero. If either condition is true, it immediately returns 0, as it is impossible to form valid pairs in such cases.
+### 2. Time and Space Complexity Analysis
+- **Time Complexity**: 
+  - The time complexity of the algorithm is O(N), where N is the length of the input string `corridor`. This is because we traverse the corridor once to collect seat indices and again to calculate the product of gaps.
+  
+- **Space Complexity**: 
+  - The space complexity is O(M), where M is the number of 'S' characters found in the corridor. This is the space required to store the indices of the 'S' characters in a list.
 
-2. **Gaps Counting**: It iterates through the string to track pairs of 'S'. For every complete pair of 'S' encountered, it counts the number of empty spaces (gaps) between them. This is done using `curr_s` to count 'S' and `curr_gaps` to count the gaps.
+### 3. Why This Approach is Efficient
+This approach is efficient because:
+- It only loops through the string a constant number of times (once to gather seat indices and once to compute gaps), ensuring linear time complexity relative to the size of the string.
+- By collecting indices upfront, it avoids repeated scans of the string or complex operations, keeping constant space usage dependent only on the number of seats, rather than the total string length.
+- The method carefully handles cases where the number of seats is odd or zero at the outset, reducing unnecessary computation for invalid cases.
 
-3. **Counting Combinations**: When it identifies a complete pair (when `curr_s == 2`), it multiplies the result variable `res` by the number of gaps counted so far. This gives the number of ways to partition the gaps for that pair of seats.
-
-4. **Final Result**: The count is taken modulo \(10^9 + 7\) to handle large numbers and prevent overflow.
-
-### Time and Space Complexity Analysis
-
-1. **Time Complexity**: The solution processes the corridor string in a single pass, resulting in a time complexity of \(O(n)\), where \(n\) is the length of the `corridor` string. This is efficient as it only requires a linear scan of the input string.
-
-2. **Space Complexity**: The space complexity is \(O(1)\) since it uses a constant amount of extra space for variables `curr_s`, `curr_gaps`, and `res`. The solution does not utilize additional data structures whose size depends on the input length.
-
-### Why This Approach is Efficient
-
-This approach is efficient for several reasons:
-
-- **Linear Pass**: It requires only a single pass through the string (O(n) time), efficiently counting pairs and gaps without needing any nested iterations or additional passes.
-- **Constant Space**: It maintains a low space complexity by using only a few variables.
-- **Direct Calculation**: The use of multiplication for counting valid combinations when encountering pairs of 'S' allows for quick accumulation of the number of ways to partition the corridor, directly leveraging the properties of combinations without complex algorithms.
-- **Modulus Handling**: The handling of large numbers with the modulus operation ensures that results remain manageable and prevents overflow, which is essential in competitive programming problems.
-
-Overall, this solution correctly balances efficiency and simplicity, making it well-suited for the problem at hand.
+Overall, this implementation efficiently computes the number of ways to pair the seats while maintaining separation, adhering to the defined problem constraints.
+```
 
 Runtime: undefined
-Memory: 18192000
+Memory: 22448000
 """
+
+# class Solution:
+#     def numberOfWays(self, corridor: str) -> int:
+#         MOD = 10 ** 9 + 7
+#         # if number of seats is odd return 0
+#         if corridor.count("S") % 2 != 0 or corridor.count("S") == 0:
+#             return 0
+        
+#         # count the gaps + 1 between seats and multiply them for computing permutations
+#         curr_s = 0
+#         curr_gaps = 0
+#         res = 1
+#         for el in corridor:
+#             if curr_s == 2:
+#                 curr_gaps += 1
+#             if el == 'S':
+#                 if curr_s == 2:
+#                     res *= curr_gaps
+#                     curr_gaps = 0
+#                     curr_s = 0
+#                 curr_s += 1
+
+#         return res%MOD
+
+#BETTER WRITING
 
 class Solution:
     def numberOfWays(self, corridor: str) -> int:
-        MOD = 10 ** 9 + 7
-        # if number of seats is odd return 0
-        if corridor.count("S") % 2 != 0 or corridor.count("S") == 0:
+        # 1. Collect indices of all seats
+        seats = [i for i, c in enumerate(corridor) if c == 'S']
+        
+        # 2. Check validity: Must have seats and total count must be even
+        if not seats or len(seats) % 2 != 0:
             return 0
         
-        # count the gaps + 1 between seats and multiply them for computing permutations
-        curr_s = 0
-        curr_gaps = 0
-        res = 1
-        for el in corridor:
-            if curr_s == 2:
-                curr_gaps += 1
-            if el == 'S':
-                if curr_s == 2:
-                    res *= curr_gaps
-                    curr_gaps = 0
-                    curr_s = 0
-                curr_s += 1
-
-        return res%MOD
+        # 3. Calculate product of gaps between pairs
+        # We look at the gap between the end of one pair (index 1, 3...) 
+        # and start of next (index 2, 4...)
+        res, mod = 1, 10**9 + 7
+        for i in range(2, len(seats), 2):
+            # (Start of Pair 2) - (End of Pair 1) gives valid positions
+            res = (res * (seats[i] - seats[i-1])) % mod
+            
+        return res
