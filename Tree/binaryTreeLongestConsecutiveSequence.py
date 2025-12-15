@@ -1,36 +1,37 @@
 """
-# Explanation of the Solution for "Binary Tree Longest Consecutive Sequence"
+```markdown
+## Explanation of the LeetCode Solution for "Binary Tree Longest Consecutive Sequence"
 
-## 1. Brief Explanation of the Approach
-The problem "Binary Tree Longest Consecutive Sequence" aims to find the length of the longest consecutive sequence path in a binary tree, where each node's value is exactly 1 more than its parent’s value. The solution uses Depth-First Search (DFS) to traverse the tree.
+### 1. Approach
+The solution uses a Depth-First Search (DFS) approach to traverse the binary tree while keeping track of the length of the current consecutive sequence. The function `longestConsecutive` initializes the DFS by checking if the root is not null, and if it is valid, it calls the `dfs` helper function with the `root` node and an initial length of `1`.
 
-The approach involves the following steps:
-- We define a recursive function `dfs(root, path)` that takes a node (`root`) and the current length of the consecutive path (`path`).
-- If the current node is `None`, the function returns the current path length.
-- For each child node (left and right), it checks if the child value is equal to the current node value + 1:
-  - If true, it calls `dfs` on the child with `path + 1`.
-  - If false, it resets the path length to 1 and calls `dfs` on the child.
-- Throughout the traversal, we maintain a variable `longest` that holds the maximum path length found.
-- Finally, the result is returned after traversing the entire tree.
+In the `dfs` function:
+- It first checks if the current node (`node`) is `None`. If so, it returns `0` (base case).
+- It calculates the length for the left child node:
+  - If the left child exists and its value equals the current node's value plus one, it extends the current length by one; otherwise, it resets the length to `1`.
+- Similarly, it calculates the length for the right child node with the same logic.
+- Finally, it returns the maximum of the current length, the result from the left subtree, and the result from the right subtree.
 
-## 2. Time and Space Complexity Analysis
-- **Time Complexity**: O(N)  
-  The algorithm visits each node exactly once, where N is the number of nodes in the tree. Traversing the tree in a depth-first manner ensures that every node is processed, making the time complexity linear with respect to the number of nodes.
+The DFS runs until all nodes have been visited, allowing the function to find the longest consecutive sequence along any path from the root to a leaf.
 
-- **Space Complexity**: O(H)  
-  The space complexity is determined by the recursion stack used by depth-first search. In the worst case of a skewed tree (essentially a linked list), the maximum depth of the recursion stack is equal to the height of the tree, denoted as H. In a balanced tree, the height would be log(N), hence O(H) is acceptable.
+### 2. Time and Space Complexity Analysis
+- **Time Complexity**: O(N)
+  - Each node in the binary tree is visited exactly once. Thus, the time complexity is linear in relation to the number of nodes, N.
+  
+- **Space Complexity**: O(H)
+  - The maximum space in the function call stack during the DFS could go up to the height of the tree (H). So in the case of a balanced tree, this is O(log N), but in the worst case (skewed tree), it can be O(N).
 
-## 3. Why This Approach is Efficient
-The DFS approach is efficient for several reasons:
-- **Direct Processing**: Each node is processed once, leading to a linear run-time.
-- **Path Tracking**: The recursive nature of DFS allows easy tracking of the length of consecutive paths without needing additional data structures, leading to streamlined memory usage.
-- **Compact Code**: The logic is straightforward and clearly reflects the constraints of the problem, making it easier to extend or modify if needed.
-- **Early Exit**: As soon as a node's children are processed, the function returns, which minimizes unnecessary checks and further enhances performance.
+### 3. Efficiency of the Approach
+This approach is efficient for several reasons:
+- **Single Pass Traversal**: The algorithm only traverses the binary tree once, ensuring that it finds the solution in linear time.
+- **Minimal Extra Space Usage**: It does not use any additional data structures that grow with the input size, which keeps the memory footprint low besides the call stack.
+- **Immediate Comparison**: The consecutive sequence is checked and updated at every node, allowing it to quickly determine the maximum length without redundant checks.
 
-Overall, the solution is concise, easy to understand, and efficiently tackles the problem by directly leveraging the properties of DFS in tree traversal.
+Overall, the DFS method is optimal for this problem as it accurately captures the essence of traversing through the tree while comprehensively updating the longest consecutive sequence length.
+```
 
 Runtime: undefined
-Memory: 21244000
+Memory: 21352000
 """
 
 # Definition for a binary tree node.
@@ -63,30 +64,46 @@ Memory: 21244000
                 
         # return longest
 
+# class Solution:
+#     def longestConsecutive(self, root: Optional[TreeNode]) -> int:
+#         #DFS
+#         longest = 0
+#         def dfs(root, path):
+#             nonlocal longest
+#             if not root:
+#                 return path
+
+#             if root.left:
+#                 if root.left.val == root.val + 1:
+#                     l = dfs(root.left, path + 1)
+#                 else:
+#                     l = dfs(root.left, 1)
+
+#             if root.right:
+#                 if root.right.val == root.val + 1:
+#                     r = dfs(root.right, path + 1)
+#                 else:
+#                     r = dfs(root.right, 1)
+                
+#             # longest = max(r, l)
+#             longest = max(longest, path)
+#             return path
+        
+#         dfs(root, 1)
+#         return longest
+
+
 class Solution:
     def longestConsecutive(self, root: Optional[TreeNode]) -> int:
-        #DFS
-        longest = 0
-        def dfs(root, path):
-            nonlocal longest
-            if not root:
-                return path
+        def dfs(node, length):
+            if not node:
+                return 0
+            
+            # Calculate length for left and right children
+            left_len = length + 1 if node.left and node.left.val == node.val + 1 else 1
+            right_len = length + 1 if node.right and node.right.val == node.val + 1 else 1
+            
+            # Return the max of current path vs. whatever is found in subtrees
+            return max(length, dfs(node.left, left_len), dfs(node.right, right_len))
 
-            if root.left:
-                if root.left.val == root.val + 1:
-                    l = dfs(root.left, path + 1)
-                else:
-                    l = dfs(root.left, 1)
-
-            if root.right:
-                if root.right.val == root.val + 1:
-                    r = dfs(root.right, path + 1)
-                else:
-                    r = dfs(root.right, 1)
-                
-            # longest = max(r, l)
-            longest = max(longest, path)
-            return path
-        
-        dfs(root, 1)
-        return longest
+        return dfs(root, 1) if root else 0
