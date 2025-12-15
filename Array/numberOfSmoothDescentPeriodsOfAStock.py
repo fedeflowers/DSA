@@ -1,61 +1,58 @@
 """
 ```markdown
-## Explanation of the Solution
+## Solution Explanation for "Number of Smooth Descent Periods of a Stock"
 
-1. **Approach**
+### 1. Approach Explanation:
+The solution is designed to count the number of smooth descent periods in a list of stock prices. A smooth descent period is defined as a sequence of days where the stock price decreases by exactly 1 unit each day.
 
-   The problem requires counting the number of "smooth descent periods" in a given list of stock prices. A smooth descent period is defined as a consecutive sequence of descending prices, where each price is exactly 1 less than the previous day's price.
+- The function initializes two variables: `res` (to hold the total count of descent periods) and `length` (to track the length of the current descent period).
+- It iterates through the list of prices starting from the second price. For each price:
+  - If the current price is exactly one less than the previous price (`prices[i] == prices[i-1] - 1`), it means a descent period is continuing; hence the `length` of the current descent gets incremented.
+  - If the current price does not satisfy this condition, it means the descent has ended, and `length` is reset to 1 as the current price forms a new descent period by itself.
+- For every price, the `length` is added to the total `res`, counting both the current period and any preceding periods that it completes.
+- Finally, the function returns the total count of descent periods `res`.
 
-   The solution iterates over the list of prices and keeps track of consecutive descent periods. It uses the following variables:
-   - `prev` to store the previous day's price.
-   - `series` to count the length of the current descent period.
-   - `res` to accumulate the total number of descent periods.
+### 2. Time and Space Complexity Analysis:
+- **Time Complexity: O(N)**  
+  The algorithm traverses the list of stock prices a single time, making the time complexity linear with respect to the number of prices, denoted as N.
 
-   As we iterate through each price:
-   - If the current price is exactly 1 less than the previous price, we increment the `series` counter.
-   - If not, we calculate the number of descent periods contributed by the current `series` using the formula \((series + 1) * series / 2\) which counts all the subarrays of lengths 1 through `series` and adds that to `res`. After that, we reset `series`.
-   - At the end of the loop, we ensure to add any remaining descent periods contributed by the last series to `res`.
+- **Space Complexity: O(1)**  
+  The algorithm uses a constant amount of space, regardless of the input size, as it only utilizes a few integer variables (`res` and `length`) for storing counts.
 
-   The formula for descent periods works because if a descent series has a length of `k`, the number of valid subarrays (descent periods) is:
-   - Length 1: k choices
-   - Length 2: (k-1) choices
-   - Length 3: (k-2) choices
-   - ...
-   - Length k: 1 choice 
-   
-   This sums up to \(\frac{k(k + 1)}{2}\).
-
-2. **Time and Space Complexity Analysis**
-
-   - **Time Complexity**: The algorithm makes a single pass through the prices list, which takes \(O(n)\), where \(n\) is the length of the prices list. Each operation inside the loop is \(O(1)\). Hence, the overall time complexity is \(O(n)\).
-
-   - **Space Complexity**: The solution uses a fixed amount of extra space (the integer variables `prev`, `series`, and `res`), regardless of the input size. Thus, the space complexity is \(O(1)\).
-
-3. **Why This Approach is Efficient**
-
-   The efficiency of this approach comes from its ability to calculate the number of descent periods in a single pass through the data while maintaining low memory usage. By:
-   - Directly processing the input list without using additional data structures (like arrays or lists), it retains space efficiency.
-   - Utilizing arithmetic to count subarrays instead of explicitly building or storing all of them, which avoids overhead and keeps the calculations manageable in terms of time complexity.
-
-   This combination of linear time complexity and constant space usage makes the solution optimal for this problem.
+### 3. Why This Approach is Efficient:
+This approach is efficient due to its linear traversal of the input list, allowing it to compute the result in a single pass while maintaining a simple state to track the length of descent periods. The use of a running total (`res`) enables the counting of all periods without needing to store or revisit any previous states, resulting in an optimal memory usage pattern. This makes it suitable for large datasets while avoiding the overhead of nested loops or additional data structures typical in other, less efficient solutions.
 ```
 
 Runtime: undefined
-Memory: 30128000
+Memory: 30108000
 """
+
+# class Solution:
+#     def getDescentPeriods(self, prices: List[int]) -> int:
+#         prev = None
+#         series = 0
+#         res = 0
+#         for el in prices:
+#             if prev and el == prev - 1:
+#                 series += 1
+#             else:
+#                 res += ((series + 1) * series) // 2
+#                 series = 0
+
+#             prev = el
+
+#         return res + len(prices) + ((series + 1) * series) // 2 #last flush
 
 class Solution:
     def getDescentPeriods(self, prices: List[int]) -> int:
-        prev = None
-        series = 0
-        res = 0
-        for el in prices:
-            if prev and el == prev - 1:
-                series += 1
+        res = 1
+        length = 1
+        
+        for i in range(1, len(prices)):
+            if prices[i] == prices[i-1] - 1:
+                length += 1
             else:
-                res += ((series + 1) * series) // 2
-                series = 0
-
-            prev = el
-
-        return res + len(prices) + ((series + 1) * series) // 2 #last flush
+                length = 1
+            res += length
+            
+        return res
