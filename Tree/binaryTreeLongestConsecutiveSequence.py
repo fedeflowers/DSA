@@ -1,35 +1,36 @@
 """
-## Explanation of the Approach
+# Explanation of the Solution for "Binary Tree Longest Consecutive Sequence"
 
-The solution to the "Binary Tree Longest Consecutive Sequence" problem uses an iterative breadth-first search (BFS) approach to traverse the binary tree and find the longest consecutive sequence of values. 
+## 1. Brief Explanation of the Approach
+The problem "Binary Tree Longest Consecutive Sequence" aims to find the length of the longest consecutive sequence path in a binary tree, where each node's value is exactly 1 more than its parent’s value. The solution uses Depth-First Search (DFS) to traverse the tree.
 
-1. **Initialization**: We start by initializing a variable `longest` to keep track of the longest consecutive sequence found so far. If the root is `None`, the function immediately returns `0`.
+The approach involves the following steps:
+- We define a recursive function `dfs(root, path)` that takes a node (`root`) and the current length of the consecutive path (`path`).
+- If the current node is `None`, the function returns the current path length.
+- For each child node (left and right), it checks if the child value is equal to the current node value + 1:
+  - If true, it calls `dfs` on the child with `path + 1`.
+  - If false, it resets the path length to 1 and calls `dfs` on the child.
+- Throughout the traversal, we maintain a variable `longest` that holds the maximum path length found.
+- Finally, the result is returned after traversing the entire tree.
 
-2. **Queue Setup**: A queue (using `Deque` from `collections`) is initialized to facilitate the BFS. Each entry in the queue consists of a tuple containing a tree node and the current length of the consecutive sequence leading up to that node.
+## 2. Time and Space Complexity Analysis
+- **Time Complexity**: O(N)  
+  The algorithm visits each node exactly once, where N is the number of nodes in the tree. Traversing the tree in a depth-first manner ensures that every node is processed, making the time complexity linear with respect to the number of nodes.
 
-3. **BFS Traversal**:
-   - While the queue is not empty, we dequeue the front element, which gives us the current node and its corresponding path length.
-   - We update the `longest` variable with the maximum value between the current `longest` and the `path` length.
-   - For each child node, we check if it is a consecutive child (i.e., `child.val` equals `parent.val + 1`):
-     - If it is, we increment the path length and enqueue the child node with the new path length.
-     - If not, we reset the path length to `1` (indicating a new potential sequence).
-  
-4. **Result**: After finishing the traversal, the `longest` variable is returned, which represents the length of the longest consecutive sequence found in the tree.
+- **Space Complexity**: O(H)  
+  The space complexity is determined by the recursion stack used by depth-first search. In the worst case of a skewed tree (essentially a linked list), the maximum depth of the recursion stack is equal to the height of the tree, denoted as H. In a balanced tree, the height would be log(N), hence O(H) is acceptable.
 
-## Time and Space Complexity Analysis
+## 3. Why This Approach is Efficient
+The DFS approach is efficient for several reasons:
+- **Direct Processing**: Each node is processed once, leading to a linear run-time.
+- **Path Tracking**: The recursive nature of DFS allows easy tracking of the length of consecutive paths without needing additional data structures, leading to streamlined memory usage.
+- **Compact Code**: The logic is straightforward and clearly reflects the constraints of the problem, making it easier to extend or modify if needed.
+- **Early Exit**: As soon as a node's children are processed, the function returns, which minimizes unnecessary checks and further enhances performance.
 
-- **Time Complexity**: O(N), where N is the number of nodes in the binary tree. Each node is visited exactly once throughout the BFS traversal.
-  
-- **Space Complexity**: O(W), where W is the maximum width of the binary tree. In the worst case, this could be approximately O(N) if the tree is completely unbalanced (like a linked list). In a balanced scenario, this would tend to be closer to O(log N).
-
-## Why This Approach Is Efficient
-
-- The BFS approach ensures that all nodes are processed in a systematic manner while checking for consecutive sequences.
-- By maintaining the current path length as we traverse, the algorithm efficiently tracks the length of sequences without the need for extra space for parent-child relationships.
-- This method avoids the overhead of recursion and stack memory usage, making it suitable for large trees where recursion depth could be a concern. The use of a queue allows for managing nodes in a first-in-first-out manner, ensuring all levels of the tree are processed thoroughly before moving on.
+Overall, the solution is concise, easy to understand, and efficiently tackles the problem by directly leveraging the properties of DFS in tree traversal.
 
 Runtime: undefined
-Memory: 20540000
+Memory: 21244000
 """
 
 # Definition for a binary tree node.
@@ -38,25 +39,54 @@ Memory: 20540000
 #         self.val = val
 #         self.left = left
 #         self.right = right
+# class Solution:
+#     def longestConsecutive(self, root: Optional[TreeNode]) -> int:
+        #BFS
+        # longest = 0
+        # if not root:
+        #     return longest
+
+        # q = Deque([(root, 1)])
+        # while q:
+        #     root, path = q.popleft()
+        #     longest = max(longest, path)
+        #     if root.left:
+        #         if root.left.val == root.val + 1:
+        #             q.append([root.left, path + 1])
+        #         else:
+        #             q.append([root.left, 1])
+        #     if root.right:
+        #         if root.right.val == root.val + 1:
+        #             q.append([root.right, path + 1])
+        #         else:
+        #             q.append([root.right, 1])
+                
+        # return longest
+
 class Solution:
     def longestConsecutive(self, root: Optional[TreeNode]) -> int:
+        #DFS
         longest = 0
-        if not root:
-            return longest
+        def dfs(root, path):
+            nonlocal longest
+            if not root:
+                return path
 
-        q = Deque([(root, 1)])
-        while q:
-            root, path = q.popleft()
-            longest = max(longest, path)
             if root.left:
                 if root.left.val == root.val + 1:
-                    q.append([root.left, path + 1])
+                    l = dfs(root.left, path + 1)
                 else:
-                    q.append([root.left, 1])
+                    l = dfs(root.left, 1)
+
             if root.right:
                 if root.right.val == root.val + 1:
-                    q.append([root.right, path + 1])
+                    r = dfs(root.right, path + 1)
                 else:
-                    q.append([root.right, 1])
+                    r = dfs(root.right, 1)
                 
+            # longest = max(r, l)
+            longest = max(longest, path)
+            return path
+        
+        dfs(root, 1)
         return longest
