@@ -1,40 +1,43 @@
 """
 ```markdown
-# Explanation of the LeetCode Solution for "Validate Binary Search Tree"
+## Explanation of the Solution for "Validate Binary Search Tree"
 
-## 1. Brief Explanation of the Approach
+### 1. A brief explanation of the approach
+The solution uses a recursive helper function `validate` to check if a binary tree satisfies the properties of a binary search tree (BST). The key properties of a BST are:
+- The left subtree of any node contains only nodes with values less than the node's value.
+- The right subtree of any node contains only nodes with values greater than the node's value.
+- Both the left and right subtrees must also be binary search trees.
 
-The provided solution employs a recursive approach to validate if a binary tree is a binary search tree (BST). The validation process uses a helper function `validate(node, low, high)` that checks whether the value of the current node lies within a specified range defined by `low` and `high`.
+The `validate` function takes three parameters: 
+- `root`: the current node being validated,
+- `low`: the lower bound for the node's value (inclusive),
+- `high`: the upper bound for the node's value (exclusive).
 
-- **Base Case**: If the current `node` is `None`, it is considered a valid subtree; therefore, the function returns `True`.
-- **Value Check**: The function checks if the current `node.val` is strictly between `low` and `high`. If it is not, the function returns `False`, indicating that the binary tree cannot be a BST.
-- **Recursive Calls**: The function then recursively checks the left and right children:
-  - The left child must have values less than the current node's value, so it updates the range to `(low, node.val)`.
-  - The right child must have values greater than the current node's value, so it updates the range to `(node.val, high)`.
-- The overall result is a conjunction of the validity of the left and right subtrees.
+The function works as follows:
+1. If the current node (`root`) is `None`, it returns `True` because an empty tree is a valid BST.
+2. It checks if the current node's value (`root.val`) is within the bounds defined by `low` and `high`. If it isn't, it returns `False`.
+3. It recursively checks the left subtree, updating the upper bound to the current node's value, and the right subtree, updating the lower bound to the current node's value.
+4. The function ultimately returns `True` if all nodes satisfy the BST properties, or `False` if any do not.
 
-The recursion is initiated with the entire range of possible values for a binary search tree: from negative infinity to positive infinity.
+The process starts by invoking the `validate` function with the initial bounds of negative infinity and positive infinity.
 
-## 2. Time and Space Complexity Analysis
+### 2. Time and Space Complexity analysis
+- **Time Complexity**: O(N)
+  - Each node in the tree is visited exactly once, where N is the number of nodes in the tree.
+- **Space Complexity**: O(H)
+  - The space complexity is determined by the recursion stack. In the worst case (for a skewed tree), the depth of the recursion can be O(N), but for a balanced tree, it will be O(log N).
 
-- **Time Complexity**: The time complexity of this solution is O(N), where N is the number of nodes in the binary tree. This is because each node is visited exactly once in a depth-first traversal.
-  
-- **Space Complexity**: The space complexity is O(H), where H is the height of the binary tree. This accounts for the space required by the recursive function call stack. In the worst-case scenario (for a skewed tree), H could be O(N). However, for a balanced tree, H would be O(log N).
+### 3. Why this approach is efficient
+This approach is efficient due to its simplicity and directness in checking the BST properties. The use of bounds for each node ensures that:
+- The correctness of the BST condition is verified at every level of recursion.
+- Only essential nodes are checked against their respective bounds, avoiding unnecessary checks.
+By enforcing the constraints of valid BST values through the traversal, the algorithm efficiently narrows down the validity checks without the need for additional data structures or traversals.
 
-## 3. Why This Approach is Efficient
-
-This approach is efficient for several reasons:
-
-- **Direct Validation**: It directly checks the properties of a BST during the traversal, ensuring that the values are within the valid ranges without needing to perform multiple passes or re-evaluations of the nodes.
-- **Recursive Depth-First Search**: The use of recursion allows the function to naturally explore the depths of the tree, effectively handling each branch independently.
-- **Constant Range Check**: By maintaining bounds on the values for each node's left and right children, the algorithm avoids cumbersome data structures or additional space that would be needed to store the entire tree or its nodes.
-- **Early Exit**: The function can exit early if it encounters any invalid conditions, providing potentially faster validation in practice depending on the structure of the tree.
-
-Overall, the implemented solution is both simple and efficient, leveraging the properties of binary search trees and recursion effectively.
+The recursive depth-first search (DFS) naturally fits the problem, capitalizing on the properties of trees and thereby keeping the implementation clean and easy to understand.
 ```
 
 Runtime: undefined
-Memory: 18648000
+Memory: 18656000
 """
 
 # Definition for a binary tree node.
@@ -45,17 +48,14 @@ Memory: 18648000
 #         self.right = right
 class Solution:
     def isValidBST(self, root: Optional[TreeNode]) -> bool:
-        def validate(node, low, high):
-            if not node:
+        def validate(root, low, high):
+            if not root:
                 return True
-            
-            # Current node must be strictly between low and high
-            if not (low < node.val < high):
-                return False
-            
-            # Left child: must be < current node.val
-            # Right child: must be > current node.val
-            return (validate(node.left, low, node.val) and 
-                    validate(node.right, node.val, high))
 
-        return validate(root, float('-inf'), float('inf'))
+            if not (low < root.val < high):
+                return False
+
+            return (validate(root.left, low, root.val) and
+                    validate(root.right, root.val, high))
+
+        return validate(root, -float("inf"), float("inf"))
