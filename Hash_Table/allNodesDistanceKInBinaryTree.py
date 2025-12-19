@@ -1,110 +1,38 @@
 """
 ## Explanation of the LeetCode Solution for "All Nodes Distance K in Binary Tree"
 
-### 1. Approach Explanation
+### 1. Approach
 
-The solution employs a depth-first search (DFS) strategy to find all nodes that are exactly K distance away from a specified target node in a binary tree. Here's a step-by-step breakdown of the approach:
+This solution tackles the problem by first converting the binary tree into an undirected graph. This is done using a depth-first search (DFS) to create an adjacency list representation, where each node maps to its neighbors (parent and children). Once the graph is constructed, a DFS is performed starting from the given target node to find and return all nodes that are exactly `k` distance away.
 
-- **Target Value Identification**: 
-  - The solution first checks if the `target` parameter is a `TreeNode` object or an integer; if it's a `TreeNode`, it assigns the value of the target node to `target_val`. 
+The steps are as follows:
+- **Graph Construction**: A helper function `create_graph` builds the graph based on the binary tree structure. It traverses the tree and connects each node to its neighbors (parent and children).
+- **Distance Search**: A DFS function `dfs` is then employed to find nodes at exactly `k` distance from the target node. It avoids revisiting nodes by maintaining a set of visited nodes.
 
-- **DFS Traversal**: 
-  - The `dfs` function traverses the binary tree recursively. It returns the distance from the current node to the target node if found, or -1 if not found.
-
-  - **Base Cases**:
-    - If the current node is `None`, it returns -1.
-    - If the current node matches the target node, it uses the `collect` function to gather all nodes that are K distance away from this node.
-
-  - **Traversing Left and Right Subtrees**:
-    - If the target node is found in the left subtree (indicated by a returned distance L ≠ -1), it calculates the distance to the current node. 
-      - If the distance matches K, it adds the current node’s value to the result.
-      - If not, it calls `collect` on the right subtree to find nodes K distance away from the current node.
-      
-    - This process is symmetrical for nodes found in the right subtree.
-
-- **Collect Function**: 
-  - The `collect` function is responsible for gathering values of all nodes that are exactly K distance away from a given node. It continues the search until it either hits a distance of K (it adds the node's value to the result) or runs out of nodes.
-
-### 2. Time and Space Complexity Analysis
+### 2. Time and Space Complexity
 
 - **Time Complexity**: 
-  - The worst-case time complexity is \(O(N)\), where \(N\) is the number of nodes in the tree. Each node is visited once during the DFS traversal to either collect the nodes at distance K or to traverse down into the subtrees.
+  - The graph construction takes O(N) time, where N is the number of nodes in the tree because every node and edge is processed once.
+  - The DFS traversal to collect nodes at distance `k` also takes O(N) time in the worst case, since all nodes may need to be explored.
+  - Therefore, the overall time complexity is O(N).
 
-- **Space Complexity**: 
-  - The space complexity is \(O(H)\), where \(H\) is the height of the tree. This accounts for the recursion stack used in the DFS, which can go as deep as the height of the tree. In a balanced tree, \(H = O(\log N)\), but in a skewed tree, \(H = O(N)\).
+- **Space Complexity**:
+  - The space complexity is primarily due to the storage of the graph, which would also hold up to O(N) entries (for each node and its edges).
+  - The recursive call stack in the DFS could go up to O(H) where H is the height of the tree.
+  - Thus, the total space complexity is O(N) due to the graph storage, with an additional O(H) for the recursion stack.
 
-### 3. Why This Approach is Efficient
+### 3. Efficiency of the Approach
 
-This approach is efficient due to the following reasons:
+This approach is efficient because:
+- **Graph Construction**: By transforming the tree into an undirected graph, it allows for easy traversal and neighbor discovery without concern for direction (like the typical parent-child structure of trees).
+- **DFS Usage**: The usage of DFS ensures that we can explore each node's neighbors efficiently and reach nodes at distance `k` without redundant checks, thanks to the visited tracking system.
+- **Scalability**: The algorithm scales well with the size of the binary tree since both its time and space complexities are linear with respect to the number of nodes.
 
-- **Direct Search**: 
-  - It focuses on searching for the target node first and calculating distances to nodes directly from it, rather than constructing additional data structures (like a graph) which would increase overhead.
-
-- **Single Pass**: 
-  - By using a single DFS traversal, each node is visited only once, yielding an optimal time complexity of \(O(N)\) in relation to tree size.
-
-- **Dynamic Distance Calculation**: 
-  - The method of calculating distances while recursively traversing the tree means that it can effectively gather only the necessary nodes at distance K from the target, avoiding unnecessary checks or computations.
-
-This method achieves the desired results efficiently while maintaining clarity and simplicity in its implementation.
+Overall, the combination of graph construction and efficient traversal enables quick resolution of the target distance queries.
 
 Runtime: undefined
-Memory: 17588000
+Memory: 17720000
 """
-
-# # Definition for a binary tree node.
-# # class TreeNode:
-# #     def __init__(self, x):
-# #         self.val = x
-# #         self.left = None
-# #         self.right = None
-
-# class Solution:
-#     def distanceK(self, root: TreeNode, target: TreeNode, k: int) -> List[int]:
-#         #create grap and then find distance
-#         graph = defaultdict(list)
-#         def create_graph(root, parent):
-#             if not root:
-#                 return
-#             if parent and root:
-#                 graph[root.val].append(parent.val)
-#                 graph[parent.val].append(root.val)
-
-#             create_graph(root.left, root)
-#             create_graph(root.right, root)
-
-#         create_graph(root, None)
-        
-#         # visited = set()    
-#         # res = []   
-#         # DFS
-#         # def dfs(node, distance):
-#         #     if node in visited:
-#         #         return
-#         #     visited.add(node)
-#         #     if distance == k:
-#         #         res.append(node)
-#         #     for child in graph[node]:
-#         #         dfs(child, distance+1)
-
-#         # dfs(target.val, 0)
-#         # return res
-
-#         #BFS
-#         visited = set([target.val])    
-#         res = []  
-#         q = Deque([(target.val,0)])
-#         while q:
-#             node, d = q.popleft()
-#             if d == k:
-#                 res.append(node)
-#             for child in graph[node]:
-#                 if child not in visited:
-#                     visited.add(child)
-#                     q.append((child, d+1))
-#         return res
-
-
 
 # Definition for a binary tree node.
 # class TreeNode:
@@ -113,46 +41,38 @@ Memory: 17588000
 #         self.left = None
 #         self.right = None
 
-# NO NEED for GRAPH
 class Solution:
-    def distanceK(self, root: TreeNode, target: TreeNode, k: int) -> list[int]:
-        res = []
-        # Support both node object or integer as target
-        target_val = target.val if isinstance(target, TreeNode) else target
-
-        def collect(node, d):
-            if not node or d < 0: return
-            if d == 0:
-                res.append(node.val)
+    def distanceK(self, root: TreeNode, target: TreeNode, k: int) -> List[int]:
+        graph = defaultdict(list) # node : [neighbours]
+        def create_graph(root: TreeNode, parent: TreeNode) -> dict:
+            if not root:
                 return
-            collect(node.left, d - 1)
-            collect(node.right, d - 1)
+            if root and parent:
+                graph[root.val].append(parent.val)
+                graph[parent.val].append(root.val)
 
-        def dfs(node):
-            if not node: return -1
-            
-            # Case 1: Node is the target
-            if node.val == target_val:
-                collect(node, k)
-                return 0
-            
-            # Case 2: Target is in left subtree
-            L = dfs(node.left)
-            if L != -1:
-                dist = L + 1
-                if dist == k: res.append(node.val)
-                else: collect(node.right, k - dist - 1)
-                return dist
-            
-            # Case 3: Target is in right subtree
-            R = dfs(node.right)
-            if R != -1:
-                dist = R + 1
-                if dist == k: res.append(node.val)
-                else: collect(node.left, k - dist - 1)
-                return dist
-            
-            return -1
+            create_graph(root.left, root)
+            create_graph(root.right, root)
 
-        dfs(root)
+        create_graph(root, None)
+
+        res = []
+        visited = set()
+        #DFS or BFS
+        def dfs(node: int, k:int):
+            if node in visited:
+                return
+            
+            visited.add(node)
+                
+            if k == 0:
+                res.append(node)
+            for neigh in graph[node]:
+                dfs(neigh, k-1)
+
+            
+
+        dfs(target.val, k)
         return res
+
+
