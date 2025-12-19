@@ -1,37 +1,38 @@
 """
-## Explanation of the LeetCode Solution for "All Nodes Distance K in Binary Tree"
+# Explanation of LeetCode Solution for "All Nodes Distance K in Binary Tree"
 
-### 1. Approach
+## 1. Brief Explanation of the Approach
 
-This solution tackles the problem by first converting the binary tree into an undirected graph. This is done using a depth-first search (DFS) to create an adjacency list representation, where each node maps to its neighbors (parent and children). Once the graph is constructed, a DFS is performed starting from the given target node to find and return all nodes that are exactly `k` distance away.
+The solution to the problem of finding all nodes that are a distance `K` from a target node in a binary tree can be accomplished through a depth-first search (DFS) approach. The strategy is divided into two main parts:
 
-The steps are as follows:
-- **Graph Construction**: A helper function `create_graph` builds the graph based on the binary tree structure. It traverses the tree and connects each node to its neighbors (parent and children).
-- **Distance Search**: A DFS function `dfs` is then employed to find nodes at exactly `k` distance from the target node. It avoids revisiting nodes by maintaining a set of visited nodes.
+- **Traversal and Depth Calculation**: The solution uses a recursive function `dfs` to traverse the binary tree. The goal is to find the target node and calculate the distance from it to its parent nodes, while also processing the left and right children during the backtracking phase. 
 
-### 2. Time and Space Complexity
+- **Collecting Nodes at Distance K**: Once the target node is found, the function `collect` is called to collect all nodes from the target downward that are `K` levels deep. Additionally, while backtracking up the tree, if the distance to the parent node equals `K`, that node is also added to the result. If not, the algorithm calls `collect` on the sibling branch to check for nodes that may be at distance `K`.
 
-- **Time Complexity**: 
-  - The graph construction takes O(N) time, where N is the number of nodes in the tree because every node and edge is processed once.
-  - The DFS traversal to collect nodes at distance `k` also takes O(N) time in the worst case, since all nodes may need to be explored.
-  - Therefore, the overall time complexity is O(N).
+Overall, this solution efficiently combines DFS traversal with a strategy to backtrack and explore both subtrees.
 
-- **Space Complexity**:
-  - The space complexity is primarily due to the storage of the graph, which would also hold up to O(N) entries (for each node and its edges).
-  - The recursive call stack in the DFS could go up to O(H) where H is the height of the tree.
-  - Thus, the total space complexity is O(N) due to the graph storage, with an additional O(H) for the recursion stack.
+## 2. Time and Space Complexity Analysis
 
-### 3. Efficiency of the Approach
+- **Time Complexity**: The time complexity of this solution is `O(N)`, where `N` is the number of nodes in the binary tree. This is because every node is visited once during the DFS traversal.
 
-This approach is efficient because:
-- **Graph Construction**: By transforming the tree into an undirected graph, it allows for easy traversal and neighbor discovery without concern for direction (like the typical parent-child structure of trees).
-- **DFS Usage**: The usage of DFS ensures that we can explore each node's neighbors efficiently and reach nodes at distance `k` without redundant checks, thanks to the visited tracking system.
-- **Scalability**: The algorithm scales well with the size of the binary tree since both its time and space complexities are linear with respect to the number of nodes.
+- **Space Complexity**: The space complexity is `O(H)`, where `H` is the height of the binary tree. This includes the space for the recursion stack during the DFS. The output list for the result also contributes to the space used, but in the worst case (if all nodes are at distance `K`), the output space is `O(N)`. However, since the recursion stack is the limiting factor, we generally consider the space complexity as `O(H)`.
 
-Overall, the combination of graph construction and efficient traversal enables quick resolution of the target distance queries.
+## 3. Why This Approach is Efficient
+
+This approach is efficient for several reasons:
+
+1. **No Additional Data Structures Required**: Unlike alternative methods (e.g., constructing a full adjacency list for graph representation), this solution navigates the tree using its inherent structure, eliminating the need for extra space besides the necessary recursion stack and output list.
+
+2. **Single Pass for Target Location and Distance Calculation**: The method finds the target node and processes necessary nodes in a single traversal (DFS). This reduces overhead compared to separate searches.
+
+3. **Effective Backtracking**: By handling both downward (collecting nodes `K` levels down from the target) and upward (checking for parent nodes at a specific distance), the approach fully exploits the binary tree's structure and minimizes repeated work.
+
+4. **Handles Edge Cases**: The solution accounts for all necessary distances, including nodes not directly connected to the target node but are reachable at distance `K`, making it robust for varying inputs.
+
+Overall, this method efficiently provides the answer without excessive operations or memory usage, making it suitable for large binary trees while ensuring clarity and correctness in the traversal logic.
 
 Runtime: undefined
-Memory: 17720000
+Memory: 17672000
 """
 
 # Definition for a binary tree node.
@@ -41,38 +42,81 @@ Memory: 17720000
 #         self.left = None
 #         self.right = None
 
+# class Solution:
+#     def distanceK(self, root: TreeNode, target: TreeNode, k: int) -> List[int]:
+#         graph = defaultdict(list) # node : [neighbours]
+#         def create_graph(root: TreeNode, parent: TreeNode) -> dict:
+#             if not root:
+#                 return
+#             if root and parent:
+#                 graph[root.val].append(parent.val)
+#                 graph[parent.val].append(root.val)
+
+#             create_graph(root.left, root)
+#             create_graph(root.right, root)
+
+#         create_graph(root, None)
+
+#         res = []
+#         visited = set()
+#         #DFS or BFS
+#         def dfs(node: int, k:int):
+#             if node in visited:
+#                 return
+            
+#             visited.add(node)
+                
+#             if k == 0:
+#                 res.append(node)
+#             for neigh in graph[node]:
+#                 dfs(neigh, k-1)
+
+            
+
+#         dfs(target.val, k)
+#         return res
+
+# NO GRAPH T: O(N), M: O(H)
 class Solution:
     def distanceK(self, root: TreeNode, target: TreeNode, k: int) -> List[int]:
-        graph = defaultdict(list) # node : [neighbours]
-        def create_graph(root: TreeNode, parent: TreeNode) -> dict:
+        res = []
+        def collect(root, distance):
             if not root:
                 return
-            if root and parent:
-                graph[root.val].append(parent.val)
-                graph[parent.val].append(root.val)
-
-            create_graph(root.left, root)
-            create_graph(root.right, root)
-
-        create_graph(root, None)
-
-        res = []
-        visited = set()
-        #DFS or BFS
-        def dfs(node: int, k:int):
-            if node in visited:
+            if distance == 0:
+                res.append(root.val)
                 return
-            
-            visited.add(node)
-                
-            if k == 0:
-                res.append(node)
-            for neigh in graph[node]:
-                dfs(neigh, k-1)
 
-            
+            collect(root.left, distance-1)
+            collect(root.right, distance-1)
 
-        dfs(target.val, k)
+        def dfs(root):
+            if not root:
+                return -1 #not found
+
+            if root == target:
+                collect(root, k) #si cerca quelli sotto 
+                return 0
+
+            L = dfs(root.left)
+            #in backtracking cerco gli altri nodi
+            if L != -1: # != se è 0 quindi ho trovato o la distance
+                dist = L + 1 #+1 perchè sono in backtracking quindi sono già tornato al nodo parent
+                if dist == k: res.append(root.val)
+                #-dist perchè è da dove chiamo la collect, -1 perchè sto chiamando il nodo dell'altro branch
+                else: collect(root.right, k - dist - 1) #chiamo collect su altro branch, perchè lì non ho ancora visitato e potrei trovare nodi a distanza k, (il target l'ho già trovato)
+                return dist
+
+            R = dfs(root.right)
+            if R != -1:
+                dist = R + 1
+                if dist == k: res.append(root.val)
+                else: collect(root.left, k - dist -1)
+                return dist
+
+            return -1 #not found
+
+        dfs(root)
         return res
 
 
