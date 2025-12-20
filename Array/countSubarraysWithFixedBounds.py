@@ -1,64 +1,61 @@
 """
-## Explanation of LeetCode Solution for "Count Subarrays With Fixed Bounds"
+### Explanation of the Approach
 
-### 1. Approach
+The problem "Count Subarrays With Fixed Bounds" requires us to count the number of subarrays within a given list of integers `nums` that have all their elements between specified bounds `minK` and `maxK`, inclusive. The solution uses a single-pass method with a few key variables to track indices of interest in the array.
 
-The problem "Count Subarrays With Fixed Bounds" requires counting the number of contiguous subarrays in an array that contain at least one instance of a given minimum value (`minK`) and at least one instance of a given maximum value (`maxK`). The solution employs a single-pass method through the array to track the necessary indices and calculate valid subarrays.
+1. **Variable Initialization**: 
+   - `res`: to store the total count of valid subarrays.
+   - `bad_idx`: to store the index of the last element that is outside the bounds `[minK, maxK]`.
+   - `min_idx`: to keep track of the last index where the element is `minK`.
+   - `max_idx`: to track the last index where the element is `maxK`.
 
-Here's a breakdown of the approach:
+2. **Iterating through the Array**:
+   - For each element `nums[r]`, check if it falls out of bounds (less than `minK` or greater than `maxK`). If so, update `bad_idx` to the current index `r`.
+   - If the current element is equal to `minK`, update `min_idx`.
+   - If the element equals `maxK`, update `max_idx`.
+   
+3. **Calculating Valid Subarrays**:
+   - The number of valid subarrays that end at index `r` can be calculated as the difference between the smallest of `min_idx` and `max_idx`, and the last bad index `bad_idx`. Essentially, `min(min_idx, max_idx) - bad_idx` gives the count of subarrays that end at `r` and begin after the last bad element. The `max(0, ...)` ensures we don't end up with negative counts.
 
-- **Initialization**: 
-  - `res` is initialized to zero, which will hold the count of valid subarrays.
-  - `bad_idx` marks the last index where an element outside the bounds `(minK, maxK)` was found. 
-  - `min_idx` and `max_idx` are initialized to -1 and will store the indices of the last occurrences of `minK` and `maxK`, respectively.
+4. **Result**: 
+   - The result `res` accumulates this count as we iterate through all elements.
 
-- **Iteration**: 
-  - The solution iterates through the array with `enumerate`, getting both the index `i` and the value `num`.
-  - For each element:
-    - If `num` is not within the valid bounds (i.e., not between `minK` and `maxK`), `bad_idx` is updated to the current index `i`.
-    - If `num` is equal to `minK`, `min_idx` is updated to the current index.
-    - If `num` is equal to `maxK`, `max_idx` is updated to the current index.
-  - For each element, the valid subarrays ending at index `i` can be counted from the maximum of the last valid indices of `minK` and `maxK`, minus the last invalid index `bad_idx`.
+### Time and Space Complexity Analysis
 
-- Finally, the result `res` is returned, representing the total count of valid subarrays found.
+1. **Time Complexity**: 
+   - The algorithm runs in O(N) time where N is the number of elements in `nums`. This is because we make a single pass through the array, performing constant-time operations for each element.
 
-### 2. Time and Space Complexity Analysis
+2. **Space Complexity**: 
+   - The space complexity is O(1), as we use a constant amount of space for the variables (`res`, `bad_idx`, `min_idx`, `max_idx`) regardless of the input size.
 
-- **Time Complexity**: 
-  - The time complexity of the solution is O(N), where N is the length of the input array `nums`. This is because the solution iterates through the array in a single pass.
-
-- **Space Complexity**: 
-  - The space complexity of the solution is O(1) since it uses a constant amount of extra space regardless of the input size. Only a few integer variables are maintained for indices and count.
-
-### 3. Efficiency of the Approach
+### Why This Approach is Efficient
 
 This approach is efficient for several reasons:
 
-- **Single Pass**: By performing only one pass through the array, the solution minimizes the number of iterations required, making it suitable for larger input sizes.
+- **Single Pass**: It only needs one iteration over the input array, leading to an O(N) time complexity which is optimal for problems like this that require examining each element.
+  
+- **Memory Usage**: Employing just a few pointers results in constant space consumption, making it space-efficient.
 
-- **Constant Space Usage**: It achieves the goals using a fixed number of variables, thus preventing overhead from using additional data structures.
+- **Dynamic Tracking**: By maintaining indices for critical conditions (like the last bad index and the last occurrences of the minimum and maximum), the program effectively narrows down the valid starting points of the subarrays without needing to re-examine previously seen elements.
 
-- **Direct Index Tracking**: By maintaining indices of the last occurrences of `minK`, `maxK`, and bad elements, it effectively counts valid subarrays without needing nested loops to generate all possible subarrays explicitly, which would be computationally expensive.
-
-Overall, this method combines clarity and performance, making it an optimal solution for the problem at hand.
+In summary, this solution effectively balances time and space complexity while providing a clear logic that leverages index tracking for efficient count calculations regarding fixed bounds in subarrays.
 
 Runtime: undefined
-Memory: 28864000
+Memory: 28788000
 """
 
 class Solution:
-    def countSubarrays(self, nums, minK, maxK):
+    def countSubarrays(self, nums: List[int], minK: int, maxK: int) -> int:
         res = 0
         bad_idx = min_idx = max_idx = -1
-        
-        for i, num in enumerate(nums):
-            if not minK <= num <= maxK:
-                bad_idx = i
-            if num == minK:
-                min_idx = i
-            if num == maxK:
-                max_idx = i
-                
+        for r in range(len(nums)):
+            if not (minK <= nums[r] <= maxK):
+                bad_idx = r
+            if nums[r] == minK:
+                min_idx = r
+            if nums[r] == maxK:
+                max_idx = r
+
             res += max(0, min(min_idx, max_idx) - bad_idx)
-            
+
         return res
