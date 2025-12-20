@@ -1,51 +1,61 @@
 """
-# Explanation of the LeetCode Solution for "Delete Columns to Make Sorted"
+## Explanation of the Approach
 
-## 1. Brief Explanation of the Approach
+The solution to the problem "Delete Columns to Make Sorted" utilizes the idea of comparing each column of characters formed from the input list of strings. The goal is to determine how many columns do not remain sorted when assessed from top to bottom.
 
-The problem "Delete Columns to Make Sorted" requires determining how many columns in a given list of strings need to be deleted to ensure that the remaining columns are sorted in lexicographical order. 
+### Detailed Steps:
+1. **Transposing the Column**: The built-in `zip(*strs)` technique effectively groups characters based on their column positions across all strings. Each resulting tuple represents a column of characters.
+  
+2. **Sorting Check**: For each column (as a tuple), the solution checks if the column matches its sorted version. If the column is not sorted (i.e., `list(col) != sorted(col)`), we increment a counter `count`.
 
-The provided code takes the following approach:
+3. **Returning the Result**: Finally, the total count of unsorted columns is returned.
 
-- It initializes a counter `cols_to_delete` to zero, which tracks the number of columns that need to be deleted.
-- It then iterates over each column of the first string (assuming that all strings are of the same length).
-- For each character in the column, it compares it with the corresponding character in the previous string. If the current character is less than the previous one (i.e., violates the sorted order), it increments the `cols_to_delete` counter and breaks the inner loop to proceed to the next column.
-- The loop continues until all columns are processed, after which it returns the total number of columns that need to be deleted.
+## Time and Space Complexity Analysis
 
-## 2. Time and Space Complexity Analysis
+### Time Complexity:
+- Let `N` be the number of strings and `M` be the length of each string.
+- The solution iterates over `M` columns, and for each column, it converts the tuple into a list and checks if it is sorted. This sorting check takes O(N log N) since `sorted` is used, leading to an overall time complexity of:
+  \[
+  O(M \cdot N \log N)
+  \]
 
-- **Time Complexity**: O(N * M)
-  - Where N is the number of strings and M is the length of each string. The outer loop iterates over each character (column) in the strings, and the inner loop iterates through all the strings to compare the characters in the current column.
+### Space Complexity:
+- The space complexity is primarily due to the tuples created by `zip`. Since we create a separate list for each column, the space complexity can be expressed as O(N) — for storing characters in each tuple (since the tuple length is confined to the number of strings). Therefore, the overall space complexity is O(N).
 
-- **Space Complexity**: O(1)
-  - The solution uses a constant amount of extra space for variables like `cols_to_delete` and `prev`, regardless of the size of the input.
+## Why This Approach is Efficient
 
-## 3. Why this Approach is Efficient
+1. **Simplicity**: The approach leverages Python's built-in functions like `zip` and `sorted`, which are optimized and make the code concise and easy to read.
 
-This approach is efficient for the following reasons:
+2. **Direct Comparison**: Instead of managing a manual comparison and condition checks as in the first implementation, this approach directly compares the column contents against their sorted counterpart, effectively minimizing the complexity of the code.
 
-- **Direct Comparison**: By directly comparing adjacent characters in the current column across all strings, the solution efficiently identifies violations of the sorting requirement.
-- **Early Break**: The use of a `break` statement in the inner loop allows the algorithm to stop evaluating further strings for a column as soon as a violation is found, which can save unnecessary comparisons.
-- **Simplicity**: The implementation is straightforward, making it easy to understand and debug. It systematically assesses each column independently, ensuring that the logic is clean and avoids unnecessary complexity.
+3. **Efficiency**: While the time complexity involves sorting, this is acceptable because the problem size is typically manageable, especially in competitive programming scenarios where N and M are limited.
 
-In conclusion, this solution effectively balances clarity and performance, making it both an optimal and an elegant solution to the problem.
+In summary, this code is efficient due to its direct and simple checking method, making it both effective and readable.
 
 Runtime: undefined
-Memory: 18264000
+Memory: 18112000
 """
+
+# class Solution:
+#     def minDeletionSize(self, strs: List[str]) -> int:
+#         if not strs: return 0
+#         cols_to_delete = 0
+#         for curr_col in range(len(strs[0])):
+#             prev = None
+#             for s in strs:
+#                 if prev and prev > s[curr_col]:
+#                     cols_to_delete += 1
+#                     break
+#                 prev = s[curr_col]
+
+#         return cols_to_delete
+
 
 class Solution:
     def minDeletionSize(self, strs: List[str]) -> int:
-        if not strs: return 0
-        cols_to_delete = 0
-        for curr_col in range(len(strs[0])):
-            prev = None
-            for s in strs:
-                if prev and prev > s[curr_col]:
-                    cols_to_delete += 1
-                    break
-                prev = s[curr_col]
-
-        return cols_to_delete
-
+        count = 0
+        for col in zip(*strs):
+            if list(col) != sorted(col):
+                count += 1
+        return count
 
