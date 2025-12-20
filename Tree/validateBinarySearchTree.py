@@ -1,43 +1,42 @@
 """
 ```markdown
-## Explanation of the Solution for "Validate Binary Search Tree"
+## Explanation of the LeetCode Solution for "Validate Binary Search Tree"
 
-### 1. A brief explanation of the approach
-The solution uses a recursive helper function `validate` to check if a binary tree satisfies the properties of a binary search tree (BST). The key properties of a BST are:
-- The left subtree of any node contains only nodes with values less than the node's value.
-- The right subtree of any node contains only nodes with values greater than the node's value.
-- Both the left and right subtrees must also be binary search trees.
+### 1. Brief Explanation of the Approach
+The solution employs a recursive helper function `valid` to verify if the given binary tree satisfies the properties of a binary search tree (BST). The key properties of a BST are:
 
-The `validate` function takes three parameters: 
-- `root`: the current node being validated,
-- `low`: the lower bound for the node's value (inclusive),
-- `high`: the upper bound for the node's value (exclusive).
+- Each node's value must be greater than all values in its left subtree.
+- Each node's value must be less than all values in its right subtree.
 
-The function works as follows:
-1. If the current node (`root`) is `None`, it returns `True` because an empty tree is a valid BST.
-2. It checks if the current node's value (`root.val`) is within the bounds defined by `low` and `high`. If it isn't, it returns `False`.
-3. It recursively checks the left subtree, updating the upper bound to the current node's value, and the right subtree, updating the lower bound to the current node's value.
-4. The function ultimately returns `True` if all nodes satisfy the BST properties, or `False` if any do not.
+To enforce these properties during the validation process, the algorithm makes use of two parameters: `low` and `high`, which represent the acceptable range of values for each node in the tree. Initially, the range for the root node is set to `(-∞, ∞)`.
 
-The process starts by invoking the `validate` function with the initial bounds of negative infinity and positive infinity.
+The steps in the `valid` function are as follows:
 
-### 2. Time and Space Complexity analysis
-- **Time Complexity**: O(N)
-  - Each node in the tree is visited exactly once, where N is the number of nodes in the tree.
-- **Space Complexity**: O(H)
-  - The space complexity is determined by the recursion stack. In the worst case (for a skewed tree), the depth of the recursion can be O(N), but for a balanced tree, it will be O(log N).
+1. If the current node (`root`) is `None`, it returns `True`, indicating that an empty subtree is valid.
+2. It checks if the current node's value (`root.val`) lies within the provided range (`low` < `root.val` < `high`). If it doesn't, it returns `False`, indicating a violation of the BST properties.
+3. The function recursively checks the left and right subtrees, updating the value ranges accordingly:
+   - For the left subtree, the updated range becomes `low` to `root.val`.
+   - For the right subtree, the updated range becomes `root.val` to `high`.
+4. The overall result is the logical AND of the results from both subtrees.
 
-### 3. Why this approach is efficient
-This approach is efficient due to its simplicity and directness in checking the BST properties. The use of bounds for each node ensures that:
-- The correctness of the BST condition is verified at every level of recursion.
-- Only essential nodes are checked against their respective bounds, avoiding unnecessary checks.
-By enforcing the constraints of valid BST values through the traversal, the algorithm efficiently narrows down the validity checks without the need for additional data structures or traversals.
+The initial call to `valid` is made with the root of the tree and the range `(-∞, ∞)`.
 
-The recursive depth-first search (DFS) naturally fits the problem, capitalizing on the properties of trees and thereby keeping the implementation clean and easy to understand.
+### 2. Time and Space Complexity Analysis
+- **Time Complexity**: O(N), where N is the number of nodes in the binary tree. Each node is visited exactly once, hence the linear time complexity.
+  
+- **Space Complexity**: O(H), where H is the height of the binary tree. This space is used for the recursion stack. In the case of a balanced tree, H will be O(log N); in the worst case (a skewed tree), H can be O(N).
+
+### 3. Why this Approach is Efficient
+This approach is efficient because:
+- It directly leverages the properties of a binary search tree to determine the validity of the tree structure in a single traversal (depth-first search).
+- It avoids unnecessary checks by managing the permissible value ranges dynamically with each recursive call.
+- The recursive method is intuitive and straightforward, making it easy to implement and understand. The decision to return early for invalid cases also helps in reducing the number of function calls and checks.
+
+Overall, this strategy effectively captures the requirements of the problem while maintaining optimal performance.
 ```
 
 Runtime: undefined
-Memory: 18656000
+Memory: 18604000
 """
 
 # Definition for a binary tree node.
@@ -48,14 +47,13 @@ Memory: 18656000
 #         self.right = right
 class Solution:
     def isValidBST(self, root: Optional[TreeNode]) -> bool:
-        def validate(root, low, high):
+        def valid(root, low, high):
             if not root:
                 return True
 
             if not (low < root.val < high):
                 return False
 
-            return (validate(root.left, low, root.val) and
-                    validate(root.right, root.val, high))
+            return valid(root.left, low, root.val) and valid(root.right, root.val, high)
 
-        return validate(root, -float("inf"), float("inf"))
+        return valid(root, -float("inf"), float("inf"))
