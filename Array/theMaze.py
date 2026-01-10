@@ -1,100 +1,131 @@
 """
-# Explanation of LeetCode Solution for "The Maze"
+# The Maze Solution Explanation
 
-## 1. Approach
+## 1. Brief Explanation of the Approach
 
-The solution uses a breadth-first search (BFS) strategy to determine if there is a path from a starting point to a destination in the maze, which is represented by a 2D grid where `0` indicates an empty space and `1` indicates a wall. The BFS explores possible paths by rolling the ball in four directions until it hits a wall. The key steps in the code are:
+The solution for "The Maze" problem involves using a Breadth-First Search (BFS) algorithm to determine if there is a valid path in a maze from a starting position to a destination position. The maze is represented as a grid, where `0` indicates an open cell and `1` indicates a wall.
 
-- **Find Next Position**: The function `find_next_pos` is defined to determine the next valid position the ball can reach in a specific direction without hitting a wall. It keeps moving in the given direction until it encounters a `1` (a wall).
-  
-- **Queue Initialization**: The BFS utilizes a queue (deque) to explore all positions that can be reached by rolling the ball, starting from the `start` position.
+### Key Steps:
+- **Rolling Mechanism**: The ball "rolls" in a given direction until it hits a wall (i.e., a cell containing `1`). This means that instead of moving one step at a time, the algorithm moves continuously in one direction until it can no longer proceed.
+- **Visited Tracking**: To avoid cycles and revisit positions, a set called `visited` keeps track of the cells the ball has already stopped at.
+- **Queue for BFS**: A deque (`collections.deque`) is used to facilitate the BFS. The BFS explores all possible directions (up, down, left, right) from the current position in a loop to find the destination.
 
-- **Visited Set**: A set is used to keep track of already visited positions, ensuring that the same position is not revisited, which would create loops.
-
-- **Direction Handling**: The BFS iterates through each direction. If it is not the previous direction taken, it pushes potential new positions into the queue for further exploration.
-
-- **Destination Check**: If the current position matches the destination, the function returns `True`. If the queue is exhausted without finding the destination, it returns `False`.
+The algorithm continues until either the destination is found or there are no more positions to explore.
 
 ## 2. Time and Space Complexity Analysis
 
-- **Time Complexity**: O(N * M), where N is the number of rows and M is the number of columns in the maze. In the worst case, each cell might be processed once, and since the ball can roll without obstruction until it hits a wall or the edge of the maze, it might check multiple positions in each direction.
+- **Time Complexity**: O(N), where N is the number of cells in the maze. In the worst case, each cell may be visited once, and exploring all possible directions from a single cell takes constant time due to rolling.
+  
+- **Space Complexity**: O(N) as well, where N is the number of cells. The space is mainly used by the `visited` set and the BFS queue. In the worst case, all cells may be stored in memory if they are reachable.
 
-- **Space Complexity**: O(N * M) as well for the `visited` set and the queue in the BFS. In the worst-case scenario, all positions in the maze could be stored in memory.
+## 3. Why This Approach is Efficient
 
-## 3. Efficiency of the Approach
+This approach is efficient for several reasons:
 
-This approach is efficient because:
+1. **Reduced Redundant Movements**: By implementing the rolling mechanism, the algorithm eliminates unnecessary back-and-forth movements—jumping directly to the last valid position. This significantly reduces the number of checks and updates made during execution.
 
-- **Immediate Exploration**: Rolling the ball directly to the farthest reachable position in each direction without obstructing walls minimizes unnecessary checks and iterations.
+2. **BFS Guarantees Shortest Path**: BFS naturally finds the shortest path in an unweighted grid, ensuring that once the destination is reached, it is confirmed as the best solution.
 
-- **Avoiding Cycles**: By maintaining a set of visited positions, the solution avoids revisiting cells, which prevents infinite loops and redundant calculations.
+3. **No Cycles**: The use of a visited set prevents cycles and redundant explorations, optimizing the exploration process and avoiding infinite loops.
 
-- **BFS Nature**: BFS systematically explores all potential paths at a particular distance from the starting point before moving further. This ensures the shortest path is found if it exists.
+4. **Simple and Clear Logic**: The algorithm clearly separates the concerns of pathfinding (BFS) and movement mechanics (rolling to walls), which makes the code easier to understand and maintain.
 
-- **Direction Constraints**: By considering the last direction taken and avoiding revisiting it immediately (ensuring the ball rolls in a new direction), the algorithm helps to prune unnecessary paths early on, improving efficiency. 
-
-Overall, these elements combine to create an effective and optimal solution for finding a path in the maze.
+In summary, the BFS with a rolling mechanism effectively explores the maze, efficiently determines pathways, and avoids unnecessary computational overhead.
 
 Runtime: undefined
-Memory: 20080000
+Memory: 19996000
 """
+
+# class Solution:
+#     def hasPath(self, maze: List[List[int]], start: List[int], destination: List[int]) -> bool:
+#         # bfs, evita di tornare da dove sei arrivato, e una funzione che data una direzione mi trova dove sarà la palla andando verso quella direzione
+#         # evito pure di mettere quelle pos che hanno start == end
+#         def find_next_pos(start, direction):
+#             x, y = start
+#             if direction == "left":
+#                 while y >= 0:
+#                     if maze[x][y] == 1:
+#                         break
+#                     y -= 1
+                    
+#                 return (x, y+1)
+#             elif direction == "right":
+#                 while y < len(maze[0]):
+#                     if maze[x][y] == 1:
+#                         break
+#                     y += 1
+                    
+#                 return (x, y-1)
+
+#             elif direction == "up":
+#                 while x >= 0:
+#                     if maze[x][y] == 1:
+#                         break
+#                     x -= 1
+                    
+#                 return (x+1, y)
+
+#             elif direction == "down":
+#                 while x < len(maze):
+#                     if maze[x][y] == 1:
+#                         break
+#                     x += 1
+#                 return (x-1, y)
+
+#         q = Deque([(start, None)])
+#         opposite = {"left": "right", "right": "left", "up": "down", "down": "up"}
+#         visited = set()
+#         while q:
+#             pos, prev = q.popleft()
+#             if tuple(pos) in visited:
+#                 continue
+
+#             visited.add(tuple(pos))
+
+#             if pos == tuple(destination):
+#                 return True
+#             if not prev:
+#                 for d in ("down", "left", "up", "right"):
+#                     q.append((find_next_pos(pos, d), d))
+#             else:
+#                 for d in ("down", "left", "up", "right"):
+#                     if d != prev and opposite[d] != prev:
+#                         q.append((find_next_pos(pos, d), d))
+
+#         return False
+
+from collections import deque
+from typing import List
 
 class Solution:
     def hasPath(self, maze: List[List[int]], start: List[int], destination: List[int]) -> bool:
-        # bfs, evita di tornare da dove sei arrivato, e una funzione che data una direzione mi trova dove sarà la palla andando verso quella direzione
-        # evito pure di mettere quelle pos che hanno start == end
-        def find_next_pos(start, direction):
-            x, y = start
-            if direction == "left":
-                while y >= 0:
-                    if maze[x][y] == 1:
-                        break
-                    y -= 1
-                    
-                return (x, y+1)
-            elif direction == "right":
-                while y < len(maze[0]):
-                    if maze[x][y] == 1:
-                        break
-                    y += 1
-                    
-                return (x, y-1)
-
-            elif direction == "up":
-                while x >= 0:
-                    if maze[x][y] == 1:
-                        break
-                    x -= 1
-                    
-                return (x+1, y)
-
-            elif direction == "down":
-                while x < len(maze):
-                    if maze[x][y] == 1:
-                        break
-                    x += 1
-                return (x-1, y)
-
-        q = Deque([(start, None)])
-        opposite = {"left": "right", "right": "left", "up": "down", "down": "up"}
-        visited = set()
+        rows, cols = len(maze), len(maze[0])
+        start_tuple = tuple(start)
+        dest_tuple = tuple(destination)
+        
+        # Use a set to keep track of stopped positions to avoid cycles
+        visited = {start_tuple}
+        q = deque([start_tuple])
+        
         while q:
-            pos, prev = q.popleft()
-            if tuple(pos) in visited:
-                continue
-
-            visited.add(tuple(pos))
-
-            if pos == tuple(destination):
+            curr = q.popleft()
+            if curr == dest_tuple:
                 return True
-            if not prev:
-                for d in ("down", "left", "up", "right"):
-                    q.append((find_next_pos(pos, d), d))
-            else:
-                for d in ("down", "left", "up", "right"):
-                    if d != prev and opposite[d] != prev:
-                        q.append((find_next_pos(pos, d), d))
-
+            
+            # Try all 4 directions from the current stopped position
+            for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                x, y = curr
+                
+                # Roll the ball until it hits a wall
+                while 0 <= x + dx < rows and 0 <= y + dy < cols and maze[x + dx][y + dy] == 0:
+                    x += dx
+                    y += dy
+                
+                new_pos = (x, y)
+                
+                # Only add to queue if we haven't stopped at this position before
+                if new_pos not in visited:
+                    visited.add(new_pos)
+                    q.append(new_pos)
+                    
         return False
-
-
