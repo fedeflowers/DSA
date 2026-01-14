@@ -1,38 +1,34 @@
 """
-```markdown
-# Explanation of the "Number of Islands" Solution
+## Explanation of the LeetCode Solution for "Number of Islands"
 
-## 1. Approach Explanation
+### 1. Brief Explanation of the Approach
+The solution provided implements a Depth-First Search (DFS) approach to count the number of islands in a grid. Each island is represented by '1's (land) in the grid, and '0's (water) represent the absence of land. The algorithm does the following:
 
-The solution employs Depth-First Search (DFS) to explore and count the number of islands ('1's) in the given 2D grid which represents land and water. The method `numIslands` iterates through each cell of the grid:
+- It initializes a set `self.visited` to keep track of the coordinates of the cells that have already been visited to prevent reprocessing.
+- The `explore_island` function is a recursive helper function that explores all the cells connected to the current cell (island) and marks them as visited.
+- For each cell in the grid, if it is '1' and not previously visited, it calls `explore_island`, which then marks all adjacent connected '1's as visited (exploring in four directions: right, down, left, and up).
+- For each call to `explore_island` that starts on an unvisited '1', it will contribute to the count of islands.
 
-- When it encounters a '1', it calls the `explore_island` function to explore the entire island, marking visited cells to prevent counting the same island multiple times. 
-- The `explore_island` function performs the following:
-    - Checks if the current cell is water ('0') or already visited; if so, it returns 0 (not part of an island).
-    - For each of the four possible directions (up, down, left, right), it invokes itself recursively to continue exploring adjacent land cells.
-    - After all adjacent land cells for a given island have been visited, it returns 1 to signify that one island has been counted.
+The main function, `numIslands`, iterates through the entire grid and increments a result counter for each unvisitedland cell (island) found, effectively counting the number of islands present.
 
-The final count of islands is maintained in the `res` variable, which is returned as the output.
-
-## 2. Time and Space Complexity Analysis
-
-- **Time Complexity:** O(N), where N is the number of cells in the grid. In the worst case, each cell will be visited once, leading to a linear time complexity relative to the number of cells.
+### 2. Time and Space Complexity Analysis
+- **Time Complexity**: O(N), where N is the number of cells in the grid (if the grid is m x n, then N = m * n). Each cell is visited at most once during the DFS exploration.
   
-- **Space Complexity:** O(N) due to the use of the `visited` set which potentially holds every cell in the grid if all cells are part of islands. Additionally, the maximum depth of the recursion stack could also go up to O(N) in the worst case.
+- **Space Complexity**: O(N) in the worst case if all cells are land ('1'). This is due to the recursion stack and the `visited` set that could potentially store every cell if the entire grid is filled with land.
 
-## 3. Efficiency of the Approach
+### 3. Why This Approach is Efficient
+The DFS approach is efficient for several reasons:
 
-This DFS approach is efficient for the following reasons:
+1. **Direct Exploration**: It directly explores all connected components (island parts) from a single starting point in an efficient manner without the need for additional data structures like a queue (which is often used in BFS).
 
-- **Exhaustive Search:** The algorithm ensures that every part of an island is explored fully, which guarantees an accurate count of islands.
-- **In-Place Travel:** By using a set to track visited cells, it avoids revisiting cells and ensures that operations are only performed on unvisited cells.
-- **Simplicity of Implementation:** The recursive DFS is relatively simple to implement and understand, allowing for elegant traversal of the grid without the need for complex data structures or algorithms.
+2. **Avoidance of Redundant Computation**: By marking visited cells, we ensure that no cell is processed more than once, which significantly reduces the number of operations compared to naive approaches that check each cell independently.
 
-Overall, this method is both effective and intuitive for solving the problem of counting islands in a grid.
-```
+3. **Simplicity**: The recursive nature of the DFS algorithm simplifies the logic of traversing connected components, making the code relatively straightforward and easier to understand.
+
+Overall, this method effectively and efficiently counts the number of islands in the given grid by leveraging DFS to explore adjacent land cells, ensuring all parts of each island are accounted for while avoiding unnecessary recomputation.
 
 Runtime: undefined
-Memory: 26308000
+Memory: 26384000
 """
 
 class Solution:
