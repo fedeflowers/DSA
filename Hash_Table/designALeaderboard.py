@@ -1,44 +1,50 @@
 """
-# LeetCode Solution Explanation for "Design A Leaderboard"
+```markdown
+## Explanation of the Solution for "Design A Leaderboard"
 
-## 1. Approach Explanation
+### 1. Approach
 
-The solution implements a simple leaderboard system where each player is identified by a unique `playerId`, and they have associated scores which can be added to or reset. The main components of this implementation are:
+The solution implements a leaderboard system using a class called `Leaderboard`. The leaderbord maintains player scores through a dictionary (`self.scores`) where the keys are player IDs and the values are their corresponding scores. The class has the following methods:
 
-- **Data Structure**: A Python dictionary `self.scores` is used to maintain the current scores of all players. The `playerId` serves as the key while the score is the value.
-
-- **Methods**:
-  - `addScore(playerId: int, score: int)`: This method adds a given score to a player's current score. If the player does not exist in the dictionary, they are initialized with the provided score. The operation is efficient and executed in constant time O(1).
+- **`__init__()`**: Initializes the leaderboard with an empty dictionary to store player scores.
   
-  - `top(K: int)`: This method computes the total score of the top `K` players. It uses the `heapq.nlargest` function to efficiently retrieve the top `K` scores from the list of all scores. The time complexity for this operation is O(N log K) due to the need to maintain a min-heap of size K.
-  
-  - `reset(playerId: int)`: This method resets a player's score to zero by removing their entry from the dictionary. If the player exists, their score is deleted in constant time O(1).
+- **`addScore(playerId: int, score: int)`**: This method updates the score of a player. If the player does not exist, it initializes their score to zero and adds the provided score. This method uses the dictionary's `get()` method to simplify the process of adding scores.
 
-Overall, the approach efficiently addresses the requirements of tracking scores, calculating top scores, and resetting scores for players.
+- **`top(K: int)`**: This method calculates the sum of the top K players' scores using a min-heap. It leverages the `heapq.nlargest()` function to efficiently retrieve the K largest scores from the dictionary values, and returns their sum.
 
-## 2. Time and Space Complexity Analysis
+- **`reset(playerId: int)`**: This method removes a player from the leaderboard, deleting their entry from the `self.scores` dictionary.
 
-- **Time Complexity**:
-  - `addScore`: O(1)
-  - `top`: O(N log K), where N is the number of players (i.e., the number of unique player IDs in the leaderboard). This is because `heapq.nlargest` requires O(N) to consider all players and O(log K) to maintain the min-heap of size K.
-  - `reset`: O(1)
+### 2. Time and Space Complexity Analysis
 
-- **Space Complexity**: O(N), where N is the total number of unique player IDs. This is due to the space used by the `self.scores` dictionary to store each player's score.
+- **`addScore(playerId: int, score: int)`**:
+  - **Time Complexity**: O(1) - inserting/updating an entry in a dictionary is on average O(1).
+  - **Space Complexity**: O(1) - we are not using additional data structures in this method.
 
-## 3. Efficiency of the Approach
+- **`top(K: int)`**:
+  - **Time Complexity**: O(N log K) - the `heapq.nlargest(K, self.scores.values())` function retrieves the K largest scores from N total scores, which involves heap operations that take O(log K) time.
+  - **Space Complexity**: O(K) - the method uses space to store the K largest scores.
 
-This approach is efficient for several reasons:
+- **`reset(playerId: int)`**:
+  - **Time Complexity**: O(1) - checking if a player exists and deleting an entry in a dictionary is O(1) on average.
+  - **Space Complexity**: O(1) - no additional space is used in this method.
 
-- **Simplicity of Operations**: The use of dictionary operations (`addScore` and `reset`) allows for quick updates and deletions without needing to traverse or sort large datasets, resulting in constant time complexity for these operations.
+Overall, the space complexity is O(N) where N is the number of unique player scores stored in the dictionary.
 
-- **Optimal Score Retrieval**: The use of a heap to retrieve the top `K` scores balances the need between having quick access to the largest scores while ensuring that updates to the leaderboard can scale with the number of players.
+### 3. Efficiency of the Approach
 
-- **Flexibility**: The structure can easily accommodate various numbers of players and scores without a significant increase in complexity or resource requirements.
+This approach is efficient for the following reasons:
 
-This combination of efficient data structure choice and algorithmic strategies ensures that the leaderboard can handle operations effectively, even as the number of players increases.
+- **Fast Score Updates**: The use of a dictionary allows for O(1) average time complexity for adding or resetting player scores, making it suitable for real-time updates.
+
+- **Efficient Top K Calculation**: Using the `heapq.nlargest()` function efficiently identifies the top K scores, which is critical for performance, especially as the number of players increases.
+
+- **Memory Usage**: The leaderboard only stores the scores of active players, optimizing memory consumption by only retaining the necessary data.
+
+In summary, this solution strikes a balance between performance and simplicity, making it a practical choice for a dynamic leaderboard system.
+```
 
 Runtime: undefined
-Memory: 19960000
+Memory: 19792000
 """
 
 class Leaderboard:
