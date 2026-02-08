@@ -1,46 +1,30 @@
 """
-## Explanation of the LeetCode Solution for "Balanced Binary Tree"
+## Explanation of the Solution for "Balanced Binary Tree"
 
-### 1. Approach Explanation
+### 1. Brief Explanation of the Approach
+The problem requires checking whether a binary tree is height-balanced, which means that for any node in the tree, the height difference between its left and right subtrees should not exceed 1.
 
-The solution defines a binary tree and checks whether it is balanced, meaning that for any node, the height of the left and right subtrees differs by at most one. The algorithm uses two helper functions: `height` and `balanced`.
+The solution uses a recursive helper function `check`, which computes the height of the tree while simultaneously checking for balance:
+- If a node is `None`, it returns a height of `0`.
+- It recursively calls itself for the left and right children of the current node.
+- If, during the recursion:
+  - The height of the left subtree is found to be `-1` (indicating an imbalance), it propagates this `-1` back up.
+  - Similarly for the right subtree.
+- After determining the heights of both subtrees, it checks the balance condition. If the height difference is greater than `1`, it returns `-1` to indicate that the tree is not balanced at that node.
+- If the node is balanced, it returns its height.
 
-- **Height Calculation**: The `height` function calculates the height of each subtree recursively. A tree is defined as balanced if:
-  - The height of the left and right subtrees differ by at most 1.
-  - Both subtrees are also balanced.
-
-- **Storage of Heights**: The heights of the subtrees rooted at each node are stored in a dictionary called `heights`, where the key is the node and the value is the height of that node.
-
-- **Balanced Check**: The `balanced` function checks whether each subtree meets the balance condition by:
-  - Ensuring that the absolute difference between the heights of its left and right child is less than or equal to 1.
-  - Recursively checking whether both the left and right subtrees are balanced.
-
-Here's the workflow:
-1. First, calculate the heights for all nodes using the `height` function.
-2. Then, verify whether the tree is balanced using the `balanced` function.
+Finally, the balance check is completed by seeing if the initial call to `check(root)` returns `-1` (indicating imbalance) or a valid height.
 
 ### 2. Time and Space Complexity Analysis
+- **Time Complexity**: The time complexity is O(N), where N is the number of nodes in the binary tree. This is because each node is visited exactly once during the height calculation.
+  
+- **Space Complexity**: The space complexity is O(H), where H is the height of the tree. This space is used by the call stack due to the recursion. In the worst case (for a skewed tree), this could be O(N), but in a balanced tree, it would be O(log N).
 
-- **Time Complexity**: \(O(N)\)
-  - Here, \(N\) is the number of nodes in the tree. Each node is visited once to calculate its height and once again to check if the tree is balanced.
-
-- **Space Complexity**: \(O(N)\)
-  - The space complexity arises from the storage of heights in a dictionary and the maximum depth of the recursion stack. In the worst case (where the tree is a skewed tree), the maximum height of the recursion will be \(O(N)\), and the height dictionary will also consume \(O(N)\).
-
-### 3. Efficiency of the Approach
-
-This approach is efficient for several reasons:
-
-- **Single Pass for Height Calculation**: By calculating the height of each subtree and immediately storing it, the solution avoids recalculating heights multiple times. This reduces unnecessary duplicate work.
-
-- **Separation of Concerns**: The two helper functions (`height` and `balanced`) clearly delineate between the tasks of computing heights and assessing balance. This modularity not only improves readability but also allows for easier debugging and enhancement.
-
-- **Direct Access via Dictionary**: The use of a dictionary to store heights allows for \(O(1)\) average-time complexity when accessing the height of a node, leading to an overall efficient balance check.
-
-Overall, the algorithm effectively uses recursion and a hash map to solve the balanced binary tree problem optimally, balancing both time and space complexities within acceptable limits.
+### 3. Why This Approach is Efficient
+This approach is efficient due to its combination of height calculation and balance checking in a single traversal of the tree, rather than requiring separate passes. By avoiding the need to store and subsequently recompute heights for left and right subtrees during a second traversal, the method minimizes redundant computations. This results in linear time complexity with respect to the number of nodes in the tree. Thus, it optimally determines both height and balance status in one go.
 
 Runtime: undefined
-Memory: 21400000
+Memory: 20520000
 """
 
 # Definition for a binary tree node.
@@ -49,27 +33,45 @@ Memory: 21400000
 #         self.val = val
 #         self.left = left
 #         self.right = right
+# class Solution:
+#     def isBalanced(self, root: Optional[TreeNode]) -> bool:
+#         heights = {None: 0}
+#         def height(root: TreeNode):
+#             if root is None:
+#                 return 0
+            
+#             left = height(root.left)
+#             right = height(root.right)
+            
+#             heights[root] = max(left, right) + 1
+#             return heights[root]
+
+#         def balanced(root):
+#             if root is None:
+#                 return True
+
+#             return (abs(heights[root.left] - heights[root.right]) <= 1 and 
+#             balanced(root.left) and 
+#             balanced(root.right))
+
+#         height(root)
+#         return balanced(root)
+        
 class Solution:
     def isBalanced(self, root: Optional[TreeNode]) -> bool:
-        heights = {None: 0}
-        def height(root: TreeNode):
-            if root is None:
+        def check(node):
+            if not node:
                 return 0
             
-            left = height(root.left)
-            right = height(root.right)
+            left = check(node.left)
+            if left == -1: return -1  # Propagate imbalance
             
-            heights[root] = max(left, right) + 1
-            return heights[root]
+            right = check(node.right)
+            if right == -1: return -1 # Propagate imbalance
+            
+            if abs(left - right) > 1:
+                return -1
+            
+            return max(left, right) + 1
 
-        def balanced(root):
-            if root is None:
-                return True
-
-            return (abs(heights[root.left] - heights[root.right]) <= 1 and 
-            balanced(root.left) and 
-            balanced(root.right))
-
-        height(root)
-        return balanced(root)
-        
+        return check(root) != -1
