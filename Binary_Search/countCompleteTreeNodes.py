@@ -1,40 +1,29 @@
 """
 ```markdown
-## Explanation of the LeetCode Solution for "Count Complete Tree Nodes"
+## Explanation of the Solution for "Count Complete Tree Nodes"
 
-### 1. Approach
-The solution is designed to count the number of nodes in a complete binary tree efficiently by leveraging the properties of such trees. 
+### 1. Brief Explanation of the Approach
+The problem "Count Complete Tree Nodes" is about counting the nodes in a complete binary tree, where every level, except possibly the last, is completely filled, and all nodes are as far left as possible. 
 
-A complete binary tree is a type of binary tree where:
-- Every level, except possibly the last, is completely filled.
-- All nodes are as left as possible in the last level.
+The solution utilizes a recursive approach and leverages the properties of complete binary trees:
 
-The function `countNodes` takes the root of the tree as input and employs a helper function `get_height` to determine the tree's height. The height is defined as the number of edges from the root to the deepest leaf node.
-
-Here’s the step-by-step breakdown:
-- If the tree is empty (i.e., `root` is `None`), it immediately returns 0.
-- It computes the height of the tree using `get_height`, which counts how far down we can go by repeatedly traversing the left child.
-- It then checks the height of the right subtree:
-  - If the height of the right subtree is `h - 1`, this means that the left subtree is a perfect binary tree with `2^(h-1)` nodes. The function counts these nodes and recursively adds the count from the right subtree.
-  - If the height of the right subtree is not `h - 1`, then the right subtree must also be a complete binary tree of height `h - 2`. In this case, it counts the nodes in the right subtree and adds the count from the left subtree, which is a perfect tree of `2^(h-2)` nodes.
+- First, it checks if the root of the tree is `None`. If so, it returns `0` because there are no nodes.
+- The `height` function computes the height of the tree by traversing only down the leftmost path (which is valid since it's a complete binary tree).
+- The solution then calculates the heights of the left and right subtrees.
+- If the heights are equal, it indicates that the left subtree is a perfect binary tree. The number of nodes in a perfect binary tree with height `h` is given by `2^h - 1`. Hence, it returns `2^l` (where `l` is the height of the left subtree) plus the count of nodes in the right subtree.
+- If the heights differ, it indicates that the right subtree is not a complete tree. It returns `2^r` (where `r` is the height of the right subtree) plus the count of nodes in the left subtree.
 
 ### 2. Time and Space Complexity Analysis
-- **Time Complexity**: The time complexity for this solution is O(log^2 N).
-  - The height retrieval function `get_height` runs in O(log N) time because it only traverses down the leftmost path of the tree.
-  - The `countNodes` function can be called recursively at most O(log N) times (the height of the tree).
-- **Space Complexity**: The space complexity is O(log N) due to the recursive call stack used by the function, where `N` is the number of nodes in the tree. 
+- **Time Complexity**: The height of the tree is computed in `O(log N)` time because a complete binary tree has a height of `log N`, where `N` is the number of nodes. Each recursive call hence operates in logarithmic depth, leading to a total time complexity of `O(log N)` for the height calculations and subsequent recursive calls. The overall time complexity is still efficient for counting nodes due to a very few additional recursive calls in relation to the height.
+
+- **Space Complexity**: The recursive call stack consumes space equal to the height of the tree leading to a space complexity of `O(log N)` in the worst-case scenario. Hence, the space complexity is `O(log N)`.
 
 ### 3. Why This Approach is Efficient
-This approach is efficient for several reasons:
-- It avoids a complete traversal of the entire tree for counting nodes. In a straightforward traversal, the time complexity would be O(N), where N is the total number of nodes. This approach leverages the properties of the complete binary tree to minimize the number of node visits.
-- It uses the tree's structure intelligently by checking the heights of subtrees, ultimately allowing it to deduce the number of nodes without explicitly counting each one.
-- It succeeds in calculating the node count with logarithmic operations, making it scalable for larger complete binary trees.
-
-By utilizing the efficient characteristics of complete binary trees, the solution achieves significant performance advantages.
+This solution is efficient because it significantly reduces the number of nodes that need to be counted by utilizing the properties of the complete binary tree. Instead of performing a traversal of all nodes, it only calculates the height of the left and right subtrees, leveraging the perfect left subtree structure or counting nodes efficiently in the remaining subtrees based on their heights. This leads to fewer recursive calls and makes the algorithm perform better than a naive traversal approach (like a full tree traversal which would yield `O(N)` time complexity).
 ```
 
 Runtime: undefined
-Memory: 24028000
+Memory: 23764000
 """
 
 # Definition for a binary tree node.
@@ -45,23 +34,21 @@ Memory: 24028000
 #         self.right = right
 class Solution:
     def countNodes(self, root: Optional[TreeNode]) -> int:
-        if not root:
-            return 0
-        
-        def get_height(node):
+        if not root: return 0
+        def height(root):
             h = 0
-            while node:
+            while root:
                 h += 1
-                node = node.left
+                root = root.left
             return h
-        
-        h = get_height(root)
-        
-        # Check if right subtree has height h-1 (meaning left subtree is a perfect tree)
-        if get_height(root.right) == h - 1:
-            # Left is perfect: 2^(h-1) nodes + recursive count on right
-            return (1 << (h - 1)) + self.countNodes(root.right)
+
+        l = height(root.left)
+        r = height(root.right)
+
+        if l == r:
+            # left is perfect
+            return (1 << l) + self.countNodes(root.right)
         else:
-            # Right is perfect (height h-2): 2^(h-2) nodes + recursive count on left
-            return (1 << (h - 2)) + self.countNodes(root.left)
+            return (1 << r) + self.countNodes(root.left)
+
         
