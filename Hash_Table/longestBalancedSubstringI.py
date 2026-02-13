@@ -1,43 +1,37 @@
 """
-```markdown
 # Explanation of LeetCode Solution for "Longest Balanced Substring I"
 
-## 1. Approach Explanation
+## 1. Brief Explanation of the Approach
 
-The solution aims to find the length of the longest balanced substring from a given string `s`. A balanced substring is defined as a substring where all characters have the same frequency.
+The problem asks to find the length of the longest balanced substring in a given string `s`. A balanced substring is defined as one where all characters occur the same number of times.
 
-The approach involves using a nested loop to examine all possible substrings of the input string `s`. For each starting index `start`, the solution counts the frequencies of characters in the substring that extends from `start` to every possible ending index `end`.
+The solution uses a nested loop structure to examine all possible substrings of the given string. The outer loop iterates over every possible starting index (`start`) of the substring, while the inner loop iterates over every possible ending index (`end`) that extends from the current starting index.
 
-- The outer loop iterates over each possible starting index `start`.
-- The inner loop iterates over all possible ending indices `end`, from `start` to the end of the string `n`.
-- A `defaultdict` is used to maintain the frequency count of characters within the current substring.
-- For each substring, it converts the frequency values into a set. A substring is deemed balanced if this set contains only one unique value (i.e., all character frequencies are the same).
-- If a balanced substring is found, the length is calculated and compared with the current maximum length (`max_length`), updating it if necessary.
-- Finally, the function returns `max_length`, which represents the length of the longest balanced substring.
+1. For each substring defined by `start` and `end`, a frequency dictionary counts how many times each character appears.
+2. The set of values from the frequency dictionary is checked to see if all characters have the same frequency, meaning the length of the set should be 1 (i.e., all characters appear a uniform number of times).
+3. If this condition is met, the length of the current substring (`end - start + 1`) is compared to `max_length` to potentially update it.
+
+Finally, the function returns the length of the longest balanced substring found.
 
 ## 2. Time and Space Complexity Analysis
 
-### Time Complexity
-The time complexity of this solution can be analyzed by considering the nested loops:
-- The outer loop runs for each character in the string, yielding `O(n)`.
-- The inner loop also runs for each character starting from `start`, leading to a worst-case situation of approximately `O(n)` iterations for each of the outer loop iterations.
+**Time Complexity:**
+- The outer loop runs `n` times (for each starting index).
+- The inner loop also can run up to `n` times in the worst case (for each ending index). 
+- Checking the frequency dictionary involves traversing through the characters in the current substring, which can be up to `n`. 
+- Therefore, the worst-case time complexity of this approach is **O(n^3)**.
 
-Thus, the overall time complexity is:
-- `O(n^2)` for the nested loops, considering that checking the frequencies and converting them into a set takes O(1) time since the alphabet size is limited.
+**Space Complexity:**
+- The space complexity is mainly determined by the frequency dictionary, which can store at most `k` unique characters (where `k` is the number of different characters in the string).
+- Hence, the space complexity is **O(k)**.
 
-### Space Complexity
-The space complexity is largely driven by the `defaultdict` used for character frequency counting:
-- In the worst case, where all characters in the substring are unique, the space complexity can reach `O(k)` where `k` is the number of unique characters encountered in the current substring, but since `k` is also bounded by the alphabet size, it becomes constant in practical scenarios (O(1)).
+## 3. Why This Approach is Efficient
 
-Therefore, the overall space complexity is:
-- `O(1)` since it does not scale with the input size in a practical sense.
+Although the time complexity is on the higher side (`O(n^3)`), the approach is straightforward and easy to understand. This brute-force method guarantees finding the longest balanced substring by examining every possible substring in the given string `s`.
 
-## 3. Efficiency of the Approach
+However, this approach is not efficient for large strings due to its cubic time complexity. For practical limits, optimizing the approach may be necessary, potentially moving to an alternative solution using a sliding window or hashing technique that avoids the full enumeration of substrings, reducing the time complexity significantly closer to linear or quadratic.
 
-The approach efficiently explores all possible substrings with a combinatorial nature within a manageable time complexity of `O(n^2)`. While this may seem inefficient for longer strings, it effectively handles cases where the string length is moderate since it systematically checks each starting point and gradually expands the substring while maintaining a count of frequencies.
-
-However, it's important to note that the method could be inefficient for particularly long strings due to quadratic time complexity. More optimal approaches (such as using two pointers or counting mechanisms) might exist for larger inputs, especially in competitive programming scenarios. Still, this method's simplicity and clarity make it a good learning example of substring handling and frequency counting.
-```
+In its current form, while the provided solution works correctly to find the balanced substring, it may not perform well for larger input sizes typical for competitive programming contests or real-world applications.
 
 Runtime: N/A
 Memory: N/A
