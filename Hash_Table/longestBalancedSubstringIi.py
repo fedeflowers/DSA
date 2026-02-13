@@ -1,126 +1,116 @@
 """
-```markdown
-# Explanation of the LeetCode Solution for "Longest Balanced Substring II"
+# Solution Explanation for "Longest Balanced Substring II"
 
-## 1. Approach Overview
+## 1. Approach Explanation
 
-The solution to the "Longest Balanced Substring II" problem employs a multi-phase strategy to find the longest balanced substring composed of the letters 'a', 'b', and 'c'. A balanced substring is defined as one where the counts of these letters are equal. The solution is divided into five main phases:
+The solution employs a three-phase strategy to find the longest balanced substring containing the characters 'a', 'b', and 'c'. 
 
-- **Phase 1**: Initializes variables and checks for empty input.
-- **Phase 2**: Finds runs of the same character, as any single character is trivially balanced.
-- **Phase 3**: Examines pairs of letters ('a' and 'b', 'a' and 'c', 'b' and 'c') within segments that do not contain the third letter. This is implemented using a helper function to manage the pair processing.
-- **Phase 4**: Uses a 2D prefix difference approach to check for balanced substrings among all three letters. It computes cumulative counts of 'a', 'b', and 'c', storing states based on the difference between their counts.
-- **Phase 5**: Returns the length of the longest balanced substring found in any of the phases.
+- **Phase 1: Single-letter Runs**
+  - The algorithm first identifies the longest contiguous segment of a single character (either 'a', 'b', or 'c'). Since any continuous run of a single letter is trivially balanced in the sense that it has equal counts (namely, something like `aaaa` can be seen as balanced since it's exclusively composed of 'a'), the length of the longest contiguous substring is initialized as `max_length`.
+
+- **Phase 2: Double-letter Balanced Substrings**
+  - The solution then defines a helper method `process_pair(x, y)` that calculates the longest substring balanced between two specific characters. The method uses a frequency difference count to find segments in which the counts of 'x' and 'y' are equal. It resets the count whenever a character that is neither 'x' nor 'y' is encountered. The difference helps to identify positions where the counts of 'x' and 'y' return to their initial state, indicating a balanced substring.
+
+- **Phase 3: Three-letter Equal-Count Substrings**
+  - Finally, it checks for substrings where the counts of all three characters 'a', 'b', and 'c' are equal using a two-dimensional difference state representation `(a-b, a-c)`. This method tracks cumulative counts of 'a', 'b', and 'c' and checks if this 2D state has been seen before. If it has, the substring between the previous and current indices has equal counts of 'a', 'b', and 'c'.
+
+The solution returns the maximum length found across all three phases.
 
 ## 2. Time and Space Complexity Analysis
 
-- **Time Complexity**: The time complexity of the solution is O(n), where n is the length of the string `s`. Each character in the string is processed a constant number of times across different phases (either during the direct iteration or while processing segments).
-  
-- **Space Complexity**: The space complexity is O(n) in the worst case due to the storage of state mappings in a dictionary for phase 4. However, the space requirement is typically close to O(1) for the other processing steps, which mainly use fixed-size variables.
+- **Time Complexity**: O(n)
+  - The algorithm iterates over the string a constant number of times (three main passes: one for single-letter runs, one for each of the three pairs in double-letter balanced substrings, and one for the three-letter case). Each pass generally handles each character only a limited number of times across the respective segments, yielding an overall complexity linear with respect to the length of the string `n`.
 
-## 3. Efficiency of the Approach
+- **Space Complexity**: O(1) 
+  - The space used is for a fixed number of variables and mappings (e.g., dictionary for indices and counts), independent of the input size. Thus, the space usage remains constant regardless of the input's length.
 
-This approach is efficient for multiple reasons:
+## 3. Why This Approach is Efficient
 
-- **Single Pass for Each Phase**: The use of linear scans eliminates the need for nested loops or excessive recomputation, optimizing the evaluation of balanced substrings.
-  
-- **Use of Maps for State Tracking**: Leveraging hash maps (dictionaries) allows for quick lookups of previously seen states and differences. This significantly enhances the ability to find matching segments without rescanning the string.
+This approach is efficient for several reasons:
 
-- **Covering All Scenarios**: By separately handling single-letter runs, pairs of letters, and all three characters, the algorithm ensures that all forms of balanced substrings are considered, providing a comprehensive solution.
+- **Single Pass Scanning**: Each character is processed in a single traversal for determining runs and balanced substrings, minimizing additional overhead and avoiding nested loops.
 
-Overall, the combination of these techniques ensures that the solution is not only correct but also performant, making it suitable for the constraints typically associated with LeetCode problems.
-```
+- **Use of Prefix Counts**: By using cumulative counts and differences, the solution effectively reduces the complexity of finding balanced segments, leveraging hash maps for quick look-up and insertion.
+
+- **Direct Handling of All Cases**: The algorithm efficiently handles single, double, and triple character cases within the same framework, providing maximum flexibility without needing extra data structure overhead.
+
+- **Avoidance of Redundancy**: The algorithm ensures that once a character is not part of the current pair, it resets and doesn't count towards future substrings. This method prevents unnecessary calculations and optimizes performance.
+
+Overall, this structured approach combines clarity with optimal performance, effectively addressing the problem requirements while ensuring scalability.
 
 Runtime: undefined
-Memory: 45484000
+Memory: 45200000
 """
 
 class Solution:
     def longestBalanced(self, s: str) -> int:
-        # --- Problem: Longest Balanced Substring (Optimized) ---
-    # --- Phase 1: Define the optimized function combining three complementary passes ---
-        # Handle empty input defensively even though constraints give length >= 1
-        if not s:  # Check if the input string is empty, because no substring exists then
-            return 0  # Return 0 for empty input, because there is nothing to evaluate
+        # --- Function: Longest Balanced Substring (Optimized) ---
+        # Handle edge case: empty string -> no substrings, so return 0 directly
+        if not s:  # Check if the input string is empty
+            return 0  # Return 0 because there cannot be any balanced substring in an empty string
 
-        # Initialize base variables
-        n = len(s)  # Cache the length of the string, because we will loop over it multiple times
-        max_length = 0  # Track the overall best balanced substring length, because we combine multiple strategies
+        # Cache length and a mapping from character to index to simplify counting logic
+        n = len(s)  # Store length to avoid repeated len() calls and to guide loops
+        index_of = {'a': 0, 'b': 1, 'c': 2}  # Fixed mapping for clarity and O(1) count updates
 
-        # --- Phase 2: Single-letter runs (any run of the same character is balanced) ---
-        current_run = 1  # Start with a run length of 1 at the first character, because a single char is a balanced substring
-        max_length = 1  # At least one character is always a balanced substring, because one distinct character trivially satisfies equality
-        for i in range(1, n):  # Iterate from the second character onward, because we compare with the previous character
-            if s[i] == s[i - 1]:  # If the current character matches the previous, because that extends the run
-                current_run += 1  # Increase the current run length, because the same character continues
-            else:  # Otherwise, the run is broken, because the character changed
-                current_run = 1  # Reset the run length to 1 starting at this new character, because a new run begins
-            if current_run > max_length:  # If this run exceeds the best length so far, because it may be the answer
-                max_length = current_run  # Update the best length, because we found a longer balanced run
+        # Initialize the answer; we'll take the maximum across different strategies
+        max_length = 0  # Start with 0 and update as we find longer balanced substrings
 
-        # --- Phase 3: Two-letter equal-count substrings within segments without the third letter ---
-        def process_two_letters(first_char: str, second_char: str, breaker_char: str) -> None:  # Define a helper to process one pair, because we need to reuse logic for all pairs
-            nonlocal max_length  # Allow updating the outer max_length, because we aggregate results here
-            index = 0  # Start scanning from the beginning of the string, because we process all segments
-            while index < n:  # Continue until we reach the end, because there may be multiple segments
-                while index < n and s[index] == breaker_char:  # Skip over breaker characters, because segments must not contain the third letter
-                    index += 1  # Advance the index past breakers, because they delimit segments
-                if index >= n:  # If we reached the end after skipping, because no segment remains
-                    break  # Exit the loop, because there is nothing left to process
-                segment_start = index  # Mark the start of the segment with no breakers, because we will process this region
+        # --- Phase 1: Single-letter runs are trivially balanced ---
+        current_run_char = None  # Track the character in the current run to detect changes
+        current_run_length = 0  # Track the length of the current contiguous run
+        for ch in s:  # Iterate over each character to measure runs
+            if ch == current_run_char:  # If the character matches the current run's character
+                current_run_length += 1  # Extend the run because the same character continues
+            else:  # The character changed, so we start a new run
+                current_run_char = ch  # Update the run character to the new one
+                current_run_length = 1  # Reset the run length to 1 for the new run
+            if current_run_length > max_length:  # Check if this run is the longest balanced substring so far
+                max_length = current_run_length  # Update the global maximum because single-letter runs are balanced
 
-                # Initialize prefix-difference map for this segment
-                diff_to_first_index = {0: segment_start - 1}  # Map difference 0 to the virtual index before segment, because equal counts can start at segment start
-                diff = 0  # Running difference (count_first_char - count_second_char), because equal counts correspond to diff repeating
+        # --- Phase 2: Exactly-two-letter balanced substrings via per-pair scans ---
+        def process_pair(x: str, y: str) -> int:
+            """Return the longest substring length containing only x and y with equal counts."""  # Explain purpose for clarity
+            diff = 0  # Initialize the prefix difference count(x) - count(y) to zero before scanning
+            first_occurrence = {0: -1}  # Map each seen diff to its earliest index; start with diff=0 at virtual index -1
+            best = 0  # Track the best length found within this pair across the whole string
+            for i, ch in enumerate(s):  # Scan the entire string once
+                if ch != x and ch != y:  # If we encounter the third letter, this breaks the two-letter condition
+                    diff = 0  # Reset diff because substrings cannot cross this boundary (would include a third letter)
+                    first_occurrence = {0: i}  # Reset the map; treat boundary as index i so next segment starts at i+1
+                    continue  # Skip updates for this index since ch is not part of the {x,y} pair
+                # Update diff based on whether we saw x or y in this position
+                if ch == x:  # If current char is the first of the pair
+                    diff += 1  # Increase diff to reflect one more x than y in the prefix up to i
+                else:  # Otherwise the char must be y (since non-pair case already continued)
+                    diff -= 1  # Decrease diff to reflect one more y than x in the prefix up to i
+                # If we've seen this diff before within the current segment, we found a zero-sum subarray (equal counts)
+                if diff in first_occurrence:  # Check for previous occurrence of the same diff value
+                    length = i - first_occurrence[diff]  # Compute the substring length between the two occurrences
+                    if length > best:  # If this substring is longer than the best seen for this pair
+                        best = length  # Update the best because we found a longer balanced two-letter substring
+                else:  # First time we see this diff in the current segment
+                    first_occurrence[diff] = i  # Record the earliest index for this diff to maximize future lengths
+            return best  # Return the best length for this pair across all segments
 
-                # Scan the current segment until the next breaker
-                while index < n and s[index] != breaker_char:  # Stay within the segment, because breaker marks the end
-                    if s[index] == first_char:  # If we see the first tracked character, because it changes the difference
-                        diff += 1  # Increment difference for first_char, because it adds +1
-                    elif s[index] == second_char:  # If we see the second tracked character, because it also changes the difference
-                        diff -= 1  # Decrement difference for second_char, because it adds -1
-                    # Note: no else clause is needed because only three characters exist and breaker_char is excluded inside this segment
+        # Compute best equal-count substrings for each pair and update the global maximum accordingly
+        max_length = max(max_length, process_pair('a', 'b'))  # Update with the best balanced substring using only 'a' and 'b'
+        max_length = max(max_length, process_pair('a', 'c'))  # Update with the best balanced substring using only 'a' and 'c'
+        max_length = max(max_length, process_pair('b', 'c'))  # Update with the best balanced substring using only 'b' and 'c'
 
-                    if diff in diff_to_first_index:  # If we have seen this difference before, because equal counts exist between those indices
-                        candidate_length = index - diff_to_first_index[diff]  # Compute length from first occurrence to current, because that segment balances the two letters
-                        if candidate_length > max_length:  # If this candidate is better than current best, because we seek maximum
-                            max_length = candidate_length  # Update the best length, because we found a longer balanced substring
-                    else:  # Otherwise, this is the first time we see this difference, because no mapping exists yet
-                        diff_to_first_index[diff] = index  # Record the earliest index for this difference, because it helps maximize lengths for future repeats
+        # --- Phase 3: All-three-letter equal-count substrings via 2D prefix-difference state ---
+        counts = [0, 0, 0]  # Initialize prefix counts for 'a', 'b', and 'c' to zero
+        state_to_first_index = {(0, 0): -1}  # Map 2D state (a-b, a-c) to earliest index; start with origin at -1
+        for i, ch in enumerate(s):  # Walk through the string once
+            counts[index_of[ch]] += 1  # Update the appropriate count to include s[i] in the prefix
+            state = (counts[0] - counts[1], counts[0] - counts[2])  # Compute the 2D state capturing pairwise diffs to 'a'
+            if state in state_to_first_index:  # If we've seen this state before, the substring between has equal deltas
+                length = i - state_to_first_index[state]  # Compute substring length achieving equal counts of a, b, and c
+                if length > max_length:  # Compare against the global maximum
+                    max_length = length  # Update the answer because we found a longer balanced 3-letter substring
+            else:  # First time this state appears
+                state_to_first_index[state] = i  # Record earliest index to maximize future substring lengths for this state
 
-                    index += 1  # Move to the next character inside the segment, because we continue scanning
-
-                # After finishing this segment, the next iteration will skip the breaker and look for the next segment
-                # No additional action is needed here, because variables are reset at the top for each new segment
-
-        # Process all three pairings by excluding the third character each time
-        process_two_letters('a', 'b', 'c')  # Balance between 'a' and 'b' when 'c' is absent, because 2-letter balance requires third letter absent
-        process_two_letters('a', 'c', 'b')  # Balance between 'a' and 'c' when 'b' is absent, because 2-letter balance requires third letter absent
-        process_two_letters('b', 'c', 'a')  # Balance between 'b' and 'c' when 'a' is absent, because 2-letter balance requires third letter absent
-
-        # --- Phase 4: Three-letter equal-count substrings using 2D prefix differences ---
-        count_a = 0  # Initialize count for 'a', because we need cumulative counts to form states
-        count_b = 0  # Initialize count for 'b', because we need cumulative counts to form states
-        count_c = 0  # Initialize count for 'c', because we need cumulative counts to form states
-        state_to_first_index = {(0, 0): -1}  # Map the state (a-b, a-c) to earliest index; start with (0,0) at -1, because equal counts from beginning are allowed
-
-        for i, ch in enumerate(s):  # Iterate through each character with index, because we update prefix counts and check states
-            if ch == 'a':  # If current char is 'a', because we must increase its count
-                count_a += 1  # Increment 'a' count, because we've seen one more 'a'
-            elif ch == 'b':  # If current char is 'b', because we must increase its count
-                count_b += 1  # Increment 'b' count, because we've seen one more 'b'
-            else:  # Otherwise the character is 'c', because the string contains only 'a', 'b', and 'c'
-                count_c += 1  # Increment 'c' count, because we've seen one more 'c'
-
-            state = (count_a - count_b, count_a - count_c)  # Compute the 2D difference state, because identical states imply a=b=c on the substring between them
-            if state in state_to_first_index:  # If we have seen this state before, because repeating state indicates equal increments of a,b,c in between
-                candidate_length = i - state_to_first_index[state]  # Compute the substring length between the two identical states, because counts equalize there
-                if candidate_length > max_length:  # If this candidate improves the best length, because we want the maximum
-                    max_length = candidate_length  # Update the best length found so far, because we found a longer balanced substring with all three letters
-            else:  # If the state has not been seen, because this is the earliest occurrence
-                state_to_first_index[state] = i  # Record the earliest index for this state, because it helps form longer substrings when repeated later
-
-        # --- Phase 5: Return the best result found across all phases ---
-        return max_length  # Return the maximum length of any balanced substring found, because all passes have completed
-
+        # Return the longest balanced substring length found across all strategies
+        return max_length  # This is the final answer combining single, double, and triple-letter cases
 
