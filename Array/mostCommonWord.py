@@ -1,70 +1,78 @@
 """
 ```markdown
-## Explanation of the Approach
+## Explanation of the LeetCode Solution for "Most Common Word"
 
-The solution to the "Most Common Word" problem employs the following steps:
+### 1. Approach Explanation
+The solution to the problem "Most Common Word" consists of the following steps:
 
-1. **Initialization**: The list of banned words is converted into a set for O(1) average time complexity during lookups.
-   
-2. **Normalization**: The input paragraph is converted to lower case to ensure uniformity, allowing case-insensitive comparisons. Special punctuation marks are then replaced with spaces to isolate words.
+- **Normalization**: The input paragraph is converted to lowercase to ensure case-insensitivity. Additionally, all punctuation marks (`!?',;.`) are replaced with spaces, helping to isolate words more effectively.
 
-3. **Word Splitting**: The normalized paragraph is split into individual words based on spaces.
+- **Splitting Words**: The normalized paragraph is then split into individual words based on whitespace.
 
-4. **Counting Words**: A `Counter` from the `collections` module is used to count the occurrences of each word in the list. This creates a dictionary-like object where the words are keys, and their counts are the corresponding values.
+- **Banned Words Set**: The list of banned words is converted into a set for O(1) average-time complexity lookups.
 
-5. **Finding the Most Common Word**: The program iterates through the counted words, skipping any words that are in the banned set. For each remaining word, it checks if its count is greater than the maximum count recorded so far. If it is, the current word is stored as the most frequent word.
+- **Frequency Map Construction**: A frequency dictionary (`frequency_map`) is built, where each word's occurrence count is recorded (but only for words that are not in the banned set).
 
-6. **Return the Result**: Finally, the most common non-banned word is returned.
+- **Finding Most Common Word**: The solution finally iterates over the frequency map to find the word with the highest count and returns it.
 
-## Time and Space Complexity Analysis
+### 2. Time and Space Complexity Analysis
 
 - **Time Complexity**: 
-  - Normalizing the paragraph takes O(P), where P is the length of the paragraph.
-  - Splitting the paragraph into words takes O(W), where W is the number of words.
-  - Counting occurrences with `Counter` is O(W).
-  - Iterating through the counted words is O(U), where U is the number of unique words. 
-  - Overall, the time complexity can be approximated as O(P + W) since P will generally be larger than W.
+    - Normalizing the paragraph takes O(P), where P is the length of the paragraph, as we iterate through each character to handle case conversion and punctuation removal.
+    - Splitting the string into words is O(P) since it involves reading the entire string.
+    - Building the frequency map requires O(W) time, where W is the number of words after splitting.
+    - Finding the most common word is O(W) since we iterate through the frequency map. 
+
+   Overall, the time complexity is O(P + W), where P is the length of the paragraph, and W represents the number of words (which is generally less than or equal to P).
 
 - **Space Complexity**: 
-  - The space used by the `Counter` will depend on the number of unique words U, giving a space complexity of O(U).
-  - The set of banned words uses O(B), where B is the number of banned words.
-  - Therefore, the total space complexity is O(U + B).
+    - The space complexity is influenced primarily by the storage of the frequency map and the banned words set. The space used for storing words can be O(W) for the frequency map and O(B) for the banned set, where B is the number of banned words.
+  
+  Therefore, the overall space complexity can be stated as O(W + B).
 
-## Why This Approach is Efficient
+### 3. Efficiency of the Approach
+This approach is efficient because:
+- **Linear Passes**: The solution processes the input with a few linear passes, ensuring that time complexity remains manageable even for large inputs.
+- **Constant Time Lookups**: Using a set data structure for banned words allows for constant time complexity during lookups, making the algorithm faster as it avoids nested loops.
+- **Simplicity and Clarity**: The steps are straightforward and easy to follow, making it maintainable and adaptable for changes.
 
-This approach is efficient due to the following reasons:
-
-1. **Use of Sets for Banned Words**: Converting the list of banned words to a set allows for average O(1) time complexity lookups, making the filtering process quick and efficient.
-
-2. **Normalization and Word Counting**: By utilizing built-in Python functionalities (`replace`, `split`, and `Counter`), the code is concise and leverages optimized implementations for string manipulation and counting, reducing the need for complex loops.
-
-3. **Single Pass for Most Common Word**: The final search for the most common word only requires a single pass through the counted words, ensuring that the overall operation remains linear in relation to the number of words.
-
-This combination of efficient data structures and optimized operations results in a solution that effectively handles the requirements of the problem within reasonable time and space limits.
+This efficient handling of normalization, counting, and retrieval ensures that the solution runs within acceptable limits for the constraints typically given in LeetCode problems.
 ```
 
 Runtime: undefined
-Memory: 19608000
+Memory: 19488000
 """
 
 class Solution:
     def mostCommonWord(self, paragraph: str, banned: List[str]) -> str:
-        banned = set(banned)
+        # --- Phase 1: Normalize the paragraph ---
+        # Convert the paragraph to lowercase for case-insensitive comparison
+        normalized_paragraph = paragraph.lower()  # Ensures all words are lowercase
+        # Replace each punctuation character with a space
+        for punct in "!?',;.":
+            normalized_paragraph = normalized_paragraph.replace(punct, ' ')  # Removes punctuation for clean splitting
         
-        normalized_paragraph = paragraph.lower()
-        for punct in "!?',;.-#":
-            normalized_paragraph = normalized_paragraph.replace(punct, " ")
-            
-        words = normalized_paragraph.split()
+        # --- Phase 2: Split into words ---
+        words = normalized_paragraph.split()  # Splits the paragraph into words by whitespace
         
-        counted_words = Counter(words)
-        max_count = 0
-        most_freq_w = ""
-        for w, v in counted_words.items():
-            if w in banned:
-                continue
-            if v > max_count:
-                max_count = v
-                most_freq_w = w
+        # --- Phase 3: Prepare banned set for O(1) lookup ---
+        banned_set = set(banned)  # Allows fast checking if a word is banned
         
-        return most_freq_w
+        # --- Phase 4: Build frequency map for non-banned words ---
+        frequency_map = {}  # Dictionary to store word frequencies
+        for word in words:  # For each word in the list
+            if word not in banned_set:  # Only count if not banned
+                if word in frequency_map:
+                    frequency_map[word] += 1  # Increment count if already present
+                else:
+                    frequency_map[word] = 1  # Initialize count if first occurrence
+        
+        # --- Phase 5: Find the word with the highest frequency ---
+        max_count = 0  # Track the highest frequency
+        most_common = ''  # Track the corresponding word
+        for word, count in frequency_map.items():  # For each word and its count
+            if count > max_count:  # If this word's count is higher
+                max_count = count  # Update the highest frequency
+                most_common = word  # Update the most common word
+        return most_common  # Return the most frequent non-banned word
+
