@@ -1,48 +1,50 @@
 """
-# Explanation of LeetCode Solution for "Valid Word Square"
+```markdown
+## Explanation of the Solution for "Valid Word Square"
 
-## 1. Brief Explanation of the Approach
-The problem "Valid Word Square" requires you to determine whether a list of words can be arranged to form a valid word square. A valid word square is an `N x N` array of characters such that the `i-th` row is the same as the `i-th` column for all valid indices.
+### 1. Approach Explanation
+The problem "Valid Word Square" requires us to verify if a given list of words forms a valid word square. A word square is an arrangement of words in a square format where the i-th row is identical to the i-th column. 
 
-The solution follows these steps:
-- First, it calculates the length `n` of the input list `words`.
-- Then, it iterates through each row (using index `i`).
-- For each character in the current row (using index `j`), it performs three checks:
-  1. **Row Length Check**: It ensures that the current column index `j` does not exceed the number of words `n`. If it does, it returns `False`.
-  2. **Column Length Check**: It checks whether the row corresponding to the current column `j` has enough characters (i.e., `i` should be less than the length of `words[j]`). If not, it returns `False`.
-  3. **Character Match Check**: It verifies that the character in the current row (`words[i][j]`) is the same as the character in the corresponding column (`words[j][i]`). If they differ, it returns `False`.
-- If all checks are passed, then the function returns `True`, indicating the input forms a valid word square.
+In this solution, we:
+- Loop through each word in the list using its index `i`.
+- Construct the i-th column by taking the i-th character from each word (row).
+- Check if the constructed column matches the corresponding row (i.e., `words[i]`).
+- If any row does not match its corresponding column, we return `False`.
+- If all rows match their corresponding columns, we return `True` at the end.
 
-## 2. Time and Space Complexity Analysis
-- **Time Complexity**: 
-  - The algorithm runs in `O(n^2)` time complexity, where `n` is the number of words. This is because, in the worst case, we check each character in an `N x N` word square (which has size `n`).
-  
-- **Space Complexity**: 
-  - The space complexity is `O(1)` since the algorithm uses only a fixed number of additional variables for counts and indices, and does not require any extra data structures that scale with input size.
+### 2. Time and Space Complexity Analysis
 
-## 3. Why This Approach is Efficient
-This approach is efficient for the following reasons:
-- It avoids unnecessary checks and only iterates through the matrix of characters that need to be validated.
-- By performing inline checks, the function processes the data in a single pass through the word square, thus minimizing the number of operations.
-- The checks are straightforward and require simple index comparisons and character comparisons, ensuring a quick response for small to moderate sizes of input.
+**Time Complexity:**
+- The outer loop iterates through each word, which is `O(n)`, where `n` is the number of words in the list.
+- The inner operation involves constructing a column by iterating through all the words and potentially concatenating characters, which in the worst case is `O(n)` if all words have the same length.
+- Therefore, the overall time complexity is `O(n^2)`.
 
-Overall, the solution is both time-efficient and straightforward, making it suitable for the constraints typically seen in competitive programming problems like these.
+**Space Complexity:**
+- The construction of the column requires space proportional to the length of the column, which is `O(n)` in the worst case.
+- However, because we are using only a few additional variables (like the column string) that do not scale with input size, the auxiliary space complexity remains `O(n)`.
+- Thus, the overall space complexity can be considered `O(n)` due to the storage of the temporary column string.
+
+### 3. Efficiency Explanation
+This approach is efficient because:
+- It directly constructs each column using a single list comprehension, which is both concise and readable.
+- By checking the rows against their corresponding columns one at a time, it stops execution as soon as a mismatch is found, preventing unnecessary computations.
+- The solution leverages Python's efficient string and list handling, allowing for straightforward manipulation of characters to create columns.
+
+In summary, the combination of a straightforward representation of the word square logic, efficient checking of row-column correspondence, and early termination upon finding mismatches makes this approach both simple and efficient.
+```
+
 
 Runtime: undefined
-Memory: 19864000
+Memory: 19920000
 """
 
 class Solution:
     def validWordSquare(self, words: List[str]) -> bool:
-        n = len(words)
-        for i in range(n):
-            row = words[i]
-            for j in range(len(row)):               
-                if j >= n:
-                    return False
-                if i >= len(words[j]):
-                    return False
-                if row[j] != words[j][i]:
-                    return False
-
+        for i in range(len(words)):
+            # Create the i-th column by taking the i-th character from every word
+            # We use a list comprehension with a length check to avoid index errors
+            column = "".join([w[i] for w in words if i < len(w)])
+            
+            if words[i] != column:
+                return False
         return True
