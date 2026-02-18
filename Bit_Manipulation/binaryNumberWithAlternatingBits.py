@@ -1,45 +1,41 @@
 """
+```markdown
 # Explanation of the LeetCode Solution for "Binary Number with Alternating Bits"
 
-## 1. Brief Explanation of the Approach
+## 1. A Brief Explanation of the Approach
+The solution provided determines whether a binary number has alternating bits (i.e., the bits alternate between 0 and 1) by using a combination of bit manipulation techniques. 
 
-The problem "Binary Number with Alternating Bits" requires us to determine if the binary representation of a given number \( n \) has alternating bits (i.e., no two consecutive bits are the same). The code provided defines a method `hasAlternatingBits` that takes an integer \( n \) as input and performs the following steps:
+### Steps:
+1. **XOR Operation**: The expression `n ^ (n >> 1)` computes the XOR of `n` with its right-shifted version. If `n` has alternating bits, the XOR result will produce a binary number consisting entirely of 1s. This is because each bit in `n` differs from the bit next to it in the right-shifted version.
+   - For example, if `n = 10` (binary `1010`), `n >> 1` will yield `5` (binary `0101`), and `10 ^ 5` results in `15` (binary `1111`).
 
-- It enters a loop that continues until \( n \) becomes zero.
-- Inside the loop, it retrieves the last bit of \( n \) using the bitwise AND operation (`last_bit = n & 1`).
-- It then shifts \( n \) one bit to the right (`n = n >> 1`), effectively removing the last bit.
-- It checks the new last bit of \( n \) (`n & 1`) to see if it is the same as the previous last bit stored in `last_bit`.
-- If the two bits are the same, the function returns `False`, as this indicates the bits are not alternating.
-- If the loop completes without finding two consecutive bits that are the same, the function returns `True`, confirming that the bits alternate correctly.
+2. **Checking for Power of Two**: After obtaining the value from the XOR operation, we add 1 to this result. For a number that consists of all 1s (like `111...111`), adding 1 will yield a power of two (such as `1000...000`). A property of powers of two is that they have only a single bit set to 1 when expressed in binary.
+
+3. **Final Check**: The final step checks whether `(x & (x + 1)) == 0`, where \( x \) is the result of the XOR operation. If this condition holds true, it indicates that \( x \) was a solid block of 1s, confirming that the original number `n` indeed had alternating bits.
 
 ## 2. Time and Space Complexity Analysis
-
-- **Time Complexity:** \( O(k) \), where \( k \) is the number of bits in the binary representation of the number \( n \). In the worst case, this loop iterates through all bits of \( n \) to check for alternation.
-  
-- **Space Complexity:** \( O(1) \), since the function uses a fixed amount of space for the variables (`last_bit`) and does not rely on any data structures that grow with input size.
+- **Time Complexity**: The time complexity of this approach is \( O(1) \). It performs a constant number of operations regardless of the size of the input number `n`.
+- **Space Complexity**: The space complexity is also \( O(1) \) since the solution uses only a fixed amount of space for variable storage and does not depend on the size of `n`.
 
 ## 3. Why This Approach is Efficient
-
-This approach is efficient for several reasons:
-
-- **Bitwise Operations:** The use of bitwise operations allows for constant time checks and manipulations of the individual bits without requiring any additional space (like arrays or strings to represent the binary form). This minimizes overhead and leads to efficient performance.
-  
-- **Early Exit:** The function can terminate early upon finding a pair of consecutive identical bits, thus potentially reducing the number of iterations in cases where the input number has many bits but does not alternate early on.
-
-- **Minimal Resource Usage:** The space complexity remains constant, which is advantageous when dealing with large numbers. This approach does not depend on additional memory allocation proportional to the input size, which can be critical in environments with strict memory limits.
-
-Overall, this code efficiently checks for alternating bits while ensuring optimal time and space usage.
+The efficiency of this approach lies in the simplicity of bit manipulation. Using XOR and bitwise operations allows for quick validation of the alternating bit condition without the need for complex iterations or additional data structures. This leads to minimal processing time and constant space usage, making it ideal for problems involving binary representations. The method leverages mathematical properties of binary numbers, leading to a concise and effective solution.
+```
 
 Runtime: undefined
-Memory: 19408000
+Memory: 19384000
 """
+
+# class Solution:
+#     def hasAlternatingBits(self, n: int) -> bool:
+#         while n > 0:
+#             last_bit = n & 1
+#             n = n >> 1
+#             if n & 1 == last_bit:
+#                 return False
+
+#         return True
+        # 1. XOR ($n \oplus (n \gg 1)$)If bits alternate ($10101...$), then $(n \gg 1)$ shifts everything by one position ($01010...$).Performing XOR compares each bit with its neighbor.Because every bit is different from its neighbor, XOR results in a sequence of all 1s.Example: If $n = 1010_2 (10)$, then $n \oplus (n \gg 1)$ is $1010 \oplus 0101 = 1111_2$.2. The Power-of-Two CheckLet $x = n \oplus (n \gg 1)$. If $n$ was alternating, $x$ is now a binary number like $111...1$.Adding 1 to $x$ ($111 + 1$) results in a power of two ($1000$).A property of any power of two ($y$) is that $y \ \& \ (y-1) == 0$.In this formula, $y = x + 1$ and $y - 1 = x$.Therefore, $(x \ \& \ (x + 1)) == 0$ returns True only if $x$ was a solid block of 1s.
 
 class Solution:
     def hasAlternatingBits(self, n: int) -> bool:
-        while n > 0:
-            last_bit = n & 1
-            n = n >> 1
-            if n & 1 == last_bit:
-                return False
-
-        return True
+        return ((n ^ (n >> 1)) & ((n ^ (n >> 1)) + 1)) == 0
