@@ -1,60 +1,59 @@
 """
-## Explanation of the LeetCode Solution for "Valid Word Abbreviation"
+```markdown
+## Explanation of the Solution for "Valid Word Abbreviation"
 
 ### 1. Approach Explanation
-The solution uses two pointers, `i` for the `word` and `j` for the `abbr` (abbreviation) to traverse both strings simultaneously. The algorithm works as follows:
 
-- Initialize two pointers `i` and `j` to 0 and get the lengths of `word` and `abbr`.
-- Use a `while` loop to ensure we traverse both strings until either pointer reaches the end.
-- Inside the loop:
-  - If the character at `abbr[j]` is a digit, we extract the full number to determine how many characters should be skipped in `word`. 
-    - If a leading zero is encountered, the abbreviation is invalid.
-    - The number is constructed by multiplying the current value by 10 and adding the integer value of the current digit, incrementing `j` until we find a non-digit character.
-  - If the character at `abbr[j]` is not a digit, then match it with the character at `word[i]`. If they don’t match, return `False`.
-- After the loop, check if both pointers, `i` and `j`, have reached the ends of their respective strings. This confirms that the entire `word` matches the `abbr`. The function returns `True` if both pointers are at the end, otherwise, it returns `False`.
+The problem requires checking if a given abbreviation (abbr) can represent a specific word (word) according to certain rules. The abbreviation can contain letters corresponding to characters in the word and digits representing consecutive characters skipped. 
+
+**Step-by-Step Breakdown:**
+
+- Two pointers `i` and `j` are initialized to zero, which will traverse the `abbr` and `word` respectively.
+- A while loop iterates until either the abbreviation (`abbr`) or the word (`word`) has been fully processed (i.e., until either pointer reaches the end of the respective string).
+  - If the current character in `abbr` (`abbr[i]`) is a digit, it indicates the number of characters to skip in the `word`. If the digit is `0`, the abbreviation is invalid (since we can't skip 0 characters).
+    - A loop accumulates the full number from the digits (e.g., "12" will be treated as 12, not as separate digits).
+    - The pointer `j` is then advanced by that accumulated number.
+  - If `abbr[i]` is a letter, it must match the current character in `word` (`word[j]`). If it doesn't match, the abbreviation is deemed invalid.
+    - Both pointers are incremented by one.
+- After exiting the loop, the function checks if both pointers have reached the end of their respective strings. If they have, it means the abbreviation is valid, and the function returns `True`. Otherwise, it returns `False`.
 
 ### 2. Time and Space Complexity Analysis
-- **Time Complexity**: O(m + n), where `m` is the length of `word` and `n` is the length of `abbr`. In the worst case, we traverse both strings entirely once.
-- **Space Complexity**: O(1). The solution uses a constant amount of additional space (just a few variables) regardless of the input sizes.
+
+- **Time Complexity:** O(N + M), where N is the length of `abbr` and M is the length of `word`. Each character in both strings is processed at most once, leading to a linear time complexity in relation to the combined lengths of the two strings.
+  
+- **Space Complexity:** O(1). The solution uses a constant amount of extra space, with only a few integer variables to keep track of the pointers, resulting in a space complexity independent of the input size.
 
 ### 3. Efficiency of the Approach
-This approach is efficient for several reasons:
-- **Single Pass**: It only requires a single pass through both strings, making it linear in terms of time complexity.
-- **No Extra Structures**: It doesn’t require any additional data structures, which contributes to its constant space complexity.
-- **Direct Mapping of Characters**: The solution effectively maps the digits to character skips, making it intuitive and straightforward to check if a string abbreviation is valid.
-- **Validation of Leading Zeros**: It includes an early return for invalid cases (leading zero), ensuring we can terminate checks quickly in such scenarios without unnecessary processing.
 
-Overall, the solution is well-optimized for the problem at hand and effectively checks the validity of the word abbreviation.
+This approach is efficient due to:
+
+- **Single Pass:** The use of two pointers allows the solution to traverse the strings in a single pass without the need for additional data structures, making it optimal for time complexity.
+- **Direct Character Matching:** Instead of generating all possible interpretations of the abbreviation, the approach directly compares characters, avoiding unnecessary computations or checks.
+- **Handling Digits:** The approach effectively handles multiple digits and ensures proper parsing of numbers (like "12"), which is a common edge case in abbreviation problems.
+  
+Overall, its linear time complexity and constant space consumption make this solution suitable for situations with larger strings where efficiency is critical.
+```
 
 Runtime: undefined
-Memory: 17968000
+Memory: 19568000
 """
 
 class Solution:
     def validWordAbbreviation(self, word: str, abbr: str) -> bool:
-        i, j = 0, 0
-        m, n = len(word), len(abbr)
-
-        while i < m and j < n:
-            if abbr[j].isdigit():
-                # Leading zeros are invalid
-                if abbr[j] == '0': 
+        i = 0
+        j = 0
+        while i < len(abbr) and j < len(word):
+            if abbr[i].isdigit():
+                if abbr[i] == '0':
                     return False
-                
-                # Parse the full number
-                val = 0
-                while j < n and abbr[j].isdigit():
-                    val = val * 10 + int(abbr[j])
-                    j += 1
-                
-                # Skip characters in word
-                i += val
+                num = 0
+                while i < len(abbr) and abbr[i].isdigit():
+                    num = num * 10 + int(abbr[i])
+                    i += 1
+                j += num
             else:
-                # Match characters
-                if word[i] != abbr[j]:
+                if abbr[i] != word[j]:
                     return False
                 i += 1
                 j += 1
-        
-        # Both pointers must reach the end
-        return i == m and j == n
+        return i == len(abbr) and j == len(word)
