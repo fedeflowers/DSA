@@ -1,34 +1,38 @@
 """
-# Explanation of the LeetCode Solution for "Generate Parentheses"
+## Explanation of the LeetCode Solution for "Generate Parentheses"
 
-## 1. Approach Explanation
-The solution to the "Generate Parentheses" problem uses a recursive backtracking technique to generate all combinations of well-formed parentheses.
+### 1. Approach Explanation
 
-- **Function `generateParenthesis`**: This is the main function that initializes an empty list `res` to store the valid combinations and calls the helper function `backtrack` with an empty path and counts for opened and closed parentheses.
+The problem of generating valid parentheses combinations involves using a backtracking approach. The goal is to construct all combinations of parentheses pairs by placing open `(` and closed `)` brackets while ensuring that the combination remains valid (i.e., at no point should the number of closed parentheses exceed the number of open parentheses).
 
-- **Function `backtrack`**: This function is responsible for building the combinations recursively:
-  - **Base Case**: When the length of the current combination `path` is equal to `2 * n` (meaning we have used all parentheses), the current combination is valid and added to the `res` list.
-  - **Adding Open Parentheses**: If the count of open parentheses (`open_count`) is less than `n`, it adds an opening parenthesis `(` to the path and recursively calls `backtrack`.
-  - **Adding Closed Parentheses**: If the count of closed parentheses (`closed_count`) is less than the count of open ones, it adds a closing parenthesis `)` to the path and recursively calls `backtrack`.
-  - **Backtracking**: After exploring both possibilities (adding an open or a closed parenthesis), it backtracks by removing the last parenthesis added to explore other combinations.
+Here's a breakdown of the approach:
 
-This recursive strategy effectively explores all potential configurations by ensuring that the parentheses remain balanced.
+- **Backtracking Function**: A nested function `backtrack` is defined, which takes the current partial string `path`, a count of open parentheses `open_count`, and a count of closed parentheses `closed_count`.
+- **Base Condition**: If the length of `path` reaches `2 * n`, it means a valid combination of parentheses has been formed because there are `n` pairs (each pair consists of an open and a close).
+- **Adding Open Parentheses**: If the count of open parentheses used is less than `n`, it is possible to add an open parenthesis. The function appends `(` to `path`, increments `open_count`, and makes a recursive call. After returning, we remove the last added parenthesis (backtracking).
+- **Adding Closed Parentheses**: If the count of closed parentheses is less than the number of open ones, a closed parenthesis can be added. Similar to adding an open parenthesis, the function appends `)` to `path`, increments `closed_count`, and makes a recursive call. Again, backtracking is performed afterward.
+- **Result Compilation**: Throughout the process, valid combinations are appended to the `res` list, which is returned after the backtracking process completes.
 
-## 2. Time and Space Complexity Analysis
-- **Time Complexity**: The time complexity is O(4^n / sqrt(n)), which represents the number of valid combinations of parentheses pairs. This derives from the fact that for every pair of parentheses added, two choices are available (either adding an open or a close). The maximum depth of recursion can lead to a branching factor that grows exponentially.
+### 2. Time and Space Complexity Analysis
+
+- **Time Complexity**: The time complexity is O(4^n / √n). This is because generating the combinations requires traversing a full binary tree of height `2n`, where each level can result in a doubling of combinations until the required number is reached.
   
-- **Space Complexity**: The space complexity is O(n) due to the recursion stack and the temporary storage of the current combination in `path`. Additionally, the result storage `res` will also hold all the valid combinations, contributing to space usage. However, since the output size can also be considered, the overall space complexity can also depend on the number of output combinations generated.
+- **Space Complexity**: The space complexity is O(n) for the recursion stack and the storage of valid combinations. The recursion stack can go as deep as `2n`, and the result list can potentially store up to O(4^n / √n) combinations of parentheses.
 
-## 3. Why This Approach is Efficient
-The backtracking approach is efficient for generating combinations of parentheses for several reasons:
-- **Pruning**: The algorithm avoids unnecessary paths early by checking the number of open and closed parentheses. If the number of closed parentheses exceeds the number of open ones or if they exceed `n`, those paths are abandoned early, reducing the search space.
-- **Balanced Combinations**: By enforcing rules on how many of each type of parenthesis can be added, this solution guarantees that only valid combinations are generated. This means that most invalid combinations are never constructed or stored.
-- **Recursion**: Backtracking leverages the call stack to manage the state of the current combination, making it easy to explore and then retract decisions, which naturally fits the problem's requirements.
+### 3. Why This Approach is Efficient
 
-This structured exploration coupled with early stopping conditions makes the solution both effective and efficient for the problem of generating well-formed parentheses combinations.
+This backtracking technique is efficient for the following reasons:
+
+- **Pruning**: The conditions within the backtrack function effectively prune the search space. For example, the checks to add a closed parenthesis only occur if `closed_count` is less than `open_count`, preventing the formation of invalid combinations.
+  
+- **Direct Construction**: The method constructs valid strings directly without generating all possible strings first. This direct construction avoids unnecessary overhead and reduces the number of recursive calls.
+  
+- **Systematic Exploration**: The systematic approach of exploring all potential combinations while maintaining constraints ensures that all valid combinations are captured without redundancy.
+
+Overall, backtracking provides a structured and efficient means of exploring and generating valid parentheses combinations, making it ideal for this specific problem.
 
 Runtime: undefined
-Memory: 18120000
+Memory: 19340000
 """
 
 # class Solution:
