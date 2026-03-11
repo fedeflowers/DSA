@@ -1,43 +1,22 @@
 """
-```markdown
-## Explanation of the LeetCode Solution for "Best Time to Buy and Sell Stock"
+## Explanation of the Solution for "Best Time to Buy and Sell Stock"
 
-### 1. Approach Explanation
-The solution uses a single pass through the list of prices to determine the maximum profit that can be made from buying and selling a stock. Here's a breakdown of the method:
+### 1. Brief Explanation of the Approach
 
-- **Initialization**: 
-  - `prev_min` is initialized to positive infinity (`float("inf")`) to track the minimum price encountered so far.
-  - `res` is initialized to zero to keep track of the maximum profit.
-
-- **Iteration Over Prices**:
-  - For each price `p` in the list of `prices`:
-    - If `prev_min` is not infinity (which will always be true after the first iteration since `prev_min` will be updated), calculate the profit as `p - prev_min`.
-    - Update `res` to be the maximum of its current value and the calculated profit.
-    - Update `prev_min` to be the minimum between its current value and the current price `p`.
-
-- **Result**:
-  - After iterating through all the prices, `res` contains the maximum profit possible.
-
-This approach leverages the fact that the best time to sell is always after the best time to buy, making it unnecessary to consider all combinations of buy and sell days; instead, you can keep track of only the minimum price seen so far and calculate the profit dynamically.
+The given solution aims to determine the maximum profit that can be achieved from buying and selling a stock on specific days, based on the provided price list. The key idea is to iterate through the list of stock prices while keeping track of the lowest price encountered so far (`prev_min`). For each price in the list, the algorithm calculates the profit that would be gained if the stock was bought at the lowest price (`prev_min`) and sold at the current price (`p`). The maximum profit found during the iterations is stored in the variable `res`. At the end of the loop, `res` holds the highest profit possible given the prices.
 
 ### 2. Time and Space Complexity Analysis
-- **Time Complexity**: O(N)
-  - The algorithm makes a single pass through the `prices` list, where `N` is the number of elements in the list. Each price is processed in constant time.
 
-- **Space Complexity**: O(1)
-  - The algorithm uses a constant amount of extra space, regardless of the input size. Only a few variables (`prev_min` and `res`) are utilized.
+- **Time Complexity:** O(n), where n is the number of days (or length of the `prices` list). The solution performs a single pass through the list, making a constant time check (comparison and assignments) for each price.
+  
+- **Space Complexity:** O(1). The algorithm uses a constant amount of extra space since it only maintains a few variables (`prev_min` and `res`), regardless of the input size.
 
-### 3. Efficiency of the Approach
-This approach is efficient because:
-- It traverses the list just once (O(N)) which is optimal for this problem compared to approaches that may involve nested loops (O(N^2)).
-- It effectively reduces the problem to maintaining two variables, which results in minimal memory usage.
-- The logic is simple and clear, improving code readability and maintainability.
+### 3. Why This Approach is Efficient
 
-Overall, this solution strikes a perfect balance between efficiency and simplicity, making it a preferred approach for solving the "Best Time to Buy and Sell Stock" problem.
-```
+This approach is efficient because it only requires a single pass through the list of prices, and it only uses a small, fixed amount of extra memory. By maintaining a running minimum (`prev_min`) and updating the maximum profit (`res`) dynamically, the algorithm avoids the need for nested loops (which would lead to a time complexity of O(n^2)). Thus, it achieves optimal performance while also being straightforward to understand and implement. This makes it suitable for large inputs, where a more naive approach would falter due to increased time complexity.
 
 Runtime: undefined
-Memory: 26852000
+Memory: 28576000
 """
 
 class Solution:
