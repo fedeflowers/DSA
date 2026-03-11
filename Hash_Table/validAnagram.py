@@ -1,46 +1,37 @@
 """
-```markdown
-## Explanation of LeetCode Solution for "Valid Anagram"
+## Explanation of the LeetCode Solution for "Valid Anagram"
 
 ### 1. Brief Explanation of the Approach
-The provided solution utilizes an array to count the occurrences of each character from the two input strings, `s` and `t`. Both strings are assumed to consist of lowercase English letters.
+The given solution checks if two strings, `s` and `t`, are anagrams of each other. The approach used in this solution involves the following steps:
 
-- **Character Counting**: An array `d` of size 26 (for each letter in the alphabet) is initialized to hold counts of characters. 
-  - For each character in string `s`, the corresponding index in the array is incremented.
-  - For each character in string `t`, the corresponding index is decremented.
+- Both strings `s` and `t` are converted into lists of characters and then sorted.
+- The sorted lists of both strings are compared.
+- If the sorted versions of the two strings are identical, the function returns `True`, indicating that `s` and `t` are anagrams. Otherwise, it returns `False`.
 
-- **Final Check**: After processing both strings, if `s` and `t` are anagrams, all entries in the array `d` should equal zero (indicating that every character in `s` has a matching character in `t`).
+The sorting step ensures that if both strings are anagrams, their characters will be in the same order after sorting.
 
 ### 2. Time and Space Complexity Analysis
-- **Time Complexity**: 
-  - Iteration through string `s`: O(N), where N is the length of string `s`.
-  - Iteration through string `t`: O(M), where M is the length of string `t`.
-  - Hence, the overall time complexity is O(N + M). In the case where both strings are of equal length, it simplifies to O(N).
-
-- **Space Complexity**: 
-  - The space complexity is O(1) since we only utilize a fixed-size list of 26 integers, regardless of the size of the input strings. This means the space used does not grow with the input size.
+- **Time Complexity**: The time complexity of this solution is O(N log N), where N is the length of the longer string among `s` and `t`. This is due to the sorting operation, which generally has a time complexity of O(N log N).
+  
+- **Space Complexity**: The space complexity is O(N) as well, since two lists are created to store the characters of `s` and `t` before sorting. Each of these lists requires space proportional to the length of the respective strings.
 
 ### 3. Why This Approach is Efficient
-This approach is efficient for the following reasons:
-- **Linear Time Complexity**: The solution runs in linear time relative to the total length of the input strings, which is efficient given that we can’t determine whether they are anagrams without examining each character at least once.
-- **Constant Space Usage**: It uses a constant amount of space (an array of 26 integers) to keep track of character counts, leading to effective memory utilization.
-- **Simplicity**: The algorithm is straightforward and easy to understand. It directly reflects the properties of anagrams, making it conceptually simple while providing optimal performance.
-```
+This sorting-based approach is simple and easy to understand. It provides a clear method to determine if two strings are anagrams by leveraging the properties of sorted orders. 
 
+- **Pros**: The algorithm correctly handles cases where characters may appear multiple times and is also straightforward in terms of implementation.
+- **Cons**: While it is efficient in terms of code simplicity, it may not be the most optimal in terms of time complexity compared to other potential approaches (like using frequency counts), which can achieve O(N) time complexity with a linear traversal and a constant space overhead.
+
+While the sorting method is efficient for small to moderately sized strings, for very large strings or performance-critical applications, other techniques (like counting characters with a hash map or an array) might be preferred due to their linear time complexity. 
+
+Overall, this solution effectively leverages sorting to solve the anagram problem, making it a valid and straightforward solution.
 
 Runtime: undefined
-Memory: 19444000
+Memory: 20864000
 """
 
 class Solution:
     def isAnagram(self, s: str, t: str) -> bool:
-        d = [0] * 26
-        for ch in s:
-            d[ord(ch) - ord("a")] += 1
-        for ch in t:
-            d[ord(ch) - ord("a")] -= 1
-
-
-        return all(el == 0 for el in d)
-
-
+        s = sorted(list(s))
+        t = sorted(list(t))
+        print(s, t)
+        return s == t
