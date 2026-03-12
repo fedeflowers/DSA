@@ -1,37 +1,35 @@
 """
-## Explanation of the LeetCode Solution for "Valid Anagram"
+## Explanation of the Solution for "Valid Anagram"
 
-### 1. Brief Explanation of the Approach
-The given solution checks if two strings, `s` and `t`, are anagrams of each other. The approach used in this solution involves the following steps:
+### 1. Approach Explanation
+The provided solution defines a method `isAnagram` that takes two strings, `s` and `t`, as input. The objective is to determine whether the two strings are anagrams of each other, meaning they contain the exact same characters with the same frequencies, but possibly in a different order.
 
-- Both strings `s` and `t` are converted into lists of characters and then sorted.
-- The sorted lists of both strings are compared.
-- If the sorted versions of the two strings are identical, the function returns `True`, indicating that `s` and `t` are anagrams. Otherwise, it returns `False`.
-
-The sorting step ensures that if both strings are anagrams, their characters will be in the same order after sorting.
+The approach used in this solution involves the following steps:
+- It sorts both strings `s` and `t`. The Python `sorted()` function converts each string into a list of characters sorted in ascending order.
+- After sorting, it compares the two resulting lists. If they are identical, then `s` and `t` are anagrams; otherwise, they are not.
+- The function returns `True` if the lists are equal (indicating that the strings are anagrams) and `False` otherwise.
 
 ### 2. Time and Space Complexity Analysis
-- **Time Complexity**: The time complexity of this solution is O(N log N), where N is the length of the longer string among `s` and `t`. This is due to the sorting operation, which generally has a time complexity of O(N log N).
+- **Time Complexity**: The time complexity of this solution is O(n log n), where n is the length of the longer string (`s` or `t`). This is due to the sorting operation, as sorting takes O(n log n) time in the average case.
   
-- **Space Complexity**: The space complexity is O(N) as well, since two lists are created to store the characters of `s` and `t` before sorting. Each of these lists requires space proportional to the length of the respective strings.
+- **Space Complexity**: The space complexity is O(n) as well. This is because `sorted()` generates a new list containing all the characters of the original string, which requires additional memory proportional to the size of the string being sorted.
 
 ### 3. Why This Approach is Efficient
-This sorting-based approach is simple and easy to understand. It provides a clear method to determine if two strings are anagrams by leveraging the properties of sorted orders. 
+This approach is efficient for several reasons:
+1. **Simplicity**: The solution is straightforward and easy to understand. Sorting and comparing two lists is a clear and concise way to check for anagrams.
+  
+2. **No Extra Libraries Required**: The method does not require any additional data structures beyond what is inherently provided by Python (i.e., lists), making it a clean solution.
 
-- **Pros**: The algorithm correctly handles cases where characters may appear multiple times and is also straightforward in terms of implementation.
-- **Cons**: While it is efficient in terms of code simplicity, it may not be the most optimal in terms of time complexity compared to other potential approaches (like using frequency counts), which can achieve O(N) time complexity with a linear traversal and a constant space overhead.
+3. **General Applicability**: The use of sorting works for any character set, including alphanumeric and special characters. It does not depend on specific character frequency calculations, which may involve additional code for corner cases (e.g., ignoring spaces or case sensitivity).
 
-While the sorting method is efficient for small to moderately sized strings, for very large strings or performance-critical applications, other techniques (like counting characters with a hash map or an array) might be preferred due to their linear time complexity. 
-
-Overall, this solution effectively leverages sorting to solve the anagram problem, making it a valid and straightforward solution.
+However, it is important to note that although the sorting approach is effective, alternative methods (such as using a character count dictionary) can achieve O(n) time complexity, which might be preferred for very large strings. This sorting approach is typically more suitable for smaller inputs or when clarity and simplicity are prioritized.
 
 Runtime: undefined
-Memory: 20864000
+Memory: 20504000
 """
 
 class Solution:
     def isAnagram(self, s: str, t: str) -> bool:
-        s = sorted(list(s))
-        t = sorted(list(t))
-        print(s, t)
+        s = sorted(s)
+        t = sorted(t)
         return s == t
