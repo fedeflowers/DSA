@@ -1,33 +1,46 @@
 """
-# LeetCode Solution Explanation for "Invert Binary Tree"
+## Explanation of Solution for "Invert Binary Tree"
 
-## 1. Brief Explanation of the Approach
-The solution to the "Invert Binary Tree" problem involves a recursive approach to invert the binary tree. The key idea is to swap the left and right children of each node in the tree. 
+### 1. Brief Explanation of the Approach
+The provided solution uses a recursive depth-first search (DFS) approach to invert a binary tree. The function `invertTree` takes a `TreeNode` object `root`, which represents the root of the binary tree. The process is as follows:
 
-- The function `invertTree` takes in a node (`root`) of a binary tree.
-- If the current node is `None`, it returns `None`, which serves as the base case for the recursion.
-- For non-null nodes, it swaps the left and right children of the current node.
-- After swapping, it recursively calls the `invertTree` function on the left and right children to ensure all levels of the tree are inverted.
-- Finally, it returns the root of the inverted tree.
+- **Base Case**: If the `root` is `None` (indicating an empty subtree), the function returns `None`.
+- **Recursive Inversion**: If the `root` is not `None`, the function recursively calls itself to invert the right subtree first and then the left subtree. The results of these calls are then swapped. 
+- **Simultaneous Assignment**: This assignment operation is done simultaneously, ensuring that the original references to left and right children are effectively swapped in the same step.
+- Finally, the function returns the `root`, which now represents the inverted binary tree.
 
-## 2. Time and Space Complexity Analysis
-- **Time Complexity:** O(N)
-  - Here, N is the number of nodes in the binary tree. The algorithm visits each node exactly once to perform the swapping operation and the recursive calls. Hence, the overall time complexity is linear with respect to the number of nodes.
+Example: For a tree structured like this:
+```
+    1
+   / \
+  2   3
+```
+After calling `invertTree`, it transforms to:
+```
+    1
+   / \
+  3   2
+```
 
-- **Space Complexity:** O(H)
-  - H is the height of the binary tree. The maximum space used on the call stack due to recursion is proportional to the height of the tree. In the worst case (unbalanced tree), this could be O(N), but for a balanced tree, the height will be O(log N).
+### 2. Time and Space Complexity Analysis
+- **Time Complexity**: 
+  - The time complexity of this solution is O(N), where N is the number of nodes in the binary tree. This is because the algorithm needs to visit each node exactly once to perform the inversion.
+  
+- **Space Complexity**:
+  - The space complexity is O(h), where h is the height of the tree. This is due to the recursive call stack used during the traversal of the tree. In the case of a balanced tree, h is O(log N), but in the worst case (skewed tree), h could be O(N).
+  
+### 3. Why This Approach is Efficient
+This approach is efficient for several reasons:
 
-## 3. Why This Approach is Efficient
-This approach is efficient because:
+- **Simplicity**: The recursive algorithm is straightforward and easy to understand. It leverages the properties of trees and recursion effectively, avoiding unnecessary complexity.
+- **DFS**: The depth-first traversal ensures we process each node while making the minimal number of passes (only one pass is needed to invert the tree).
+- **In-Place Modification**: Since the inversion is done by swapping the child pointers directly, it doesn't require any additional data structures or storage for another tree, making optimal use of memory.
+- **Independence from Tree Structure**: The method works well regardless of the shape of the tree (balanced, skewed, complete, etc.), maintaining a consistent time complexity of O(N).
 
-- **Simplicity:** The solution is straightforward, easily understandable, and clean due to its recursive nature.
-- **Optimal Node Visit:** Each node is handled exactly once, ensuring that the algorithm runs in linear time, making it efficient for any size binary tree.
-- **In-Place Modification:** The inversion is done in place, meaning we utilize the existing nodes and do not require additional data structures to store nodes, leading to optimal space usage for tree inversion.
-
-Overall, this approach is efficient and elegant while effectively solving the problem of inverting a binary tree.
+Overall, this approach efficiently inverts a binary tree while keeping the implementation clean and understandable.
 
 Runtime: undefined
-Memory: 19228000
+Memory: 19292000
 """
 
 class Solution:
@@ -35,11 +48,7 @@ class Solution:
         if not root:
             return None
         
-        # Swap the children
-        root.left, root.right = root.right, root.left
-        
-        # Recursively invert subtrees
-        self.invertTree(root.left)
-        self.invertTree(root.right)
+        # Simultaneous swap ensures both original references are used
+        root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)
         
         return root
