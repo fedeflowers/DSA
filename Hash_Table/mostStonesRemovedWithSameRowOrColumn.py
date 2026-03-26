@@ -1,71 +1,75 @@
 """
-```markdown
-## Explanation of the LeetCode Solution for "Most Stones Removed with Same Row or Column"
+### Explanation of the Approach
 
-### 1. Approach Explanation
+The problem "Most Stones Removed with Same Row or Column" involves determining how many stones can be removed from a grid while ensuring that each removal of a stone is connected through either the same row or the same column with other stones. This task can be visualized as a graph where each stone can be considered a node, and edges can exist between stones that share the same row or column.
 
-The problem requires us to determine the maximum number of stones that can be removed if we can only remove stones from the same row or the same column. The approach taken in this solution involves treating the stones as nodes in a graph, where each stone can connect to others in the same row or column. Therefore, the first step is to group the stones based on their x and y coordinates using two dictionaries.
+The solution uses a graph traversal technique (DFS) to find connected components of stones. Here’s a breakdown of the approach:
 
-The `removeStones` function works as follows:
+1. **Adjacency List Creation**: 
+   - Two dictionaries, `x_adj` and `y_adj`, are created to store lists of stone indices that share the same x-coordinate (row) and y-coordinate (column), respectively.
+   - For each stone (given as coordinates [x, y]), the index of that stone is appended to both `x_adj[x]` and `y_adj[y]`.
 
-- **Mapping Stones**: We create two dictionaries: `rows` and `cols`. For each stone represented by its coordinates (x, y), we add its index to the corresponding list in `rows` (for the x-coordinate) and `cols` (for the y-coordinate).
+2. **Graph Traversal**: 
+   - A Depth-First Search (DFS) function is defined to explore the connected stones. 
+   - Starting from an unvisited stone, DFS will traverse all stones connected directly or indirectly via rows or columns and mark them as visited.
 
-- **DFS for Connected Components**: We then use depth-first search (DFS) to explore all stones connected directly or indirectly through other stones in the same row or column. Each time we initiate a DFS from a new stone, it signifies a new connected component of stones.
+3. **Counting Components**: 
+   - The main loop iterates through each stone. If a stone hasn't been visited, it indicates the start of a new connected component, so the component count is incremented and DFS is invoked.
+   
+4. **Result Calculation**: 
+   - The result is calculated as the total number of stones minus the number of connected components. This result represents the maximum number of stones that can be removed while keeping at least one stone in each component.
 
-- **Counting Components**: The number of connected components corresponds to the number of distinct groups of stones that cannot be removed together due to their connections. The maximum stones that can be removed is equal to the total number of stones minus the number of these components.
+### Time and Space Complexity Analysis
 
-### 2. Time and Space Complexity Analysis
+- **Time Complexity**: O(N)
+  - Each stone is processed once in creating the adjacency list, and each stone is again processed during the DFS traversal. Therefore, the total time complexity is proportional to the number of stones (N).
 
-- **Time Complexity**: The time complexity of this solution is O(N), where N is the number of stones. This is because we traverse through all stones to build the connections and again for each stone during the DFS, ensuring every stone is visited once.
+- **Space Complexity**: O(N)
+  - The space used for storing the adjacency list (both `x_adj` and `y_adj`) requires space proportional to the number of stones since we are storing the index of each stone. The visited set also stores up to N elements in the worst case.
 
-- **Space Complexity**: The space complexity is also O(N) due to the storage required for the `rows` and `cols` dictionaries and the `visited` list. In the worst-case scenario, where all stones are in distinct rows and columns, the space utilized will scale linearly with the number of stones.
+### Why This Approach is Efficient
 
-### 3. Efficiency of the Approach
+This approach is efficient because it effectively reduces the problem to finding connected components in a graph representation of the stones:
 
-This approach is efficient for several reasons:
+1. **Scalability**: The use of adjacency lists allows for efficient connections between stones based on shared rows or columns, making it scalable for a large number of stones.
 
-- **Graph Representation**: By representing the stones as nodes connected through shared rows and columns, we can utilize graph traversal techniques which are well-suited to this type of connectivity problem.
+2. **Optimal Traversal**: DFS efficiently explores all connections along rows and columns, ensuring that all reachable stones are visited without unnecessary re-visits. 
 
-- **Direct Component Counting**: The solution effectively counts connected components rather than trying to simulate removal, which can become cumbersome. This provides a more straightforward calculation of removable stones.
+3. **Direct Problem-solving**: The method directly addresses the problem's requirement (maximum removable stones while maintaining connectivity) by abstracting it to a graph theory problem—finding connected components.
 
-- **Single Pass DFS**: By employing a single DFS from each unvisited stone, we ensure each stone is processed only once, making the solution both efficient and scalable.
-
-Overall, this method efficiently determines the maximum number of removable stones while minimizing the complexity of the implementation.
-```
+Overall, the solution is optimal and leverages graph theory principles to achieve the desired result effectively.
 
 Runtime: undefined
-Memory: 21388000
+Memory: 22296000
 """
 
 class Solution:
-    def removeStones(self, stones):
-        # Map each x and y coordinate to a list of stone indices
-        rows = collections.defaultdict(list)
-        cols = collections.defaultdict(list)
-        for i, (x, y) in enumerate(stones):
-            rows[x].append(i)
-            cols[y].append(i)
+    def removeStones(self, stones: List[List[int]]) -> int:
+        #adj list
+        x_adj = defaultdict(list)
+        y_adj = defaultdict(list)
 
-        visited = [False] * len(stones)
-        num_components = 0
-
-        def dfs(stone_idx):
-            visited[stone_idx] = True
-            x, y = stones[stone_idx]
-            
-            # Visit all stones in the same row
-            for neighbor in rows[x]:
-                if not visited[neighbor]:
-                    dfs(neighbor)
-            
-            # Visit all stones in the same column
-            for neighbor in cols[y]:
-                if not visited[neighbor]:
-                    dfs(neighbor)
-
+        for i, (x,y) in enumerate(stones):
+            x_adj[x].append(i)
+            y_adj[y].append(i)
+        
+        visited = set()
+        #dfs
+        def dfs(index):
+            visited.add(index)
+            x, y = stones[index]
+            for i in x_adj[x]:
+                if i not in visited:
+                    dfs(i)
+                    
+            for i in y_adj[y]:
+                if i not in visited:
+                    dfs(i)
+     
+        components = 0
         for i in range(len(stones)):
-            if not visited[i]:
+            if i not in visited:
+                components += 1
                 dfs(i)
-                num_components += 1
-
-        return len(stones) - num_components
+        
+        return len(stones) - components
