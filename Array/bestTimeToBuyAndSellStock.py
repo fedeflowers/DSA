@@ -1,32 +1,52 @@
 """
-## Explanation of the Solution for "Best Time to Buy and Sell Stock"
+### Solution Explanation for "Best Time to Buy and Sell Stock"
 
-### 1. Brief Explanation of the Approach
+#### 1. Approach Explanation:
+The provided solution uses a single pass through the list of stock prices to determine the maximum profit that can be made by buying and selling the stock. Here’s a breakdown of how it works:
 
-The given solution aims to determine the maximum profit that can be achieved from buying and selling a stock on specific days, based on the provided price list. The key idea is to iterate through the list of stock prices while keeping track of the lowest price encountered so far (`prev_min`). For each price in the list, the algorithm calculates the profit that would be gained if the stock was bought at the lowest price (`prev_min`) and sold at the current price (`p`). The maximum profit found during the iterations is stored in the variable `res`. At the end of the loop, `res` holds the highest profit possible given the prices.
+- **Initialization**: 
+  - A variable `buy` is initialized to infinity (`float("inf")`), which represents the minimum stock price encountered so far. This ensures that any stock price will be lower during the first iteration.
+  - A variable `res` is initialized to 0. This will keep track of the maximum profit found.
 
-### 2. Time and Space Complexity Analysis
+- **Iteration**:
+  - The algorithm iterates through each price `p` in the `prices` list:
+    - If the current price `p` is less than the `buy`, it updates `buy` to the current price. This means the algorithm has found a new lowest price to buy the stock.
+    - If the current price `p` is greater than or equal to `buy`, it calculates the profit by subtracting `buy` from `p` and updates `res` if the calculated profit is greater than the current value of `res`.
 
-- **Time Complexity:** O(n), where n is the number of days (or length of the `prices` list). The solution performs a single pass through the list, making a constant time check (comparison and assignments) for each price.
+- **Return Value**: 
+  - After iterating through all prices, `res` contains the maximum profit that can be achieved.
+
+#### 2. Time and Space Complexity Analysis:
+- **Time Complexity**: O(n)
+  - The solution involves a single loop that iterates through the `prices` list once, making the time complexity linear with respect to the number of elements in `prices`.
+
+- **Space Complexity**: O(1)
+  - The algorithm uses only a constant amount of additional space (`buy` and `res`), regardless of the input size. Therefore, the space complexity is constant.
+
+#### 3. Efficiency of the Approach:
+This approach is efficient due to the following reasons:
+
+- **Single Pass**: By only looping through the prices once, the solution minimizes the number of comparisons and calculations, resulting in an optimal time complexity.
   
-- **Space Complexity:** O(1). The algorithm uses a constant amount of extra space since it only maintains a few variables (`prev_min` and `res`), regardless of the input size.
+- **Constant Space Usage**: The use of a fixed number of variables means that the space required does not grow with input size, making it very memory efficient.
 
-### 3. Why This Approach is Efficient
+- **Dynamic Tracking of Buy Price**: The algorithm efficiently keeps track of the lowest price seen so far, allowing it to dynamically calculate potential profits without needing nested loops or additional data structures.
 
-This approach is efficient because it only requires a single pass through the list of prices, and it only uses a small, fixed amount of extra memory. By maintaining a running minimum (`prev_min`) and updating the maximum profit (`res`) dynamically, the algorithm avoids the need for nested loops (which would lead to a time complexity of O(n^2)). Thus, it achieves optimal performance while also being straightforward to understand and implement. This makes it suitable for large inputs, where a more naive approach would falter due to increased time complexity.
+Overall, this solution effectively handles the problem in a streamlined manner, making it suitable for large datasets as well.
 
 Runtime: undefined
-Memory: 28576000
+Memory: 28732000
 """
 
 class Solution:
     def maxProfit(self, prices: List[int]) -> int:
-        prev_min = float("inf")
+        buy = float("inf")
         res = 0
         for p in prices:
-            if prev_min != float("inf"):
-                res = max(res, p-prev_min)
-            prev_min = min(prev_min, p)
-        return res
+            if p < buy:
+                buy = p
+            else:
+                res = max(res, p - buy)
 
+        return res
 
