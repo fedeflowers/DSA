@@ -1,36 +1,41 @@
 """
-```markdown
-## Explanation of the Solution for "Minimum Distance Between Three Equal Elements I"
+## Explanation of the Approach
 
-### 1. Brief Explanation of the Approach
-This solution focuses on tracking the last two indices of each value in the array `nums`. The key observation here is that if we have three indices (let’s call them `a`, `b`, and `c`) corresponding to the same value, the formula to compute their total distance is:
+The problem "Minimum Distance Between Three Equal Elements I" requires us to find the minimum distance between three occurrences of the same number in the list `nums`. The given solution utilizes a dictionary to keep track of the last two indices for each unique value in the list.
 
-\[ |a-b| + |b-c| + |c-a| = 2 \times (c - a) \]
+Here’s a step-by-step explanation of the approach:
 
-Given that `a`, `b`, and `c` are the indices of the same value located at increasing indices (hence, `a < b < c`), the total distance simplifies to minimizing the difference between the farthest (`c`) and the nearest (`a`) index.
+1. **Dictionary Initialization**: We create a dictionary `last_two` where keys are the unique values in `nums` and the values are lists containing the last two indices where that value has appeared.
 
-The process works as follows:
-- Iterate over the array `nums`, keeping track of the last two indices encountered for each value in the dictionary `last_two`.
-- When a value is found that appears for the third time, calculate the minimum distance as \(2 \times (i - \text{prev})\), where \(i\) is the current index and \(\text{prev}\) is the second-to-last index of that value.
-- Update `last_two` to slide the window, keeping the most recent indices for future calculations.
-- If at least one valid triplet is found, return the minimum distance; otherwise, return `-1`.
+2. **Iterate Through the List**: We iterate through the enumerated `nums` list. For each value `v` at index `i`, we check:
+   - If the value has not been seen before, we initialize its entry in the `last_two` dictionary with the current index.
+   - If it has been seen once (only one index is stored), we append the current index to its list.
+   - If it has been seen twice, we calculate the distance for the triplet of indices (previous indexed `prev`, current indexed `curr`, and the new index `i`). The distance is calculated using the relationship \( |a-b| + |b-c| + |a-c| = 2 \times (c - a) \) which simplifies our task significantly.
 
-### 2. Time and Space Complexity Analysis
-- **Time Complexity**: \(O(n)\), where \(n\) is the length of the list `nums`. We iterate through the list once, and each dictionary operation (insertion and lookup) is on average \(O(1)\).
+3. **Updating the Minimum Distance**: Whenever we process an occurrence of a value for the third time (and thus have three indices), we update the minimum distance if the computed distance is smaller than the previously recorded minimum.
+
+4. **Return Value**: After processing all elements, we return the minimum distance found. If no valid triplet was found, we return -1.
+
+## Time and Space Complexity Analysis
+
+### Time Complexity
+- The time complexity is **O(n)**, where n is the number of elements in the list `nums`. This is because we take a single pass through the list to populate `last_two` and compute distances.
+
+### Space Complexity
+- The space complexity is **O(k)**, where k is the number of unique values in `nums`. In the worst case, if all numbers are unique, this could be O(n), but typically, it is expected to be much smaller since many elements will be the same.
+
+## Why This Approach is Efficient
+
+1. **Minimized Operations**: Instead of sorting the array (which would typically take O(n log n)), the solution efficiently manages indices in O(n) time by only tracking the last two occurrences of each value.
   
-- **Space Complexity**: \(O(m)\), where \(m\) is the number of unique values in `nums`. The dictionary `last_two` stores indices for each unique value, and in the worst case, this could be the entire list if all elements are distinct.
+2. **Direct Calculation of Distances**: Utilizing the relationship between absolute differences allows immediate calculation of the minimum distance when encountering a third occurrence without needing to explore every combination or subarray.
+  
+3. **Memory Usage**: The solution maintains a compact memory usage by strictly storing the last two indices, which is sufficient to derive the needed distances, leading to potentially less space usage compared to solutions involving combinations or full storage of triplets.
 
-### 3. Why This Approach is Efficient
-This approach is efficient because:
-- It leverages a single pass through the input list (`nums`), meaning that no additional sorting or nested looping is needed, which would significantly increase the time complexity.
-- By focusing solely on the last seen indices of each unique value, it minimizes the distance calculation directly when a third occurrence is found, thus sidestepping any need for more complex data structures or algorithms.
-- The use of a dictionary allows for quick access and updates, ensuring that we can keep track of indices without overhead.
+Overall, the implemented approach is efficient in both time and space, making it well-suited for large input sizes commonly encountered in competitive programming.
 
-This makes the algorithm not only efficient in terms of runtime but also straightforward, adhering to clean coding principles with a clear and manageable structure.
-```
-
-Runtime: undefined
-Memory: 19436000
+Runtime: N/A
+Memory: N/A
 """
 
 # class Solution:
