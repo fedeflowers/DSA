@@ -1,0 +1,74 @@
+/*
+## Brief Explanation of the Approach
+
+The provided SQL query is designed to categorize nodes in a tree structure stored in a database table named `tree`. Each node can have a parent-child relationship indicated by the `p_id` (parent ID) field. The solution classifies nodes into three types:
+
+1. **Root**: Nodes that do not have a parent (i.e., `p_id` is `NULL`).
+2. **Inner**: Nodes that have children and are not root nodes (i.e., `p_id` is not `NULL` and there are corresponding entries in the `tree` table indicating that other nodes reference these nodes as their parent).
+3. **Leaf**: Nodes that do not have children (i.e., `p_id` is not `NULL` and there are no corresponding entries in the table indicating any child nodes). However, any node that was found to be a root in the first Common Table Expression (CTE) `r` is excluded from being classified as a leaf.
+
+The query breaks down into several parts using Common Table Expressions (CTEs):
+
+- CTE `r` identifies root nodes.
+- CTE `i` identifies inner nodes.
+- CTE `l` identifies leaf nodes and excludes any roots.
+
+Finally, it combines the results of all three CTEs using the `UNION` operator, ensuring all node types are returned in a single result set.
+
+## Time and Space Complexity Analysis
+
+### Time Complexity
+- The query involves multiple `LEFT JOIN` operations and may scan the entire table for each CTE:
+  - The first CTE (`r`) has time complexity of O(N) for scanning the table once.
+  - The second CTE (`i`) again involves a scan and join, which can be approximated as O(N).
+  - The third CTE (`l`) involves a scan and a subquery (the EXCEPT clause), which also leads to O(N).
+  - Overall, if we consider overlapping work done across the CTEs, the time complexity can be approximated as O(N).
+
+### Space Complexity
+- The space complexity is driven mainly by the storage of the CTEs and the intermediate results, which are about O(N) for each CTE. Thus, the overall space complexity is:
+  - O(N) for storing the intermediate results of each CTE.
+
+## Why This Approach is Efficient
+
+1. **Modularity Using CTEs**: The use of CTEs allows breaking down the problem into smaller, more manageable parts. Each CTE serves a specific purpose, making the query easier to read and maintain.
+
+2. **Direct Classification**: Each type of node is computed in a straightforward manner using SQL operations (`JOIN` and condition checks), thus avoiding unnecessary complexity.
+
+3. **Set Operations with UNION**: The `UNION` operator effectively combines results from the different classifications, which simplifies the final output without requiring further computations or checks.
+
+4. **Efficient Use of Indexes**: Assuming indices exist on `id` and `p_id`, the joins and conditions in the CTEs will perform efficiently, leading to faster query evaluations.
+
+Overall, this approach is efficient in terms of both time and readability, effectively using SQL capabilities to categorize tree nodes neatly.
+
+Runtime: undefined
+Memory: 0
+*/
+
+# Write your MySQL query statement below
+# leaf
+with r as (
+    select id, "Root" as type
+    from tree
+    where p_id is null
+),
+i as (
+    select t1.id, "Inner" as type
+    from tree t1 left join tree t2
+    on t1.id = t2.p_id
+    where t2.id is not null and t1.p_id is not null
+),
+l as (
+    select t1.id, "Leaf" as type
+    from tree t1 left join tree t2
+    on t1.id = t2.p_id
+    where t2.id is null
+    except
+    select id, "Leaf"
+    from r
+)
+
+SELECT * FROM r
+UNION
+SELECT * FROM i
+UNION
+SELECT * FROM l
