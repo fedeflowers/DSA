@@ -1,60 +1,77 @@
 /*
-## Explanation of the LeetCode Solution for "Customers Who Bought All Products"
+## Explanation of the Solution for "Customers Who Bought All Products"
 
 ### 1. Brief Explanation of the Approach
 
-The provided SQL query is used to identify customers who have purchased all available products. Here’s a breakdown of the approach:
+The goal of the problem is to identify customers who have purchased all available products from the product list. The provided SQL query effectively achieves this through the following steps:
 
-- **Common Table Expressions (CTEs)**: The query defines two CTEs, `c1` and `c2`.
-  
-  - **CTE `c1`**: This CTE selects distinct records from the `customer` table, which presumably contains transactions made by customers. The use of `distinct` ensures that there are no duplicate entries for any customer-product combination.
+1. **Grouping by Customer**: The query groups the records in the `Customer` table by `customer_id`. This allows us to analyze the purchases made by each customer.
 
-  - **CTE `c2`**: This second CTE calculates how many unique products each customer has purchased. It does this by grouping the results from `c1` by `customer_id` and counting the number of products associated with each customer. The result is a table that holds `customer_id` and the corresponding `goods_count` (the number of distinct products purchased by that customer).
+2. **Counting Distinct Products**: For each customer, the query counts the distinct `product_key` they have purchased. This is important because customers might buy the same product multiple times, and we only want to count unique product purchases.
 
-- **Final Selection**: The main query selects customer IDs from `c2` where the `goods_count` matches the total count of products available (retrieved with the subquery `select count(*) from product`). This means only customers who have purchased the same number of products as are available in the `product` table are selected.
+3. **Comparing Counts**: The final step checks if the count of distinct products purchased by each customer matches the total number of distinct products in the `Product` table. If they match, it means that the customer has bought all available products.
+
+4. **Fetching Results**: The `HAVING` clause is used to filter the grouped results, returning only those customers whose distinct product count equals the total product count.
 
 ### 2. Time and Space Complexity Analysis
 
 - **Time Complexity**:
-  - The initial distinct selection from the `customer` table (`c1`) will take O(n) time, where n is the number of entries in the `customer` table.
-  - The aggregation and grouping in `c2` will also take O(n) time.
-  - The subquery to count the total products (`select count(*) from product`) takes O(m), where m is the number of entries in the `product` table.
-  - Hence, the total time complexity can be roughly approximated as O(n + m).
+  - **Counting Distinct Products for Each Customer**: This operation requires iterating through all customer purchases, which can be approximated as O(n), where n is the number of transactions in the `Customer` table.
+  - **Counting Distinct Products in Product Table**: This operation is O(m), where m is the number of products in the `Product` table.
+  - Overall complexity is dominated by the counting of distinct products among customers, so it can be approximated as O(n + m).
 
 - **Space Complexity**:
-  - The space used for storing the CTEs `c1` and `c2` is based primarily on the size of the `customer` table, which holds distinct product purchases and boils down to about O(n), assuming distinct entries.
-  - The temporary space for calculations (counts and unique entries) can also be considered, but it remains linear with respect to the size of the input tables. Thus, the space complexity is O(n).
+  - The space complexity is primarily determined by the storage of intermediate results (distinct counts per customer) and the final filtered results. The space would be O(k), where k is the number of unique customers (in the worst case), as you need to store their identifiers in memory.
 
-### 3. Why this Approach is Efficient
+### 3. Why This Approach is Efficient
 
-This approach is efficient for several reasons:
+This approach is efficient due to several reasons:
 
-- **Use of CTEs**: CTEs improve the clarity and modularity of the SQL query, making it easier to understand and maintain. They also help to break down complex operations into manageable steps.
+- **Direct Aggregation**: By directly aggregating customer purchases while counting distinct products, the query avoids the need to individually check each product purchase against all products, simplifying the operation significantly.
 
-- **Aggregation with Group By**: Using the `GROUP BY` clause allows us to efficiently compute counts by customer in one pass through the distinct records, reducing the need for expensive multiple joins or nested queries.
+- **Database Optimization**: SQL databases are generally highly optimized for operations like `GROUP BY` and `DISTINCT`, allowing them to perform these operations much faster than naive implementations, particularly when indices are utilized.
 
-- **Direct Matching**: The use of a simple equality condition (matching `goods_count` with the total product count) allows for straightforward filtering of results, ensuring that the query remains efficient and easy to implement.
+- **Reduction of Data**: By using `HAVING` to filter after aggregation, the algorithm ensures that only relevant customers are processed further, reducing the overhead of unnecessary data processing and memory usage.
 
-- **Minimizing Data Handling**: By selecting distinct records right at the start and grouping them, we minimize the amount of data processed in subsequent steps and avoid potential overhead from handling duplicates.
+- **Final Comparison in One Step**: The division of the problem (counting distinct products and comparing) allows it to be executed in a straightforward and linear-pass manner, which is generally more efficient than nested loops or iterative comparisons.
 
-Overall, the structure of the query combined with the operations performed makes this approach a clear and concise solution to the problem of finding customers who have purchased all products available.
+Overall, this combination of SQL operations effectively provides a solution that is both intuitive and efficient for the problem at hand.
 
 Runtime: undefined
 Memory: 0
 */
 
 # Write your MySQL query statement below
-with c1 as (
-    select distinct *
-    from customer
-),
-c2 as (
-    select customer_id, count(*) as goods_count
-    from c1
-    group by customer_id
-)
+-- with c1 as (
+--     select distinct *
+--     from customer
+-- ),
+-- c2 as (
+--     select customer_id, count(*) as goods_count
+--     from c1
+--     group by customer_id
+-- )
 
-select customer_id
-from c2
-where goods_count = (select count(*) from product)
+-- select customer_id
+-- from c2
+-- where goods_count = (select count(*) from product)
+
+
+-- spark DF
+-- from pyspark.sql import functions as F
+
+-- total_products = product_df.select(F.countDistinct("product_key")).collect()[0][0]
+
+-- result = (
+--     customer_df
+--     .groupBy("customer_id")
+--     .agg(F.countDistinct("product_key").alias("bought"))
+--     .filter(F.col("bought") == total_products)
+--     .select("customer_id")
+-- )
+
+SELECT customer_id
+FROM Customer
+GROUP BY customer_id
+HAVING COUNT(DISTINCT product_key) = (SELECT COUNT(*) FROM Product)
 
