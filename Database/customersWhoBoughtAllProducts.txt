@@ -1,0 +1,60 @@
+/*
+## Explanation of the LeetCode Solution for "Customers Who Bought All Products"
+
+### 1. Brief Explanation of the Approach
+
+The provided SQL query is used to identify customers who have purchased all available products. Here’s a breakdown of the approach:
+
+- **Common Table Expressions (CTEs)**: The query defines two CTEs, `c1` and `c2`.
+  
+  - **CTE `c1`**: This CTE selects distinct records from the `customer` table, which presumably contains transactions made by customers. The use of `distinct` ensures that there are no duplicate entries for any customer-product combination.
+
+  - **CTE `c2`**: This second CTE calculates how many unique products each customer has purchased. It does this by grouping the results from `c1` by `customer_id` and counting the number of products associated with each customer. The result is a table that holds `customer_id` and the corresponding `goods_count` (the number of distinct products purchased by that customer).
+
+- **Final Selection**: The main query selects customer IDs from `c2` where the `goods_count` matches the total count of products available (retrieved with the subquery `select count(*) from product`). This means only customers who have purchased the same number of products as are available in the `product` table are selected.
+
+### 2. Time and Space Complexity Analysis
+
+- **Time Complexity**:
+  - The initial distinct selection from the `customer` table (`c1`) will take O(n) time, where n is the number of entries in the `customer` table.
+  - The aggregation and grouping in `c2` will also take O(n) time.
+  - The subquery to count the total products (`select count(*) from product`) takes O(m), where m is the number of entries in the `product` table.
+  - Hence, the total time complexity can be roughly approximated as O(n + m).
+
+- **Space Complexity**:
+  - The space used for storing the CTEs `c1` and `c2` is based primarily on the size of the `customer` table, which holds distinct product purchases and boils down to about O(n), assuming distinct entries.
+  - The temporary space for calculations (counts and unique entries) can also be considered, but it remains linear with respect to the size of the input tables. Thus, the space complexity is O(n).
+
+### 3. Why this Approach is Efficient
+
+This approach is efficient for several reasons:
+
+- **Use of CTEs**: CTEs improve the clarity and modularity of the SQL query, making it easier to understand and maintain. They also help to break down complex operations into manageable steps.
+
+- **Aggregation with Group By**: Using the `GROUP BY` clause allows us to efficiently compute counts by customer in one pass through the distinct records, reducing the need for expensive multiple joins or nested queries.
+
+- **Direct Matching**: The use of a simple equality condition (matching `goods_count` with the total product count) allows for straightforward filtering of results, ensuring that the query remains efficient and easy to implement.
+
+- **Minimizing Data Handling**: By selecting distinct records right at the start and grouping them, we minimize the amount of data processed in subsequent steps and avoid potential overhead from handling duplicates.
+
+Overall, the structure of the query combined with the operations performed makes this approach a clear and concise solution to the problem of finding customers who have purchased all products available.
+
+Runtime: undefined
+Memory: 0
+*/
+
+# Write your MySQL query statement below
+with c1 as (
+    select distinct *
+    from customer
+),
+c2 as (
+    select customer_id, count(*) as goods_count
+    from c1
+    group by customer_id
+)
+
+select customer_id
+from c2
+where goods_count = (select count(*) from product)
+
