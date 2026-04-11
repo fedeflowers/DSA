@@ -1,74 +1,84 @@
 /*
-## Brief Explanation of the Approach
+# Explanation of the LeetCode Solution for the "Tree Node" Problem
 
-The provided SQL query is designed to categorize nodes in a tree structure stored in a database table named `tree`. Each node can have a parent-child relationship indicated by the `p_id` (parent ID) field. The solution classifies nodes into three types:
+## 1. Brief Explanation of the Approach
 
-1. **Root**: Nodes that do not have a parent (i.e., `p_id` is `NULL`).
-2. **Inner**: Nodes that have children and are not root nodes (i.e., `p_id` is not `NULL` and there are corresponding entries in the `tree` table indicating that other nodes reference these nodes as their parent).
-3. **Leaf**: Nodes that do not have children (i.e., `p_id` is not `NULL` and there are no corresponding entries in the table indicating any child nodes). However, any node that was found to be a root in the first Common Table Expression (CTE) `r` is excluded from being classified as a leaf.
+The SQL query provided categorizes nodes in a tree structure into three types: "Root", "Inner", and "Leaf". 
 
-The query breaks down into several parts using Common Table Expressions (CTEs):
+- **Root Nodes**: These are nodes that do not have a parent node (i.e., `p_id` is `NULL`).
+- **Inner Nodes**: These are nodes that have children (i.e., they are referenced as a parent in the `p_id` of other nodes) and also have a parent (i.e., their own `p_id` is not `NULL`).
+- **Leaf Nodes**: These are nodes that do not have any children (i.e., no other node references them as a parent in `p_id`) and have a parent node.
 
-- CTE `r` identifies root nodes.
-- CTE `i` identifies inner nodes.
-- CTE `l` identifies leaf nodes and excludes any roots.
+The solution utilizes Common Table Expressions (CTEs) to build subqueries for each type of node:
 
-Finally, it combines the results of all three CTEs using the `UNION` operator, ensuring all node types are returned in a single result set.
+1. **CTE `r`** identifies the root nodes.
+2. **CTE `i`** identifies the inner nodes by joining the tree with itself.
+3. **CTE `l`** identifies the leaf nodes that are not root nodes, ensuring that there is no overlap by excluding root nodes.
 
-## Time and Space Complexity Analysis
+Finally, the results from each of the CTEs are combined using `UNION` to produce a comprehensive list of all nodes with their respective types.
+
+## 2. Time and Space Complexity Analysis
 
 ### Time Complexity
-- The query involves multiple `LEFT JOIN` operations and may scan the entire table for each CTE:
-  - The first CTE (`r`) has time complexity of O(N) for scanning the table once.
-  - The second CTE (`i`) again involves a scan and join, which can be approximated as O(N).
-  - The third CTE (`l`) involves a scan and a subquery (the EXCEPT clause), which also leads to O(N).
-  - Overall, if we consider overlapping work done across the CTEs, the time complexity can be approximated as O(N).
+- The time complexity is O(N), where N is the number of nodes in the `tree` table. This is because each query scans the `tree` table at most a couple of times (once for each CTE), making the overall complexity proportional to the number of nodes.
 
 ### Space Complexity
-- The space complexity is driven mainly by the storage of the CTEs and the intermediate results, which are about O(N) for each CTE. Thus, the overall space complexity is:
-  - O(N) for storing the intermediate results of each CTE.
+- The space complexity is also O(N) due to the storage requirements for the result sets created by the CTEs. The intermediate tables essentially create temporary storage for the nodes categorized by their types.
 
-## Why This Approach is Efficient
+## 3. Why This Approach is Efficient
 
-1. **Modularity Using CTEs**: The use of CTEs allows breaking down the problem into smaller, more manageable parts. Each CTE serves a specific purpose, making the query easier to read and maintain.
+- **Clear Categorization**: The use of CTEs allows for a clear and organized structure to differentiate between the types of nodes in the tree. Each CTE focuses on a specific problem area, which enhances code readability and maintainability.
+  
+- **Single Pass for Each Category**: The structure employs a straightforward method of evaluating each category in separate passes, avoiding complex condition checks and subqueries. Each CTE effectively operates like a single scan, which is advantageous for performance.
 
-2. **Direct Classification**: Each type of node is computed in a straightforward manner using SQL operations (`JOIN` and condition checks), thus avoiding unnecessary complexity.
+- **Use of SQL UNION**: The `UNION` operator efficiently combines the results from the three different CTEs, allowing for a simplified final result set without excessive joining or filtering.
 
-3. **Set Operations with UNION**: The `UNION` operator effectively combines results from the different classifications, which simplifies the final output without requiring further computations or checks.
-
-4. **Efficient Use of Indexes**: Assuming indices exist on `id` and `p_id`, the joins and conditions in the CTEs will perform efficiently, leading to faster query evaluations.
-
-Overall, this approach is efficient in terms of both time and readability, effectively using SQL capabilities to categorize tree nodes neatly.
+In conclusion, this SQL solution effectively utilizes relational database principles to achieve efficient categorization of nodes in a hierarchical structure, providing clear and maintainable code.
 
 Runtime: undefined
 Memory: 0
 */
 
-# Write your MySQL query statement below
-# leaf
-with r as (
-    select id, "Root" as type
-    from tree
-    where p_id is null
-),
-i as (
-    select t1.id, "Inner" as type
-    from tree t1 left join tree t2
-    on t1.id = t2.p_id
-    where t2.id is not null and t1.p_id is not null
-),
-l as (
-    select t1.id, "Leaf" as type
-    from tree t1 left join tree t2
-    on t1.id = t2.p_id
-    where t2.id is null
-    except
-    select id, "Leaf"
-    from r
-)
+-- # Write your MySQL query statement below
+-- # leaf
+-- with r as (
+--     select id, "Root" as type
+--     from tree
+--     where p_id is null
+-- ),
+-- i as (
+--     select t1.id, "Inner" as type
+--     from tree t1 left join tree t2
+--     on t1.id = t2.p_id
+--     where t2.id is not null and t1.p_id is not null
+-- ),
+-- l as (
+--     select t1.id, "Leaf" as type
+--     from tree t1 left join tree t2
+--     on t1.id = t2.p_id
+--     where t2.id is null
+--     except
+--     select id, "Leaf"
+--     from r
+-- )
 
-SELECT * FROM r
-UNION
-SELECT * FROM i
-UNION
-SELECT * FROM l
+-- SELECT * FROM r
+-- UNION
+-- SELECT * FROM i
+-- UNION
+-- SELECT * FROM l
+
+WITH r AS (
+    SELECT id, 'Root' AS type FROM tree WHERE p_id IS NULL
+),
+i AS (
+    SELECT t1.id, 'Inner' AS type
+    FROM tree t1 JOIN tree t2 ON t1.id = t2.p_id
+    WHERE t1.p_id IS NOT NULL
+),
+l AS (
+    SELECT t1.id, 'Leaf' AS type
+    FROM tree t1 LEFT JOIN tree t2 ON t1.id = t2.p_id
+    WHERE t2.id IS NULL AND t1.p_id IS NOT NULL  -- ← guards both root and leaf overlap
+)
+SELECT * FROM r UNION SELECT * FROM i UNION SELECT * FROM l
