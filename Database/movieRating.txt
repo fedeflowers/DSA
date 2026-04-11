@@ -1,0 +1,91 @@
+/*
+```markdown
+## Explanation of the LeetCode Solution for the "Movie Rating" Problem
+
+### 1. Brief Explanation of the Approach
+
+This SQL query aims to solve the "Movie Rating" problem by retrieving two key pieces of information:
+1. The user who has provided the most ratings, along with the number of ratings given.
+2. The movie which has the highest average rating for ratings provided in February 2020.
+
+The solution employs Common Table Expressions (CTEs) to structure the query in manageable parts:
+
+- **CTE `a`**: This CTE counts the number of ratings submitted by each user. It groups the results by `user_id` and stores the count as `num_rating`.
+- **CTE `res1`**: This CTE retrieves the name of the user with the highest number of ratings. It joins the results from `CTE a` with the `users` table to get the user's name. It then orders the results by `num_rating` in descending order and by the user's name in ascending order, limiting the output to one result.
+  
+- **CTE `b`**: This CTE computes the average rating for each movie from the `movierating` table filtered for ratings created in February 2020. It groups the results by `movie_id` and calculates `avg_rating`.
+  
+- **CTE `res2`**: This CTE retrieves the title of the movie with the highest average rating. Similar to `res1`, it joins `CTE b` with the `movies` table to get the movie title and orders by `avg_rating` in descending order and by title in ascending order, again limiting the output to one result.
+
+Finally, the main SELECT statement combines the results from both `res1` and `res2` using `UNION ALL`, thereby returning both the user with the most ratings and the highest-rated movie.
+
+### 2. Time and Space Complexity Analysis
+
+- **Time Complexity**:
+  - The first CTE (`a`) will take `O(N)` time to compute the count of ratings for all users, where `N` is the number of rows in the `movierating` table.
+  - The second CTE (`b`) will also take `O(N)` time to compute the average ratings grouped by each movie for the filtered records.
+  - The two joins in `res1` and `res2` each have a time complexity of `O(M + L)`, where `M` is the number of users and `L` is the number of movies, respectively.
+  - Overall, the most dominating term is `O(N)`, thus the time complexity of the entire query is approximately `O(N)`.
+
+- **Space Complexity**:
+  - The space complexity is primarily driven by the CTEs storing intermediate results. Each CTE `a`, `b`, `res1`, and `res2` would require storage for a set of rows equal to the number of unique users, ratings, and movies respectively.
+  - Hence, the space complexity can be considered `O(U + V)`, where `U` is the number of unique users, and `V` is the number of unique movies.
+
+### 3. Why This Approach is Efficient
+
+The approach is efficient due to the following reasons:
+
+1. **Use of CTEs**: By breaking down the query into smaller, logical components (CTEs), the code becomes easier to understand and maintain. Each CTE is focused on a single task, which simplifies debugging and optimization.
+
+2. **Filtering Conditions**: The use of specific filters (e.g., year and month in CTE `b`) reduces the amount of data processed in subsequent calculations, which can significantly improve performance, especially on large datasets.
+
+3. **Sorting and Limiting**: Sorting results by rating or name and using `LIMIT 1` allows the query to return only the necessary information without unnecessary data processing, optimizing performance.
+
+4. **Union Logic**: The use of `UNION ALL` instead of `UNION` avoids additional overhead of deduplication, which is not required in this context since the results are logically distinct (one user and one movie).
+
+Overall, this structured approach not only improves readability but also enhances performance efficiency.
+```
+
+Runtime: undefined
+Memory: 0
+*/
+
+# Write your MySQL query statement below
+
+#first part
+with a as (
+    select user_id, count(*) as num_rating
+    from movierating as mr
+    group by user_id
+),
+res1 as (
+    select name as results
+    from a join users on a.user_id = users.user_id
+    order by num_rating desc, users.name asc
+    limit 1
+),
+b as (
+    select movie_id, avg(rating) as avg_rating
+    from movierating as mr
+    WHERE YEAR(created_at) = 2020 AND MONTH(created_at) = 2
+    group by movie_id
+),
+res2 as (
+    select title as results
+    from b join movies m on b.movie_id = m.movie_id
+    order by avg_rating desc, m.title asc
+    limit 1
+)
+
+select *
+from res1
+union all
+select *
+from res2
+
+
+
+
+
+
+
