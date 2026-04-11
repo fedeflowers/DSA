@@ -1,0 +1,54 @@
+/*
+```markdown
+### Explanation of the LeetCode Solution for "Count Student Number in Departments"
+
+#### 1. Brief Explanation of the Approach
+The SQL query retrieves the count of students in each department from a database that contains two tables: `student` and `department`. The goal is to result in a list of departments alongside their respective student counts. Here’s a breakdown of the query:
+
+- **Tables Involved**: 
+  - `student (s)`: Holds student records with a `dept_id` that indicates which department the student belongs to.
+  - `department (d)`: Contains department records identified by `dept_id` and `dept_name`.
+
+- **Join Operation**:
+  - A `RIGHT JOIN` is performed between the `student` table and the `department` table on the `dept_id` field. This means all departments will be included in the final result, even if there are no students in a particular department.
+
+- **Aggregation**:
+  - The `COUNT(student_id)` function counts the number of entries (students) for each department. If no students are linked to a department, the count will return as zero.
+
+- **Grouping**:
+  - The results are grouped by `d.dept_id` and `dept_name` to ensure that counts are computed per department.
+
+- **Sorting**:
+  - Finally, the results are ordered first by the count of students in descending order and then by `dept_name` in ascending order to maintain a readable output.
+
+#### 2. Time and Space Complexity Analysis
+- **Time Complexity**: 
+  - The time complexity primarily depends on the efficiency of the join operation and the aggregation. Assuming a standard implementation with indexing, the computational time can be approximated as O(N + M), where N is the number of records in the `student` table and M is the number of records in the `department` table.
+  
+- **Space Complexity**: 
+  - The space complexity is O(K) where K is the number of unique departments in the `department` table, as this query will yield an output with a row for each department.
+
+#### 3. Why This Approach is Efficient
+- **Use of RIGHT JOIN**: The use of a `RIGHT JOIN` ensures that even departments without any students are included in the result set. This is crucial for counting total students in each department accurately.
+
+- **Aggregation in the Database**: Performing counting and grouping operations directly in the database is generally efficient as database engines are optimized for these operations. Thus, it minimizes data transfer between the database and the application.
+
+- **Ordered Output**: The ordering of results makes it easier to analyze departments by student count, which is often required in such reporting queries.
+
+Overall, this solution utilizes standard SQL features effectively to achieve an accurate and sorted count of students per department in a scalable manner.
+```
+
+Runtime: undefined
+Memory: 0
+*/
+
+# Write your MySQL query statement below
+
+select dept_name, count(student_id) as student_number
+from student s
+right join department d
+on s.dept_id = d.dept_id
+group by d.dept_id, dept_name
+ORDER BY count(student_id) DESC, dept_name ASC
+
+
