@@ -1,0 +1,41 @@
+/*
+## Explanation of the LeetCode Solution for "Consecutive Numbers"
+
+### 1. Approach
+The solution uses a SQL query to find numbers in a table named `logs` that appear as consecutive values. The main idea is to use window functions `LAG` and `LEAD` to compare each number with its immediate previous and next numbers. 
+
+The steps involved are:
+- Using the `LAG` function to get the previous number (`prev`) for each number (`num`), ordered by an identifier (`id`).
+- Using the `LEAD` function to get the next number (`next`) for each number (`num`), again ordered by `id`.
+- The outer query then filters the results to find the numbers where the current number (`num`) is equal to both its previous and next values (`prev` and `next`). This indicates that the number appears consecutively.
+
+Finally, the `SELECT DISTINCT` ensures that only unique numbers that meet the criteria are returned in the result set, labeled as `ConsecutiveNums`.
+
+### 2. Time and Space Complexity Analysis
+**Time Complexity:**
+- The query has an overall time complexity of O(N), where N is the number of rows in the `logs` table. This is because the `LAG` and `LEAD` functions need to process each row to determine the values of adjacent rows.
+
+**Space Complexity:**
+- The space complexity is also O(N) due to the temporary table (subquery `t`) that stores the results of the `LAG` and `LEAD` computations before filtering them. The temporary result set will at least hold all rows in the input table.
+
+### 3. Efficiency of the Approach
+This approach is efficient because:
+- It leverages window functions that are optimized for querying datasets and reduce the need for explicit joins or complex nested queries. 
+- The use of window functions allows us to access rows in a way that is concise and directly related to the input dataset, making the code cleaner and easier to understand.
+- By filtering using `WHERE` in the outer query, we are able to directly derive the desired output without additional filtering steps.
+
+Overall, this solution is both elegant in its SQL structure and efficient in execution, making it well-suited for large datasets in relational databases.
+
+Runtime: undefined
+Memory: 0
+*/
+
+# Write your MySQL query statement below
+SELECT DISTINCT num AS ConsecutiveNums
+FROM (
+    SELECT num,
+        LAG(num)  OVER (ORDER BY id) AS prev,
+        LEAD(num) OVER (ORDER BY id) AS next
+    FROM logs
+) t
+WHERE num = prev AND num = next;
