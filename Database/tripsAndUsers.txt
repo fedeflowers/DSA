@@ -1,0 +1,60 @@
+/*
+```markdown
+## Explanation of the LeetCode Solution for "Trips and Users"
+
+### 1. Brief Explanation of the Approach
+
+The provided SQL query calculates the cancellation rate of trips requested between the dates '2013-10-01' and '2013-10-03'. It joins two instances of the `users` table (for clients and drivers) to ensure that both participants of the trip are not banned. Here’s a step-by-step breakdown of what the query does:
+
+- **SELECT Clause**: 
+  - It retrieves the `request_at` date as `Day`.
+  - It calculates the `Cancellation Rate`, defined as the ratio of trips that are not completed (`status != 'completed'`) to the total number of trips (`COUNT(*)`), rounded to two decimal places.
+
+- **FROM and JOIN Clauses**:
+  - The query operates on the `trips` table, denoted as `t`, and joins it with the `users` table (twice), once for the client (`c`) and once for the driver (`d`).
+  - Both joins filter participants to ensure only users who are not banned (`banned = 'No'`) are included.
+
+- **WHERE Clause**:
+  - It restricts the results to trips that occurred within the specified date range.
+
+- **GROUP BY Clause**:
+  - The results are grouped by the `request_at` date, allowing for the calculation of cancellation rates for each unique date.
+
+### 2. Time and Space Complexity Analysis
+
+- **Time Complexity**: 
+  - The time complexity largely depends on the number of rows in the `trips` and `users` tables. The joins will result in a combined complexity of `O(n * m)` in the worst case, where `n` is the number of trips and `m` is the number of users. However, due to optimizations in SQL query execution engines (such as indexing), performance is usually significantly better than quadratic.
+
+- **Space Complexity**:
+  - The space complexity is primarily dependent on the output storage for the results, which will be linear in the number of unique dates (`k`) that meet the criteria. Therefore, it could be considered `O(k)` for the results held in memory.
+
+### 3. Why This Approach is Efficient
+
+This approach is efficient because:
+
+- **Filtering Early**: The query filters out banned users during the joins, significantly reducing the data set being processed. This means that the calculations for the cancellation rate are performed only on relevant data, improving performance.
+
+- **Using Aggregation**: The use of aggregate functions (`SUM` and `COUNT`) alongside grouping allows the query to compute necessary statistics (cancellation rate) directly from the database. This is typically much faster than processing raw data in application layer code.
+
+- **Date Range Query**: Restricting the query to a specific date range limits the data the database needs to scan. This reduces the overall workload and speeds up execution.
+
+By combining these optimization techniques, the query can efficiently compute the desired metrics for the specified criteria.
+```
+
+Runtime: undefined
+Memory: 0
+*/
+
+# Write your MySQL query statement below
+
+SELECT 
+    request_at AS Day,
+    ROUND(
+        SUM(status != 'completed') / COUNT(*),
+        2
+    ) AS "Cancellation Rate"
+FROM trips t
+JOIN users c ON t.client_id = c.users_id AND c.banned = 'No'
+JOIN users d ON t.driver_id = d.users_id AND d.banned = 'No'
+WHERE request_at BETWEEN '2013-10-01' AND '2013-10-03'
+GROUP BY request_at;
