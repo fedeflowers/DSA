@@ -1,0 +1,41 @@
+/*
+```markdown
+## Explanation of the LeetCode Solution for "Rank Scores"
+
+### 1. Brief Explanation of the Approach
+
+The provided SQL query is designed to rank scores from a table named `scores`. It uses the `DENSE_RANK()` window function to assign ranks to the scores in descending order. The query processes the following steps:
+
+- **Selects the Score**: The `SELECT` clause retrieves the `score` column from the `scores` table.
+- **Applies DENSE_RANK()**: The `DENSE_RANK()` function assigns a unique rank to each distinct score, with the same score getting the same rank. The ranking is done by ordering the scores in descending order.
+- **Orders the Result**: Finally, the result is ordered by the calculated rank to display the scores in ranked order.
+
+### 2. Time and Space Complexity Analysis
+
+- **Time Complexity**: The time complexity for executing the `DENSE_RANK()` function and the `ORDER BY` clause is O(N log N), where N is the number of rows in the `scores` table. This is primarily due to the sorting operation involved in ranking.
+  
+- **Space Complexity**: The space complexity is O(N) since the database needs to hold the results of the ranking operation, which corresponds to the number of scores.
+
+### 3. Why This Approach is Efficient
+
+This approach is efficient for several reasons:
+
+- **Use of Window Functions**: Leveraging window functions like `DENSE_RANK()` allows for efficient rank computation without the need for complex joins or subqueries.
+- **Direct Ranking**: The direct application of ranking based on score order minimizes the need for additional calculations or storage, making it straightforward.
+- **Simplicity and Clarity**: The query is simple and clear, making it easier to understand, maintain, and modify if necessary.
+
+Overall, this SQL solution effectively ranks scores in a concise manner while managing computational complexity.
+```
+
+Runtime: undefined
+Memory: 0
+*/
+
+# Write your MySQL query statement below
+
+SELECT 
+    score,
+    DENSE_RANK() OVER (ORDER BY score DESC) AS `rank`
+FROM scores
+ORDER BY `rank`;
+
