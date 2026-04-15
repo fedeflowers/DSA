@@ -1,38 +1,38 @@
 """
 ```markdown
-### Explanation of the Approach
+## Explanation of the Solution
 
-The solution employs a straightforward strategy to find the shortest distance to a target string in a circular array of strings. The approach is as follows:
+### Approach
+The given solution solves the problem of finding the shortest distance to a target string in a circular array of words. The main idea is to simultaneously traverse the array in both clockwise and counterclockwise directions, comparing the elements at each position to the target string. 
 
-1. **Initialization**: A variable `smallest` is set to infinity to keep track of the minimum distance found during the search. The length of the `words` list is stored in `n`.
+The steps involved in the algorithm are as follows:
+1. Initialize a variable `smallest` to a very large value (infinity) to keep track of the minimum distance found.
+2. Determine the length of the `words` array (`n`).
+3. Iterate from `0` to `n-1`, checking distances in both the left and right directions:
+   - **Left Direction**: Calculate the index to the left using modulo to simulate the circular nature of the array.
+   - **Right Direction**: Similarly, calculate the index to the right with modulo arithmetic.
+   - If either index matches the target string, update `smallest` with the current distance if it's less than the current value of `smallest`.
+4. After the loop, if `smallest` is still infinity, it indicates that the target is not found, and we return `-1`. Otherwise, return the `smallest` distance found.
 
-2. **Traversal Logic**: The solution uses a loop that iterates `n` times. For each iteration:
-   - Calculates the left index by moving `i` steps back from the `startIndex`, wrapping around the array using modulo operation.
-   - Checks if the word at the left index matches the target. If it does, it updates `smallest` to the minimum of its current value and `i`.
-   - Similarly, calculates the right index by moving `i` steps forward from the `startIndex`, also using the modulo operation for wrapping. If the right index matches the target, it updates `smallest` accordingly.
+### Time and Space Complexity
+- **Time Complexity**: O(n)
+  - The solution iterates through the array a maximum of `n` times, where `n` is the number of words in the array. Each check involves constant time operations, so the overall complexity remains linear.
+  
+- **Space Complexity**: O(1)
+  - The solution uses a constant amount of additional space for variables (`smallest`, `n`, `l`, `r`), regardless of the input size.
 
-3. **Result Determination**: After the loop, if `smallest` remains as infinity, it implies that the target was not found, thus returns `-1`. Otherwise, it returns the value of `smallest`, which represents the minimum distance to the target string.
-
-### Time and Space Complexity Analysis
-
-- **Time Complexity**: The algorithm iterates over the range of `n` (length of the words list) twice (once for left and once for right), resulting in a time complexity of O(n). 
-- **Space Complexity**: The space complexity is O(1), as the algorithm only uses a few extra variables for calculations, not dependent on the input size.
-
-### Why This Approach is Efficient
-
+### Efficiency of the Approach
 This approach is efficient for several reasons:
+1. **Direct Comparisons**: By checking both directions simultaneously, the algorithm ensures that it finds the nearest target with minimal iterations.
+2. **Circular Nature Handling**: The use of modulo arithmetic neatly handles the wrap-around of indices without any additional data structures or complex logic.
+3. **Single Pass**: The algorithm only requires a single pass over the list, making it efficient in terms of processing time.
+4. **No Additional Data Structures**: The absence of any lists or sets to store intermediate results keeps the memory usage low, further improving the efficiency.
 
-1. **Single Pass**: By using a single loop that checks both directions (left and right) simultaneously, it efficiently determines the shortest distance without needing multiple scans of the array.
-
-2. **Constant Space Usage**: The use of only a few variables minimizes the auxiliary space needed, which is crucial for space-constrained environments.
-
-3. **Handling Circular Nature**: The modulo operation effectively handles the circular nature of the array, allowing the algorithm to check indices that wrap around without the need for additional data structures or complex logic.
-
-Overall, the solution combines clarity, simplicity, and efficiency, making it a strong candidate for tackling the problem at hand.
+Overall, the algorithm is optimal for the problem and effectively leverages properties of modular arithmetic to handle the circular structure of the array.
 ```
 
-Runtime: undefined
-Memory: 19532000
+Runtime: N/A
+Memory: N/A
 """
 
 class Solution:
