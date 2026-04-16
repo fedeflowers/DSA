@@ -1,65 +1,54 @@
 """
-# Explanation of the LeetCode Solution for "Number of Islands"
+```markdown
+## Explanation of the "Number of Islands" Solution
 
-## 1. Approach Explanation
+### 1. Approach
+The provided solution employs a Depth-First Search (DFS) strategy to explore the grid of land and water represented as a 2D array of strings. Each '1' in the grid represents land, while '0' represents water. The goal is to count the number of distinct islands, where an island is defined as a group of connected '1's (land) that are connected either horizontally or vertically.
 
-The solution employs a depth-first search (DFS) algorithm to traverse and explore each island in the given 2D grid. The grid consists of '1's (land) and '0's (water). The solution counts the number of distinct islands by following these steps:
+Here's a breakdown of the approach:
+- The `numIslands` function iterates over each cell in the grid. Whenever it encounters a '1' that has not been visited yet, it triggers a DFS to explore the entire island.
+- The `explore_island` function recursively marks all parts of the island as visited, ensuring not to double count parts of the same island.
+- The exploration uses a set named `visited` to track which cells have been processed to prevent re-visiting them.
+- After fully exploring one island, it returns 1 to indicate that one complete island has been counted, and this is accumulated in the `res` variable.
 
-- **Initialization**: A set called `visited` is used to keep track of cells that have already been explored to avoid counting them multiple times.
-
-- **Explore Island**: The method `explore_island` takes a starting cell (coordinates) and the grid as parameters. It performs the following:
-  - If the current cell is water ('0'), it returns `0` indicating that no island is found.
-  - If the current cell has already been visited, it also returns `0` to avoid redundant exploration.
-  - If the current cell is part of an island ('1'), the method explores its adjacent cells (right, down, left, up) recursively using a loop. Before making a recursive call, the current cell is marked as visited.
+### 2. Time and Space Complexity Analysis
+- **Time Complexity**: \(O(M \times N)\), where \(M\) is the number of rows and \(N\) is the number of columns in the grid. In the worst-case scenario, we may have to visit every cell in the grid to find all islands.
   
-- **Count Islands**: The method `numIslands` iterates through each cell in the grid. For each cell, it calls `explore_island`. Each successful call that marks an island as visited increments a counter (`res`). The final count of islands is returned.
+- **Space Complexity**: \(O(M \times N)\) in the worst case for the recursive stack, particularly in cases where all cells are land and form a single connected island. The `visited` set also consumes \(O(M \times N)\) space in the worst case, as it could potentially store information about every cell.
 
-## 2. Time and Space Complexity Analysis
-
-### Time Complexity
-- **O(N)**: Here, `N` is the total number of cells (rows * columns) in the grid. Each cell is visited at most once during the DFS, leading to a linear time complexity relative to the number of cells in the grid.
-
-### Space Complexity
-- **O(N)**: The space complexity is primarily due to the `visited` set which stores each visited cell. In the worst case (when the entire grid is an island), the depth of the recursive stack can also grow, which can be O(N) for the call stack space.
-
-## 3. Efficiency of the Approach
-
-This approach is efficient for several reasons:
-
-- **Direct Exploration**: The DFS allows for direct exploration of connected land cells with minimal overhead. Each cell is processed at most once, leading to an optimal traversal of the grid.
-
-- **No Auxiliary Structures**: The solution uses a single set to track visited nodes, minimizing additional memory usage beyond what is necessary for tracking visited states.
-
-- **Simplicity and Clarity**: The recursive nature of the DFS simplifies the code structure, making it straightforward to follow the logic of visiting connected components (islands).
-
-Overall, this method effectively utilizes DFS to explore the grid systematically while ensuring that each cell contributes to the island count accurately.
+### 3. Efficiency of the Approach
+This method is efficient because:
+- It systematically explores each unvisited cell only once, ensuring that the counting of islands is done in a single pass through the grid.
+- The DFS guarantees thorough exploration of each island without unnecessary re-visitation of cells, thus optimizing the performance.
+- By using a set to track visited cells, it can quickly check if a cell has already been processed, ensuring rapid lookups and updates.
+  
+These factors contribute to the overall efficiency, making the approach both time-effective and space-efficient given the constraints of the problem.
+```
 
 Runtime: undefined
-Memory: 26316000
+Memory: 26968000
 """
 
 class Solution:
     def __init__(self):
+        self.num_islands = 0
         self.visited = set()
-
-    def explore_island(self, start, grid):
-        x,y = start
-        if grid[x][y] == '0':
+        
+    def explore_island(self, x: int, y: int, grid):
+        dirs = [(-1, 0), (0, -1), (1, 0), (0, 1)]
+        if grid[x][y] == '0' or (x, y) in self.visited:
             return 0
-        if tuple(start) in self.visited:
-            return 0 
+        
+        self.visited.add((x,y))
+        for i, k in dirs:
+            new_x, new_y = x + i, y + k
+            if 0 <= new_y < len(grid[0]) and 0 <= new_x < len(grid) and grid[new_x][new_y] == '1':  
+                self.explore_island(new_x, new_y, grid)
 
-        for new_x,new_y in [[0,1], [1,0], [0,-1], [-1,0]]:
-            if 0 <= x + new_x < len(grid) and 0 <= y + new_y < len(grid[0]):
-                self.visited.add(tuple(start))
-                self.explore_island((x+new_x, y+ new_y), grid)
         return 1
-
     def numIslands(self, grid: List[List[str]]) -> int:
-        row, col = len(grid), len(grid[0])
         res = 0
-        for i in range(row):
-            for j in range(col):
-                res += self.explore_island((i, j), grid)
-
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                res += self.explore_island(i, j, grid)
         return res
