@@ -1,0 +1,46 @@
+/*
+```markdown
+# Explanation of the LeetCode Solution for "Department Highest Salary"
+
+## 1. Brief Explanation of the Approach
+The provided SQL query aims to retrieve the highest-paid employee in each department from an `employee` table and a `department` table. 
+
+### Steps:
+- It first uses a Common Table Expression (CTE) named `highest_salaries` to compute the highest salaries within each department. It does this using the `DENSE_RANK()` window function, which assigns a rank to each employee's salary within their respective department, ensuring that the highest salary receives a rank of 1.
+- The `PARTITION BY departmentId` clause in the `DENSE_RANK()` function allows the ranking to restart for each department.
+- After calculating the rankings, the main query selects the department name, employee name, and salary from the `highest_salaries` CTE and joins it with the `department` table on the department ID.
+- It filters the results to include only those employees whose rank is 1, which corresponds to the highest salary in each department.
+
+## 2. Time and Space Complexity Analysis
+- **Time Complexity**: O(N log N)
+  - The ranking process with `DENSE_RANK()` involves sorting the salaries within each department, which takes O(N log N) in the worst case, where N is the total number of employees. This is because we need to arrange the salaries to determine the highest one.
+  
+- **Space Complexity**: O(N)
+  - The space required is primarily for storing the results of the CTE, which must hold a row for each employee, thus leading to a space complexity of O(N).
+
+## 3. Why This Approach is Efficient
+- **Direct Usage of Window Functions**: The use of `DENSE_RANK()` allows for efficient retrieval of ranks without needing multiple joins or subqueries, as it calculates ranks based on a single pass over the employee data.
+- **CTE for Clarity and Modularity**: The use of a CTE makes the query easier to read and understand, as it separates the ranking logic from the final selection logic. This modularity is a best practice in SQL.
+- **Minimization of Data**: By filtering only the top-ranked salaries after calculating the ranks, we limit further processing to only the relevant results, leading to improved runtime efficiency.
+- **Reduction of Joins**: By computing the ranking within the same step as collecting names and salaries, the implementation avoids unnecessary repetition in joins, focusing directly on the needed information.
+
+Overall, this approach effectively leverages SQL functionalities to solve the problem in a clear and optimal manner.
+```
+
+Runtime: undefined
+Memory: 0
+*/
+
+# Write your MySQL query statement below
+
+# get highest per department id
+with highest_salaries as (
+    select departmentId, name, salary,
+    dense_rank() over (partition by departmentId order by salary desc) as ranked
+    from employee e
+
+)
+select d.name as Department, h.name as Employee, h.salary as Salary
+from highest_salaries h join department d
+on h.departmentId = d.id
+where h.ranked = 1
