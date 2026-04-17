@@ -1,30 +1,52 @@
 """
-```markdown
-### LeetCode Solution Explanation for "Maximum Subarray"
+# Explanation of the LeetCode Solution for "Maximum Subarray"
 
-#### 1. Brief Explanation of the Approach
-The given solution uses an iterative approach to find the maximum sum of a contiguous subarray within the input array `nums`. 
+## 1. Approach Explanation
 
-- `curr_sum` is initialized to negative infinity to account for the scenario where all numbers in `nums` are negative.
-- `res` also starts at negative infinity to track the maximum subarray sum found so far.
-- The algorithm iterates through each number (`num`) in `nums`:
-  - It updates `curr_sum` by adding the current number.
-  - `res` is updated to be the maximum of its current value, `curr_sum`, and the current number `num`. This ensures that if a single number is greater than the `curr_sum`, it will reset `curr_sum` to that number.
-  - If `num` is greater than `curr_sum`, it indicates that starting a new subarray from the current number may yield a higher sum, hence `curr_sum` is reset to `num`.
-This continues until all elements of the array have been processed, and finally, `res` contains the maximum subarray sum.
+The provided solution implements a variation of the Kadane's Algorithm to find the maximum sum of a contiguous subarray from the input list `nums`. The main idea is to traverse through the elements of the array while maintaining a running sum (`curr_sum`) of the current subarray. Here’s how the code works:
 
-#### 2. Time and Space Complexity Analysis
-- **Time Complexity**: O(n), where n is the length of the input array `nums`. The algorithm makes a single pass through the array, processing each element exactly once.
-- **Space Complexity**: O(1). The solution uses a constant amount of space for a few integer variables (`curr_sum` and `res`) and does not allocate new data structures based on input size.
+- **Initialization**: We start with two variables, `curr_sum` and `res`, both initialized to negative infinity to handle cases where all elements could be negative. 
 
-#### 3. Why This Approach is Efficient
-The efficiency of this approach lies in the use of a single pass through the array while only maintaining a few variables, thus minimizing both time and space complexity. The idea of resetting `curr_sum` when a single number is found to be greater than it ensures that we keep track of the best possible contiguous subarray sum dynamically. This efficient in-place tracking allows for immediate consideration of new potential subarray sums without needing to check all possible subarrays (which would lead to a higher time complexity).
+- **Iterate through the array**: For each number (`num`) in the list:
+  - Update `curr_sum` by adding the current number to it.
+  - Update `res` to the maximum value among `res`, `curr_sum`, and the current number `num`. This accounts for cases where starting a new subarray at the current number might yield a higher sum.
+  - If the current number is greater than the current sum (`curr_sum`), we restart `curr_sum` with the current number, indicating that a new subarray should begin from this number.
 
-By focusing on cumulative sums and dynamically resetting the starting point of the subarray, we achieve optimal performance suitable for large inputs.
+- **Return Result**: After processing all numbers, `res` will contain the maximum sum of any contiguous subarray.
+
+```python
+class Solution:
+    def maxSubArray(self, nums: List[int]) -> int:
+        curr_sum = -float("inf")
+        res = -float("inf")
+        for num in nums:
+            curr_sum = curr_sum + num
+            res = max(res, curr_sum, num)
+            if num > curr_sum:
+                curr_sum = num #restart
+        return res
 ```
 
+## 2. Time and Space Complexity Analysis
+
+- **Time Complexity**: The algorithm runs in O(n), where n is the number of elements in the input list `nums`. This is because it processes each element in the list exactly once in a single loop.
+
+- **Space Complexity**: The space complexity is O(1). The algorithm uses a fixed amount of extra space for the variables `curr_sum` and `res`, regardless of the input size.
+
+## 3. Efficiency of the Approach
+
+This approach is efficient due to the following reasons:
+
+- **Single Pass**: By processing each element of the array in a single pass (O(n)), we avoid the need for nested loops that could lead to O(n^2) time complexity, especially crucial for large arrays.
+
+- **Constant Space**: The use of only a couple of variables for tracking the current sum and the result minimizes memory usage, making it suitable for problems with potential large input sizes.
+
+- **Handling Edge Cases**: The initialization with negative infinity allows the solution to correctly handle cases where all elements are negative, ensuring it accurately finds the maximum contiguous subarray sum (which, in such cases, will be the largest single element).
+
+Overall, this implementation balances time efficiency and space efficiency, making it an optimal solution to the "Maximum Subarray" problem.
+
 Runtime: undefined
-Memory: 31312000
+Memory: 31588000
 """
 
 class Solution:
@@ -32,7 +54,6 @@ class Solution:
         curr_sum = -float("inf")
         res = -float("inf")
         for num in nums:
-            print(curr_sum)
             curr_sum = curr_sum + num
             res = max(res, curr_sum, num)
             if num > curr_sum:
