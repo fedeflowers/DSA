@@ -1,0 +1,55 @@
+/*
+## Explanation of the LeetCode Solution for "Product Sales Analysis III"
+
+### 1. Brief Explanation of the Approach
+
+The given SQL query is designed to analyze product sales data, specifically aiming to identify the first year of sales for each product from a `sales` table. 
+
+Here’s a step-by-step breakdown of the approach:
+
+- **Common Table Expressions (CTEs)**:
+  - `first_y`: This CTE uses the `ROW_NUMBER()` window function to enumerate the years for each product, partitioned by `product_id` and ordered by `year` in ascending order. This allows us to assign a unique row number (`c`) to each year for each product.
+  
+  - `prod_y`: This CTE filters the results from `first_y` to select only the rows where the row number `c` equals 1. This effectively identifies the very first year of sales for each product.
+
+- **Final Selection**: The main query joins the `sales` table with the `prod_y` CTE to retrieve the `product_id`, the first year of sales (aliased as `first_year`), the quantity sold, and the price at which the product was sold in that first year. This ensures that we get the complete sales information for each product in its first year.
+
+### 2. Time and Space Complexity Analysis
+
+- **Time Complexity**:
+  - The time complexity of this query is driven by the operations involved in the `ROW_NUMBER()` function and the join operation. 
+  - Assuming `N` is the number of records in the `sales` table, the query essentially requires scanning through the entire dataset for the initial row number assignments and then performing a join. Consequently, the time complexity can be approximated to **O(N log N)** due to sorting during the row number assignment, and there could be a linear scan for the join.
+
+- **Space Complexity**:
+  - The space complexity of the query can be approximated to **O(N)** since we need to store intermediate results in the CTEs. The CTEs hold copies of the data for `first_y` and `prod_y` which can grow with the size of the input table.
+
+### 3. Why This Approach is Efficient
+
+- **Clear Structure**: The use of CTEs makes the SQL query easier to understand and manage. Breaking down the query into smaller parts helps with clarity and maintenance. Each CTE addresses a specific part of the problem, which makes the overall logic straightforward.
+
+- **Utilization of Window Functions**: The `ROW_NUMBER()` function is a powerful tool that allows us to efficiently enumerate the records based on specific criteria (in this case, the earliest year of sales for each product). This avoids the need for multiple subqueries or complex aggregations.
+
+- **Direct Result Retrieval**: By directly joining the filtered first-year data with the original `sales` table, we ensure that we obtain all relevant sales details in a single result set, minimizing any potential inefficiencies in subsequent queries.
+
+Overall, the solution is both elegant and efficient, making optimal use of SQL features to solve the problem at hand.
+
+Runtime: undefined
+Memory: 0
+*/
+
+# Write your MySQL query statement below
+with first_y as (
+    select *,
+    row_number() over (partition by product_id order by year asc) as c
+    from sales
+    
+),
+
+prod_y as (
+    select product_id, year
+    from first_y
+    where c = 1
+)
+
+select s.product_id, s.year as first_year, s.quantity, s.price
+from sales s inner join prod_y y on s.product_id = y.product_id and s.year = y.year
