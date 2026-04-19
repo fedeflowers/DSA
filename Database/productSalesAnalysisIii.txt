@@ -1,55 +1,55 @@
 /*
-## Explanation of the LeetCode Solution for "Product Sales Analysis III"
+### Explanation of the Solution
 
-### 1. Brief Explanation of the Approach
+1. **Approach**:
+   The SQL query is aimed at retrieving information about products that have been sold, specifically focusing on the very first sale of each product. The main objective is to capture the `product_id`, the year of the first sale (`first_year`), the quantity sold during that sale, and the price at which it was sold.
 
-The given SQL query is designed to analyze product sales data, specifically aiming to identify the first year of sales for each product from a `sales` table. 
+    - In the inner query, the SQL statement selects `product_id` and the minimum `year` for each product from the `sales` table. It groups the results by `product_id`, which effectively provides the year of the first sale for each product.
+    
+    - The outer query then joins this inner query back to the original `sales` table. The join uses `product_id` and `year` to match the first sales corresponding to each product, allowing us to retrieve the additional columns – `quantity` and `price` – for the first sale.
 
-Here’s a step-by-step breakdown of the approach:
+2. **Time and Space Complexity Analysis**:
+   - **Time Complexity**:
+     - The inner query performs a `GROUP BY` operation which, in general, is O(N) for scanning the `sales` table once to find the minimum year per `product_id`, where N is the number of rows in the `sales` table.
+     - The outer query, which joins the aggregated result with the original table, also iterates over the rows of both results, making it effectively O(N) as well.
+     - Therefore, the overall time complexity remains O(N).
 
-- **Common Table Expressions (CTEs)**:
-  - `first_y`: This CTE uses the `ROW_NUMBER()` window function to enumerate the years for each product, partitioned by `product_id` and ordered by `year` in ascending order. This allows us to assign a unique row number (`c`) to each year for each product.
-  
-  - `prod_y`: This CTE filters the results from `first_y` to select only the rows where the row number `c` equals 1. This effectively identifies the very first year of sales for each product.
+   - **Space Complexity**:
+     - The space complexity is determined by the storage required for the intermediate results (the output of the inner query). This additional storage is O(P), where P is the number of unique products. 
+     - Thus, the space complexity can be considered O(P) in terms of the maximum size of the intermediate results.
 
-- **Final Selection**: The main query joins the `sales` table with the `prod_y` CTE to retrieve the `product_id`, the first year of sales (aliased as `first_year`), the quantity sold, and the price at which the product was sold in that first year. This ensures that we get the complete sales information for each product in its first year.
+3. **Efficiency of the Approach**:
+   - This approach is efficient because it minimizes the need for multiple passes over the sales data. The aggregation step combined with the join allows us to efficiently filter out unnecessary data, focusing solely on the first occurrence of each product sale.
+   - The use of `GROUP BY` and `JOIN` is straightforward and takes advantage of SQL's capabilities to handle large datasets efficiently.
+   - Since we're primarily grouping and then joining, the impact on performance is limited, keeping it linear concerning the size of the input data. This is particularly important for database operations, where larger datasets are common, and performance can significantly impact response times.
 
-### 2. Time and Space Complexity Analysis
-
-- **Time Complexity**:
-  - The time complexity of this query is driven by the operations involved in the `ROW_NUMBER()` function and the join operation. 
-  - Assuming `N` is the number of records in the `sales` table, the query essentially requires scanning through the entire dataset for the initial row number assignments and then performing a join. Consequently, the time complexity can be approximated to **O(N log N)** due to sorting during the row number assignment, and there could be a linear scan for the join.
-
-- **Space Complexity**:
-  - The space complexity of the query can be approximated to **O(N)** since we need to store intermediate results in the CTEs. The CTEs hold copies of the data for `first_y` and `prod_y` which can grow with the size of the input table.
-
-### 3. Why This Approach is Efficient
-
-- **Clear Structure**: The use of CTEs makes the SQL query easier to understand and manage. Breaking down the query into smaller parts helps with clarity and maintenance. Each CTE addresses a specific part of the problem, which makes the overall logic straightforward.
-
-- **Utilization of Window Functions**: The `ROW_NUMBER()` function is a powerful tool that allows us to efficiently enumerate the records based on specific criteria (in this case, the earliest year of sales for each product). This avoids the need for multiple subqueries or complex aggregations.
-
-- **Direct Result Retrieval**: By directly joining the filtered first-year data with the original `sales` table, we ensure that we obtain all relevant sales details in a single result set, minimizing any potential inefficiencies in subsequent queries.
-
-Overall, the solution is both elegant and efficient, making optimal use of SQL features to solve the problem at hand.
+Overall, this SQL query performs well within the constraints of typical database operations, making it a robust solution for the "Product Sales Analysis III" problem.
 
 Runtime: undefined
 Memory: 0
 */
 
-# Write your MySQL query statement below
-with first_y as (
-    select *,
-    row_number() over (partition by product_id order by year asc) as c
-    from sales
+-- # Write your MySQL query statement below
+-- with first_y as (
+--     select *,
+--     row_number() over (partition by product_id order by year asc) as c
+--     from sales
     
-),
+-- ),
 
-prod_y as (
-    select product_id, year
-    from first_y
-    where c = 1
-)
+-- prod_y as (
+--     select product_id, year
+--     from first_y
+--     where c = 1
+-- )
+
+-- select s.product_id, s.year as first_year, s.quantity, s.price
+-- from sales s inner join prod_y y on s.product_id = y.product_id and s.year = y.year
 
 select s.product_id, s.year as first_year, s.quantity, s.price
-from sales s inner join prod_y y on s.product_id = y.product_id and s.year = y.year
+from sales s
+join (
+    select product_id, min(year) as year
+    from sales
+    group by product_id
+) f using (product_id, year)
