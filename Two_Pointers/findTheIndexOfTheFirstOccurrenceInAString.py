@@ -1,35 +1,37 @@
 """
 ```markdown
-## Explanation of the Solution
+## Explanation of LeetCode Solution: "Find the Index of the First Occurrence in a String"
 
-### 1. Approach
+### 1. Brief Explanation of the Approach
+The problem requires finding the first occurrence of the substring (needle) within a larger string (haystack). The provided solution employs a straightforward approach using nested loops:
 
-The solution aims to find the index of the first occurrence of the substring `needle` within the string `haystack`. It utilizes a simple brute-force comparison method:
-
-- The outer loop iterates over each character in `haystack` using an index `i`.
-- Before comparing, it checks if there are enough characters remaining in `haystack` to potentially match `needle` (i.e., `len(haystack) - i >= len(needle)`).
-- An inner loop compares characters from `haystack` starting at index `i` with characters from `needle`. The inner index `j` is incremented as long as the characters match and the length of matched characters does not exceed the length of `needle`.
-- If the entire `needle` is matched (`j - i == len(needle)`), the function returns the starting index `i`.
-- If no match is found after completing the iterations, the function returns -1.
+- The outer loop iterates through each index of the haystack string.
+- For each starting index `i` in haystack, the inner loop checks if the substring starting from `i` matches the needle.
+- The `while` loop increments index `j` if the characters of `haystack` and `needle` match.
+- If the entire needle is matched (i.e., the length of matched characters equals the length of the needle), the function returns the starting index `i`.
+- If no match is found after checking all potential starting indices in the haystack, the function returns `-1`.
 
 ### 2. Time and Space Complexity Analysis
-
-- **Time Complexity**: O(N * M) in the worst case, where N is the length of `haystack` and M is the length of `needle`. In the worst-case scenario, it iterates through `haystack` and for each position, it may potentially check all characters of `needle`.
+- **Time Complexity**: The worst-case time complexity is \(O(N \times M)\), where:
+  - \(N\) is the length of the haystack, and
+  - \(M\) is the length of the needle.
   
-- **Space Complexity**: O(1) since it only uses a fixed amount of extra space for variables `i` and `j`, regardless of the input size.
+  In the worst scenario, we might need to check every possible starting position in haystack and, for each position, compare all characters of needle.
 
-### 3. Efficiency of the Approach
+- **Space Complexity**: The space complexity is \(O(1)\) because the solution uses a fixed amount of extra space regardless of input size (only a few integer variables are used).
 
-While this solution is straightforward and easy to understand, its efficiency can be improved. However, for small strings or simple use cases, this brute-force technique is acceptable. The key benefits include:
+### 3. Why This Approach is Efficient
+Although the provided solution works correctly and is easy to understand, it can be inefficient for large strings due to its \(O(N \times M)\) time complexity. Major reasons for efficiency include:
 
-- **Simplicity**: The implementation is straightforward, making it easy to understand and maintain.
-- **No Extra Data Structures**: It doesn't use additional data structures, keeping the memory footprint low, which can be advantageous in certain environments.
+- **Simplicity**: The solution's logic is straightforward, making it easy to read and understand.
+- **Early Exit**: The check `len(haystack) - i >= len(needle)` ensures that unnecessary comparisons are avoided if the remaining part of the haystack is shorter than the needle.
+- **Direct Comparison**: It compares characters directly without the need for additional data structures; it uses indices to keep track of currently processed positions.
 
-However, for larger inputs or performance-critical applications, more efficient algorithms (like the Knuth-Morris-Pratt or Rabin-Karp algorithms) are recommended to reduce the time complexity significantly.
+However, there are more advanced algorithms available, like the Knuth-Morris-Pratt (KMP) algorithm, which can solve this problem in linear time \(O(N + M)\). Those would generally be preferred in scenarios where performance is critical.
 ```
 
-Runtime: undefined
-Memory: 19236000
+Runtime: N/A
+Memory: N/A
 """
 
 class Solution:
